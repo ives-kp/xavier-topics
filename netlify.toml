@@ -1,9 +1,15 @@
 [build]
-command = "python3 generate_config.py && cp -r . public 2>/dev/null || true"
+command = "python3 generate_config.py"
 publish = "."
 
 [build.environment]
 PYTHON_VERSION = "3.11"
+
+# 設定HTML的正確MIME type
+[[headers]]
+for = "/*.html"
+[headers.values]
+Content-Type = "text/html; charset=utf-8"
 
 # 重定向規則
 [[redirects]]
