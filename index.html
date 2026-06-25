@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xavier 深度探究中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', '微軟正黑體', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: #ffffff;
+            margin-bottom: 50px;
+            padding: 40px 20px;
+        }
+        
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .header p {
+            font-size: 1.3em;
+            opacity: 0.95;
+        }
+        
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        
+        .module-card {
+            background: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+        
+        .module-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+        }
+        
+        .module-header {
+            padding: 30px 25px;
+            color: #ffffff;
+            font-weight: bold;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .module-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .module-title {
+            font-size: 1.8em;
+            margin-top: 10px;
+        }
+        
+        .module-content {
+            padding: 25px;
+        }
+        
+        .module-description {
+            color: #555;
+            margin-bottom: 20px;
+            font-size: 1.05em;
+            line-height: 1.7;
+            min-height: 60px;
+        }
+        
+        .module-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .tag {
+            display: inline-block;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            border: 1px solid #667eea;
+        }
+        
+        .open-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        
+        .open-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* 配色 */
+        .color-blue { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .color-red { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .color-green { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .color-orange { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .color-purple { background: linear-gradient(135deg, #30cfd0, #330867); }
+        .color-pink { background: linear-gradient(135deg, #a8edea, #fed6e3); }
+        
+        .footer {
+            text-align: center;
+            color: #ffffff;
+            padding: 40px 20px;
+            opacity: 0.9;
+        }
+        
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 50px;
+            color: white;
+            text-align: center;
+        }
+        
+        .stat-item {
+            display: inline-block;
+            margin: 0 30px;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            padding: 40px;
+        }
+        
+        .error {
+            background: #ffcdd2;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .modules-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-item {
+                display: block;
+                margin: 15px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎓 Xavier 深度探究中心</h1>
+            <p>探索各個有興趣的專題</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-number" id="moduleCount">0</span>
+                <span class="stat-label">個專題</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">📚</span>
+                <span class="stat-label">持續學習中</span>
+            </div>
+        </div>
+        
+        <div id="modulesContainer" class="modules-grid">
+            <div class="loading">正在從 config.json 載入專題...</div>
+        </div>
+        
+        <div class="footer">
+            <p>✨ 每個專題都是一次深度探究的旅程</p>
+            <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.7;">Xavier的個人學習平台 | 自動配置版本</p>
+        </div>
+    </div>
+    
+    <script>
+        let modules = [];
+        
+        // 從config.json載入配置
+        async function loadConfig() {
+            try {
+                console.log('🔍 正在從 config.json 載入配置...');
+                const response = await fetch('config.json');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                modules = data.modules || [];
+                
+                if (modules.length === 0) {
+                    console.log('ℹ️  config.json 現在是空的。首個HTML檔案會在下次部署時自動掃描。');
+                    showEmpty();
+                    return;
+                }
+                
+                console.log(`✅ 成功載入 ${modules.length} 個專題`);
+                displayModules();
+                
+            } catch (error) {
+                console.error('❌ 載入config.json失敗:', error);
+                showError(
+                    '❌ 無法載入 config.json<br><br>' +
+                    '可能的原因：<br>' +
+                    '1. 網路連接問題<br>' +
+                    '2. Netlify build尚未完成<br><br>' +
+                    '請重新整理頁面（Ctrl+F5）'
+                );
+            }
+        }
+        
+        // 顯示模組
+        function displayModules() {
+            const container = document.getElementById('modulesContainer');
+            container.innerHTML = '';
+            
+            modules.forEach((module, index) => {
+                const card = createModuleCard(module, index);
+                container.appendChild(card);
+            });
+            
+            // 更新統計
+            document.getElementById('moduleCount').textContent = modules.length;
+        }
+        
+        // 建立卡片
+        function createModuleCard(module, index) {
+            const card = document.createElement('div');
+            card.className = 'module-card';
+            
+            const colors = [
+                'color-blue', 'color-red', 'color-green', 
+                'color-orange', 'color-purple', 'color-pink'
+            ];
+            const colorClass = module.color || colors[index % colors.length];
+            
+            const tagsHTML = module.tags 
+                ? module.tags.map(tag => `<span class="tag">${tag}</span>`).join('')
+                : '<span class="tag">專題</span>';
+            
+            card.innerHTML = `
+                <div class="module-header ${colorClass}">
+                    <div>
+                        <span class="module-icon">${module.icon || '📚'}</span>
+                        <div class="module-title">${module.title}</div>
+                    </div>
+                </div>
+                <div class="module-content">
+                    <p class="module-description">${module.description}</p>
+                    <div class="module-tags">
+                        ${tagsHTML}
+                    </div>
+                    <a href="${module.file}" class="open-button">📖 開啟專題</a>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        // 顯示空狀態
+        function showEmpty() {
+            const container = document.getElementById('modulesContainer');
+            container.innerHTML = `
+                <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: white;">
+                    <p style="font-size: 1.2em; margin-bottom: 20px;">📚 還沒有專題</p>
+                    <p>上傳HTML檔案到GitHub，Netlify會自動掃描並顯示在這裡</p>
+                </div>
+            `;
+            document.getElementById('moduleCount').textContent = '0';
+        }
+        
+        // 顯示錯誤
+        function showError(message) {
+            const container = document.getElementById('modulesContainer');
+            container.innerHTML = `<div class="error" style="grid-column: 1 / -1;">${message}</div>`;
+            document.getElementById('moduleCount').textContent = '0';
+        }
+        
+        // 頁面載入時讀取配置
+        window.addEventListener('load', loadConfig);
+    </script>
+</body>
+</html>
