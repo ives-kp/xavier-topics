@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>量子糾纏：Xavier 的深度指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            color: #1f2937;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            color: #1e40af;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #6b7280;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f9fafb;
+            border-left: 5px solid #1e40af;
+            border-radius: 8px;
+        }
+
+        h2 {
+            font-size: 1.8em;
+            color: #1e40af;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            font-size: 1.3em;
+            color: #374151;
+            margin-top: 20px;
+            margin-bottom: 12px;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #374151;
+        }
+
+        .highlight {
+            background: #fef08a;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #fbbf24;
+            margin: 20px 0;
+            font-weight: 500;
+        }
+
+        .interactive-box {
+            background: white;
+            border: 2px solid #1e40af;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .coin-demo {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .coin {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            user-select: none;
+        }
+
+        .coin:hover {
+            transform: scale(1.05);
+        }
+
+        .coin.heads {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: white;
+        }
+
+        .coin.tails {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+        }
+
+        .coin.spinning {
+            background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+            animation: spin 0.6s infinite;
+            color: white;
+        }
+
+        @keyframes spin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        .button {
+            background: #1e40af;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .button:hover {
+            background: #1e3a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.3);
+        }
+
+        .button.secondary {
+            background: #6b7280;
+        }
+
+        .button.secondary:hover {
+            background: #4b5563;
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            color: #1e40af;
+            font-size: 1em;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+            font-weight: 600;
+        }
+
+        .expand-btn:hover {
+            color: #1e3a8a;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .expanded-content {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+            }
+            to {
+                opacity: 1;
+                max-height: 1000px;
+            }
+        }
+
+        .critical-question {
+            background: #fee2e2;
+            border-left: 4px solid #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 1em;
+        }
+
+        .critical-question strong {
+            color: #991b1b;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .comparison-table th {
+            background: #1e40af;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .emoji-icon {
+            font-size: 2em;
+            margin-right: 10px;
+        }
+
+        .thought-bubble {
+            background: #ede9fe;
+            border: 2px dashed #7c3aed;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-style: italic;
+            color: #6d28d9;
+        }
+
+        .einstein-quote {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-left: 5px solid #f59e0b;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        .three-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .option-box {
+            background: white;
+            border: 2px solid #e5e7eb;
+            padding: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option-box:hover {
+            border-color: #1e40af;
+            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.1);
+        }
+
+        .option-box h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            border-left: 5px solid #16a34a;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .summary-box h3 {
+            color: #15803d;
+        }
+
+        .summary-box p {
+            color: #166534;
+            margin-bottom: 10px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .section-indicator {
+            text-align: center;
+            color: #9ca3af;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .thinking-prompt {
+            background: #dbeafe;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .thinking-prompt strong {
+            color: #0c4a6e;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.4em;
+            }
+
+            p {
+                font-size: 1em;
+            }
+
+            .coin {
+                width: 80px;
+                height: 80px;
+                font-size: 1.5em;
+            }
+
+            .coin-demo {
+                margin: 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section-indicator" id="section-count">第 1 部分，共 7 部分</div>
+        
+        <h1>⚛️ 量子糾纏</h1>
+        <p class="subtitle">從硬幣對的魔術開始</p>
+
+        <!-- 第一部分 -->
+        <div class="section" id="section-1">
+            <h2>第一部分：神奇的硬幣對</h2>
+
+            <h3>🎮 遊戲開始</h3>
+            <p>想像有一對特殊的硬幣。我們把其中一枚給你，一枚留給自己。</p>
+            
+            <div class="highlight">
+                你拿著你的硬幣去<strong>火星</strong>，我留在<strong>地球</strong>。<br><br>
+                現在，我同時扔出我的硬幣，它出現了「正面」。<br><br>
+                🪄 <strong>神奇的事發生了：你的硬幣也自動變成了「正面」。</strong>
+            </div>
+
+            <div class="critical-question">
+                <strong>🤔 你會問的第一個問題是什麼？</strong><br><br>
+                通常是：「你是怎麼偷偷告訴我的？」<br>
+                或者更狡猾的：「我們的硬幣打造時，你早就決定好了，對嗎？」
+            </div>
+
+            <h3>但答案是……都不是</h3>
+            <p>在量子的微觀世界裡，<strong>沒有人提前決定</strong>。</p>
+
+            <div class="interactive-box">
+                <h3>看看這對硬幣的初始狀態</h3>
+                <div class="coin-demo">
+                    <div>
+                        <div class="coin spinning">🔄</div>
+                        <p style="margin-top: 10px; color: #666;">你的硬幣</p>
+                    </div>
+                    <div style="font-size: 1.5em; color: #1e40af;">⟷</div>
+                    <div>
+                        <div class="coin spinning">🔄</div>
+                        <p style="margin-top: 10px; color: #666;">我的硬幣</p>
+                    </div>
+                </div>
+                <p style="color: #666; font-style: italic;">
+                    硬幣在旋轉 — 既不是正面，也不是反面。
+                    <br>在掉下來之前，它們的狀態就是「旋轉」。
+                </p>
+                <button class="button" onclick="toggleSection(2)">明白了，下一個想法 →</button>
+            </div>
+
+            <h3 style="margin-top: 30px;">💡 這就是量子的第一個怪事：「疊加態」</h3>
+            <p>在量子世界裡，一個粒子可以同時處於多個狀態。</p>
+            <p><strong>不是我們不知道它在哪個狀態，</strong><br>而是<strong>它真的在多個狀態裡。</strong></p>
+
+            <div class="thinking-prompt">
+                <strong>⏸️ 停一下，想想：</strong><br>
+                這是什麼意思？為什麼不只是「我們不知道」，而必須是「真的在多個狀態」？有差別嗎？
+            </div>
+        </div>
+
+        <!-- 第二部分 -->
+        <div class="section hidden" id="section-2">
+            <h3 style="margin-top: 0;">第二部分：為什麼是「糾纏」而不只是「疊加」？</h3>
+
+            <h3>一個關鍵的不同</h3>
+            <p>如果只是「疊加態」，你拿的硬幣獨立地「旋轉」，我的也獨立地「旋轉」。</p>
+            <p style="color: #dc2626; font-weight: 600;">但糾纏態不是這樣。</p>
+
+            <div class="highlight">
+                糾纏態的硬幣對有一個特殊的配對規則：<br><br>
+                ✓ 如果你測到「<strong>正面</strong>」 → 我的硬幣保證是「<strong>反面</strong>」<br>
+                ✓ 如果你測到「<strong>反面</strong>」 → 我的硬幣保證是「<strong>正面</strong>」
+            </p>
+
+            <h3>三種可能的硬幣對</h3>
+            <p>假設我們製造了成千上萬對硬幣，試試看能區分出不同的類型：</p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>類型</th>
+                        <th>初始狀態</th>
+                        <th>特徵</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>獨立型</strong><br>（普通硬幣）</td>
+                        <td>各自獨立</td>
+                        <td>沒有關係，各 50% 機率</td>
+                    </tr>
+                    <tr>
+                        <td><strong>預設型</strong><br>（但不是糾纏）</td>
+                        <td>都是正或都是反<br>（但「已決定好」）</td>
+                        <td>有相關性，但在打造時就決定了</td>
+                    </tr>
+                    <tr>
+                        <td><strong>量子糾纏型</strong><br>（真正的魔法）</td>
+                        <td>都不存在「已決定」</td>
+                        <td><strong>瞬間相關</strong>，無論距離多遠</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="critical-question">
+                <strong>🤔 這裡的疑問：</strong><br>
+                如果硬幣初始時沒有決定，那測量時怎樣「瞬間」決定另一個？
+                <br>這是超光速傳遞信息嗎？
+            </div>
+
+            <button class="button" onclick="toggleSection(3)">我想知道愛因斯坦怎樣質疑這個 →</button>
+        </div>
+
+        <!-- 第三部分 -->
+        <div class="section hidden" id="section-3">
+            <h3 style="margin-top: 0;">第三部分：為什麼這看起來違反常理？</h3>
+
+            <h3>🧠 愛因斯坦的質疑（1935 年）</h3>
+            <p>愛因斯坦覺得這太荒唐了。他說了一句著名的話：</p>
+
+            <div class="einstein-quote">
+                <strong>「上帝不會擲骰子。」</strong>
+            </div>
+
+            <p>他的意思是：一個系統應該<strong>在我們測量之前，就已經有確定的狀態</strong>。</p>
+
+            <p>他無法接受：「因為我測了，遠方的東西才決定自己的狀態。」</p>
+
+            <div class="thought-bubble">
+                這樣的話……<br>
+                我在地球測你的硬幣 → 瞬間火星上你的硬幣就知道了<br>
+                <br>
+                但光速是宇宙的極限！<br>
+                這看起來像是<strong>「超光速的傳遞信息」</strong>
+            </div>
+
+            <h3>🔬 貝爾的解決方案（1964 年）</h3>
+            <p>一位叫貝爾的物理學家說：「這不是信仰之爭。」</p>
+            <p><strong>可以實驗驗證。</strong></p>
+
+            <div class="interactive-box">
+                <h4>貝爾的聰明想法</h4>
+                <p style="text-align: left; display: inline-block;">
+                    假設糾纏硬幣<strong>不是真的糾纏</strong>，而是早就被「編程」好了。<br><br>
+                    那麼統計規律應該遵守某個數學規則（叫「貝爾不等式」）。<br><br>
+                    但實驗一次又一次證明：<br>
+                    <strong style="color: #16a34a; font-size: 1.2em;">
+                    ✓ 量子糾纏違反了這個不等式
+                    </strong>
+                </p>
+            </div>
+
+            <div class="highlight">
+                這意味著什麼？<br><br>
+                <strong>沒有任何「提前編程」的方案能解釋這個現象。</strong><br><br>
+                愛因斯坦可能是錯的。
+            </div>
+
+            <div class="thinking-prompt">
+                <strong>⏸️ 停一下，想想：</strong><br>
+                如果不是「提前編程」，那到底是什麼？<br>
+                既然不能超光速傳遞信息，怎樣解釋這個相關性？
+            </div>
+
+            <button class="button" onclick="toggleSection(4)">我想知道怎樣解釋這個矛盾 →</button>
+        </div>
+
+        <!-- 第四部分 -->
+        <div class="section hidden" id="section-4">
+            <h3 style="margin-top: 0;">第四部分：那它怎樣「不是超光速信息傳遞」呢？</h3>
+
+            <h3>🔑 關鍵在這裡</h3>
+            <p>你無法控制你測到的結果。</p>
+
+            <div class="interactive-box">
+                <h4>試試這個場景</h4>
+                <p style="text-align: left; display: inline-block;">
+                    💪 我在地球上扔硬幣<br>
+                    🚀 你在火星上扔硬幣<br><br>
+                </p>
+                <button class="button secondary" onclick="simulateQuantumToss()">模擬測量</button>
+                <div id="toss-result" style="margin-top: 20px; font-size: 1.2em;"></div>
+            </div>
+
+            <h3 style="margin-top: 30px;">結果：我們的測量結果相反</h3>
+            <p>我正面，你反面；或反過來。</p>
+            <p style="color: #666; font-style: italic;">但這是隨機的。我不知道我會測到什麼，你也不知道。</p>
+
+            <div class="highlight">
+                雖然你的硬幣「知道」我的硬幣是什麼，<br>
+                但你<strong>沒辦法看出這一點</strong>，除非……<br><br>
+                <strong>……我們事後比對結果。</strong>
+            </div>
+
+            <h3>🚀 比對結果需要時間</h3>
+            <p>我要用光速傳遞訊息告訴你「我測到正面」。</p>
+            <p>你才能確認「對，我測到反面，我們的硬幣確實糾纏了。」</p>
+
+            <div class="summary-box">
+                <h3>✨ 量子糾纏的神奇之處</h3>
+                <p>✓ <strong>相關性是瞬間的</strong> — 測一個，另一個瞬間「知道」</p>
+                <p>✓ <strong>信息傳遞不是</strong> — 需要用光速比對</p>
+                <p style="margin-top: 15px; font-size: 1.1em;"><strong>結論：沒有違反相對論。</strong></p>
+            </div>
+
+            <div class="critical-question">
+                <strong>🤔 停一下，為什麼這不是超光速傳遞？</strong><br><br>
+                因為你無法<strong>控制</strong>你測出什麼。<br>
+                測出什麼都是<strong>隨機的</strong>。<br>
+                所以你無法用它傳送有意義的信息。
+            </div>
+
+            <button class="button" onclick="toggleSection(5)">我想知道實際應用 →</button>
+        </div>
+
+        <!-- 第五部分 -->
+        <div class="section hidden" id="section-5">
+            <h3 style="margin-top: 0;">第五部分：實際應用（為什麼科學家們在乎？）</h3>
+
+            <h3>🔐 1. 量子通訊（最安全的密鑰）</h3>
+            <p>你想傳一個秘密給朋友，但怕被竊聽。</p>
+
+            <div class="interactive-box">
+                <h4>怎樣用糾纏硬幣傳秘密？</h4>
+                <ol style="text-align: left; display: inline-block; line-height: 1.8;">
+                    <li>我們各拿一個糾纏硬幣</li>
+                    <li>我隨機測我的硬幣（正面或反面），你也隨機測你的</li>
+                    <li>我明文告訴你「我測的是正面」</li>
+                    <li>你檢查：如果你測到反面，那就對了，我們有共同的密鑰</li>
+                    <li>竊聽者即使截獲訊號，也看不出密鑰是什麼<br>（因為他測出什麼都是隨機的）</li>
+                </ol>
+            </div>
+
+            <h3>📡 2. 量子傳輸（傳送狀態，不是粒子）</h3>
+            <p>你想讓一個量子粒子的狀態瞬間「複製」到遠方，但不能傳送粒子本身。</p>
+            <p style="color: #666; font-style: italic;">用糾纏硬幣，配合特殊的測量方式，你可以做到。</p>
+            <p style="color: #666; font-style: italic;">（原理複雜，但核心還是利用糾纏的相關性）</p>
+
+            <button class="button" onclick="toggleSection(6)">我要記住哪三件事？ →</button>
+        </div>
+
+        <!-- 第六部分 -->
+        <div class="section hidden" id="section-6">
+            <h3 style="margin-top: 0;">第六部分：Xavier 應該記住什麼？</h3>
+
+            <h3>📌 三句話理解量子糾纏</h3>
+            
+            <div class="three-options">
+                <div class="option-box">
+                    <h4>疊加態</h4>
+                    <p>一個粒子可以同時處於多個狀態<br>（像旋轉的硬幣）</p>
+                </div>
+                <div class="option-box">
+                    <h4>糾纏態</h4>
+                    <p>兩個粒子的狀態相關，測一個決定另一個，無論多遠</p>
+                </div>
+                <div class="option-box">
+                    <h4>不是超光速</h4>
+                    <p>相關性瞬間，但信息傳遞需要光速</p>
+                </div>
+            </div>
+
+            <h3>❓ 三個「為什麼」</h3>
+            
+            <div class="interactive-box">
+                <h4>為什麼愛因斯坦反對？</h4>
+                <button class="expand-btn" onclick="toggleAnswer('why1')">展開答案 ↓</button>
+                <div id="why1" class="expanded-content hidden">
+                    <p>因為他認為狀態應該「提前決定」，而不是被測量決定。<br>
+                    他無法接受「現實」是由測量創造出來的。</p>
+                </div>
+            </div>
+
+            <div class="interactive-box">
+                <h4>為什麼貝爾能解決爭議？</h4>
+                <button class="expand-btn" onclick="toggleAnswer('why2')">展開答案 ↓</button>
+                <div id="why2" class="expanded-content hidden">
+                    <p>因為他把哲學爭議變成可以實驗驗證的物理問題。<br>
+                    他設計了一個測試，用實驗結果說話，而不是用信念。</p>
+                </div>
+            </div>
+
+            <div class="interactive-box">
+                <h4>為什麼還有應用價值？</h4>
+                <button class="expand-btn" onclick="toggleAnswer('why3')">展開答案 ↓</button>
+                <div id="why3" class="expanded-content hidden">
+                    <p>因為糾纏的「瞬間相關性」可以用來做安全通訊和量子電腦。<br>
+                    這種超越直覺的性質，恰好是它有用的地方。</p>
+                </div>
+            </div>
+
+            <button class="button" onclick="toggleSection(7)">我想更深入……→</button>
+        </div>
+
+        <!-- 第七部分 -->
+        <div class="section hidden" id="section-7">
+            <h3 style="margin-top: 0;">第七部分：如果 Xavier 想更深入……</h3>
+
+            <h3>🤔 一個有趣的矛盾</h3>
+            
+            <div class="thought-bubble">
+                <strong>看起來：</strong><br>
+                「如果測一個就決定另一個，為什麼不是超光速信息傳遞？」<br><br>
+                <strong>實際上：</strong><br>
+                因為你測出什麼是隨機的。你無法控制。所以無法用它傳信息。<br><br>
+                <strong>比喻：</strong><br>
+                一個房間裡有紅燈和藍燈。一個人進去看不到光，但另一個房間的燈會自動跟著亮起相同的顏色。<br>
+                看起來他們之間有超光速通訊。<br>
+                但實際上，進房間的人無法控制看到什麼顏色，所以無法傳信息。
+            </div>
+
+            <h3>🌍 一個深層的哲學問題</h3>
+            <p>量子糾纏真的「違反」了我們對世界的直覺，因為它告訴我們：</p>
+
+            <div class="highlight">
+                在量子層面，「現實」不是在測量前就決定好的。<br><br>
+                <strong>測量本身創造了現實。</strong>
+            </div>
+
+            <p>愛因斯坦一生都不願意接受這個。他說如果量子力學是對的，那就意味著「上帝擲骰子」。</p>
+
+            <div class="summary-box" style="background: linear-gradient(135deg, #fee2e2, #fecaca); border-left-color: #dc2626;">
+                <h3 style="color: #991b1b;">⚡ 實驗證明了愛因斯坦錯了</h3>
+                <p style="color: #7f1d1d;">不是因為他聰明程度不夠，而是因為他對宇宙的直覺不對。</p>
+                <p style="color: #7f1d1d; font-size: 1.1em; margin-top: 15px;"><strong>這是物理學最美的地方：現實可以比我們想像的更奇怪。</strong></p>
+            </div>
+
+            <div class="critical-question">
+                <strong>🤔 最後的思考：</strong><br>
+                如果「測量創造現實」，那什麼是「客觀的世界」？<br>
+                在沒有人觀察的地方，宇宙存在嗎？<br>
+                <br>
+                <span style="color: #666; font-style: italic;">這些問題至今仍有物理學家在爭論。</span>
+            </div>
+
+            <h3 style="margin-top: 40px;">🎯 推薦看法</h3>
+            <p>這篇解釋是給你讀的。如果有不懂的地方，<strong>不要查百科，直接問我</strong>。</p>
+            
+            <div class="interactive-box">
+                <h4>最好的理解方式</h4>
+                <ol style="text-align: left; display: inline-block; line-height: 2;">
+                    <li>📖 讀一部分 → 停下來</li>
+                    <li>❓ 問「為什麼」 → 我們對話</li>
+                    <li>🗣️ 說給我聽 → 用你自己的話解釋給我</li>
+                    <li>🔍 找矛盾 → 「這裡不對勁」，我們一起挖</li>
+                </ol>
+            </div>
+
+            <div class="summary-box">
+                <p style="font-size: 1.2em;">
+                    <strong>量子糾纏最有趣的地方不是公式，<br>而是它怎樣挑戰我們對「現實」的理解。</strong>
+                </p>
+                <p style="margin-top: 20px; font-size: 1.1em;">
+                    你的腦子特別適合這個工作。<br>
+                    <strong>去挑戰它吧。</strong>
+                </p>
+            </div>
+        </div>
+
+        <!-- 導航 -->
+        <div class="nav-buttons">
+            <button class="button secondary" onclick="previousSection()">← 上一部分</button>
+            <span id="progress" style="color: #6b7280; font-weight: 600; padding: 0 20px;"></span>
+            <button class="button secondary" onclick="nextSection()">下一部分 →</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 7;
+
+        function toggleSection(sectionNum) {
+            // 隱藏所有 section
+            for (let i = 1; i <= totalSections; i++) {
+                document.getElementById(`section-${i}`).classList.add('hidden');
+            }
+            // 顯示目標 section
+            document.getElementById(`section-${sectionNum}`).classList.remove('hidden');
+            currentSection = sectionNum;
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function nextSection() {
+            if (currentSection < totalSections) {
+                toggleSection(currentSection + 1);
+            }
+        }
+
+        function previousSection() {
+            if (currentSection > 1) {
+                toggleSection(currentSection - 1);
+            }
+        }
+
+        function toggleAnswer(id) {
+            const element = document.getElementById(id);
+            element.classList.toggle('hidden');
+        }
+
+        function updateProgress() {
+            document.getElementById('section-count').textContent = `第 ${currentSection} 部分，共 ${totalSections} 部分`;
+            document.getElementById('progress').textContent = `${currentSection} / ${totalSections}`;
+        }
+
+        function simulateQuantumToss() {
+            const earth = Math.random() < 0.5 ? '正面' : '反面';
+            const mars = earth === '正面' ? '反面' : '正面';
+            
+            const resultDiv = document.getElementById('toss-result');
+            resultDiv.innerHTML = `
+                <div class="coin-demo">
+                    <div>
+                        <div class="coin ${earth === '正面' ? 'heads' : 'tails'}">
+                            ${earth === '正面' ? '👑' : '⭐'}
+                        </div>
+                        <p style="margin-top: 10px;">地球：${earth}</p>
+                    </div>
+                    <div style="font-size: 1.5em; color: #1e40af;">⟷</div>
+                    <div>
+                        <div class="coin ${mars === '正面' ? 'heads' : 'tails'}">
+                            ${mars === '正面' ? '👑' : '⭐'}
+                        </div>
+                        <p style="margin-top: 10px;">火星：${mars}</p>
+                    </div>
+                </div>
+                <p style="color: #666; margin-top: 15px;">✓ 結果總是相反的（這一次）<br>
+                <span style="font-size: 0.9em;">試試再點一次，看看它們是否總是相反</span></p>
+            `;
+        }
+
+        // 初始化
+        updateProgress();
+        toggleSection(1);
+    </script>
+</body>
+</html>
