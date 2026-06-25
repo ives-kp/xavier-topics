@@ -1,0 +1,1639 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xavier 知識說明手冊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #F7F8FB;
+  --surface: #FFFFFF;
+  --border:  #DDE3EE;
+  --text:    #1A2033;
+  --soft:    #4A5568;
+  --hint:    #8A96AA;
+
+  --s1: #0A7A6E;  --s2: #1A5FAA;  --s3: #5530A8;
+  --s4: #9A5800;  --s5: #156830;
+  --s1t: #E5F4F2; --s2t: #E8F0FB; --s3t: #EDE8FB;
+  --s4t: #FBF2E5; --s5t: #E5F5EB;
+
+  --code-bg:  #F2F4F8;
+  --code-text:#2A3550;
+  --sb:       260px;
+  --max:      800px;
+  --font:     'Noto Sans TC', sans-serif;
+  --serif:    'Noto Serif TC', serif;
+  --mono:     'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── SIDEBAR ── */
+#sb {
+  position:fixed; top:0; left:0; width:var(--sb); height:100vh;
+  background:#2A3448; overflow-y:auto; z-index:100; padding-bottom:48px;
+}
+.sb-logo { padding:22px 20px 14px; border-bottom:1px solid rgba(255,255,255,.1); }
+.sb-logo h1 { font-size:13px; font-weight:700; color:#fff; line-height:1.4; }
+.sb-logo p  { font-size:11px; color:#8A9AB8; margin-top:3px; }
+.sb-sec { padding:12px 0 4px; }
+.sb-sec-lbl { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; padding:0 20px; margin-bottom:4px; }
+.c1{color:#2ABDA8}.c2{color:#5A9AE0}.c3{color:#9A70F0}.c4{color:#D08830}.c5{color:#3AC870}
+.sb-a {
+  display:flex; align-items:baseline; gap:8px; padding:7px 20px;
+  font-size:13px; color:#8090B0; text-decoration:none;
+  transition:background .12s,color .12s; line-height:1.4;
+}
+.sb-a:hover  { background:rgba(255,255,255,.07); color:#D0D8F0; }
+.sb-a.active { background:rgba(255,255,255,.12); color:#fff; }
+.sb-a .id { font-family:var(--mono); font-size:10px; color:#5A6A8A; min-width:32px; flex-shrink:0; }
+.sb-a.active .id { color:#7A8AB0; }
+
+/* ── MAIN ── */
+#main { margin-left:var(--sb); }
+
+/* ── COVER ── */
+#cover { background:#2A3448; color:#fff; padding:72px 60px 56px; }
+.eyebrow { font-size:11px; font-weight:700; letter-spacing:.14em; text-transform:uppercase; color:#2ABDA8; margin-bottom:14px; }
+#cover h1 { font-size:34px; font-weight:900; line-height:1.2; margin-bottom:10px; }
+#cover .sub { font-size:16px; color:#8A9AB8; margin-bottom:40px; }
+.cover-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; max-width:700px; margin-bottom:36px; }
+.cg-item { background:rgba(255,255,255,.07); border-radius:8px; padding:12px 10px; border-left:3px solid transparent; }
+.cg-item:nth-child(1){border-color:#2ABDA8}.cg-item:nth-child(2){border-color:#5A9AE0}
+.cg-item:nth-child(3){border-color:#9A70F0}.cg-item:nth-child(4){border-color:#D08830}
+.cg-item:nth-child(5){border-color:#3AC870}
+.cg-n { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:5px; }
+.cg-item:nth-child(1) .cg-n{color:#2ABDA8}.cg-item:nth-child(2) .cg-n{color:#5A9AE0}
+.cg-item:nth-child(3) .cg-n{color:#9A70F0}.cg-item:nth-child(4) .cg-n{color:#D08830}
+.cg-item:nth-child(5) .cg-n{color:#3AC870}
+.cg-t { font-size:12px; color:#B0C0D8; line-height:1.4; }
+.cover-note {
+  max-width:640px; padding:16px 20px; background:rgba(255,255,255,.06);
+  border-left:3px solid #8A9AB8; border-radius:0 8px 8px 0;
+  font-size:14px; color:#8A9AB8; line-height:1.65;
+}
+
+/* ── STAGE DIVIDER ── */
+.stage-div { padding:40px 60px 22px; border-bottom:1.5px solid var(--border); }
+.stage-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 14px; border-radius:100px;
+  font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:#fff; margin-bottom:12px;
+}
+.stage-div h2 { font-size:22px; font-weight:800; color:var(--text); margin-bottom:10px; }
+.stage-blurb { font-size:15px; color:var(--soft); line-height:1.75; max-width:640px; padding:12px 16px; border-radius:8px; }
+
+/* ── KNOWLEDGE CARD ── */
+.kcard { padding:52px 60px 60px; border-bottom:2px solid var(--border); }
+.kcard-inner { max-width:var(--max); }
+
+.kc-head { display:flex; align-items:flex-start; gap:16px; margin-bottom:28px; }
+.kc-num {
+  font-family:var(--mono); font-size:12px; font-weight:500;
+  padding:5px 12px; border-radius:7px; color:#fff; flex-shrink:0; margin-top:4px;
+}
+.kc-head h3 { font-size:24px; font-weight:900; color:var(--text); line-height:1.2; }
+.kc-sub { font-size:15px; color:var(--hint); margin-top:4px; }
+
+.topic-bar { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:26px; }
+.topic-tag {
+  font-size:13px; font-weight:600; padding:4px 14px;
+  border-radius:100px; border:1.5px solid currentColor; letter-spacing:.02em;
+}
+
+/* ── SECTION LABEL ── */
+.sec-lbl {
+  font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  margin:34px 0 14px; display:flex; align-items:center; gap:8px; color:var(--soft);
+}
+.sec-lbl::after { content:''; flex:1; height:1.5px; background:var(--border); }
+
+/* ── CONCEPT BOX ── */
+.concept {
+  background:var(--surface); border:1.5px solid var(--border);
+  border-radius:12px; padding:22px 26px; margin-bottom:14px;
+}
+.concept h4 { font-size:17px; font-weight:700; margin-bottom:10px; color:var(--text); }
+.concept p { font-size:16px; color:var(--soft); line-height:1.85; margin-bottom:10px; }
+.concept p:last-child { margin-bottom:0; }
+
+/* ── FORMULA ── */
+.formula-card { border-radius:12px; padding:20px 24px; margin-bottom:16px; }
+.formula-card .f-label { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; margin-bottom:12px; }
+.formula-card .f-main {
+  font-family:var(--serif); font-size:22px; font-weight:700;
+  letter-spacing:.04em; text-align:center; padding:14px 0; line-height:1.5;
+  color: var(--text);
+}
+.formula-card .f-explain { font-size:14.5px; color:var(--soft); margin-top:12px; line-height:1.75; }
+.formula-card .f-explain span {
+  display:inline-block; background:var(--bg); border:1px solid var(--border);
+  border-radius:4px; padding:1px 8px; font-family:var(--mono); font-size:13px; margin:2px; color:var(--text);
+}
+
+/* ── DERIVE ── */
+.derive {
+  background:var(--s2t); border:1.5px solid #B0C8EC;
+  border-radius:12px; padding:22px 26px; margin-bottom:14px;
+}
+.derive .d-title { font-size:14px; font-weight:700; color:var(--s2); margin-bottom:14px; }
+.derive .step { display:flex; gap:14px; margin-bottom:10px; align-items:flex-start; }
+.derive .step:last-child { margin-bottom:0; }
+.derive .step-n {
+  flex-shrink:0; width:22px; height:22px; border-radius:50%;
+  background:var(--s2); color:#fff; font-size:11px; font-weight:700;
+  display:flex; align-items:center; justify-content:center; margin-top:3px;
+}
+.derive .step-body { font-size:15.5px; color:var(--text); line-height:1.75; }
+.derive .step-body .eq {
+  font-family:var(--serif); font-size:17px; display:block;
+  margin:6px 0; color:var(--s2);
+}
+.derive .step-body .note { font-size:13.5px; color:var(--hint); margin-top:2px; }
+
+/* ── INSIGHT ── */
+.insight {
+  border-radius:12px; padding:18px 22px; margin-bottom:14px;
+  display:flex; gap:14px; align-items:flex-start;
+}
+.insight .icon { font-size:22px; flex-shrink:0; margin-top:1px; }
+.insight .body strong {
+  display:block; font-size:11px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; margin-bottom:6px;
+}
+.insight .body p { font-size:15.5px; line-height:1.75; }
+
+/* ── ANALOGY ── */
+.analogy {
+  background:#FFFBF0; border:1.5px solid #E8D080;
+  border-radius:12px; padding:20px 24px; margin-bottom:14px;
+}
+.analogy .a-label { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#8A6000; margin-bottom:10px; }
+.analogy p { font-size:16px; color:#5A4000; line-height:1.8; }
+
+/* ── COMPARE TABLE ── */
+.compare-wrap { overflow-x:auto; margin-bottom:14px; }
+.compare-table { width:100%; border-collapse:collapse; font-size:15px; }
+.compare-table th {
+  background:var(--text); color:#fff; padding:11px 16px;
+  text-align:left; font-size:13px; font-weight:700;
+}
+.compare-table td {
+  padding:11px 16px; border-bottom:1.5px solid var(--border);
+  background:var(--surface); vertical-align:top; line-height:1.65;
+  color: var(--soft);
+}
+.compare-table tr:nth-child(even) td { background:var(--bg); }
+.compare-table .hl { font-weight:700; color:var(--s2); }
+
+/* ── EXTENSION ── */
+.extension {
+  background:var(--s3t); border:1.5px solid #C0A8E8;
+  border-radius:12px; padding:20px 24px; margin-bottom:14px;
+}
+.extension .e-label { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--s3); margin-bottom:10px; }
+.extension p,.extension li { font-size:15px; color:#3A2060; line-height:1.8; }
+.extension ul { list-style:none; margin-top:8px; }
+.extension ul li { padding-left:20px; position:relative; margin-bottom:7px; }
+.extension ul li::before { content:'→'; position:absolute; left:0; color:var(--s3); font-weight:700; }
+
+/* ── PRACTICE ── */
+.practice .p-label { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--s5); margin-bottom:14px; }
+.pq {
+  background:var(--surface); border:1.5px solid var(--border);
+  border-radius:10px; padding:18px 22px; margin-bottom:10px;
+}
+.pq .qn {
+  font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--hint); margin-bottom:8px; display:flex; align-items:center; gap:8px;
+}
+.pq .qn span {
+  background:var(--text); color:#fff; border-radius:4px; padding:2px 8px; font-size:10px;
+}
+.pq .q { font-size:16px; font-weight:600; color:var(--text); line-height:1.65; margin-bottom:10px; }
+.pq .q-hint { font-size:14px; color:var(--hint); line-height:1.65; font-style:italic; }
+.pq .ans-toggle {
+  display:flex; align-items:center; gap:6px;
+  font-size:14px; font-weight:700; color:var(--s2);
+  cursor:pointer; margin-top:12px; user-select:none;
+  background:none; border:none; padding:0;
+}
+.pq .ans-toggle::before { content:'▶'; font-size:10px; transition:transform .2s; }
+.pq .ans-toggle.open::before { transform:rotate(90deg); }
+.pq .ans-body {
+  display:none; margin-top:12px; padding-top:12px;
+  border-top:1.5px solid var(--border);
+  font-size:15.5px; color:var(--soft); line-height:1.8;
+}
+.pq .ans-body.show { display:block; }
+.pq .ans-body .key {
+  font-weight:700; color:var(--text); font-family:var(--serif);
+  font-size:17px; display:block; margin-bottom:8px;
+}
+.pq .ans-body .steps { margin-top:8px; font-size:14.5px; color:var(--hint); line-height:1.75; }
+
+/* ── DIAGRAM ── */
+.diagram {
+  background:var(--surface); border:1.5px solid var(--border);
+  border-radius:12px; padding:20px 24px; margin-bottom:14px; overflow:hidden;
+}
+.diagram svg { display:block; max-width:100%; height:auto; margin:0 auto; }
+.diagram .d-cap { font-size:13px; color:var(--hint); text-align:center; margin-top:10px; line-height:1.5; }
+
+/* ── CODE ── */
+.code-wrap { margin:8px 0 18px; border-radius:10px; overflow:hidden; border:1.5px solid var(--border); }
+.code-title { background:#EEF1F8; padding:8px 18px; font-family:var(--mono); font-size:12px; color:var(--hint); border-bottom:1.5px solid var(--border); }
+.code-wrap pre {
+  background:var(--code-bg); padding:18px 22px;
+  font-family:var(--mono); font-size:14px; line-height:1.85;
+  overflow-x:auto; tab-size:4; color:var(--code-text);
+}
+.kw{color:#1A5FAA;font-weight:600}.fn{color:#7A4A00}.st{color:#AA3020}
+.nm{color:#1A6820}.cm{color:#8A9AB0;font-style:italic}.cl{color:#0A6A80}
+.vr{color:#2A4A8A}.op{color:#4A5568}
+
+/* ── HAMBURGER ── */
+#hbg {
+  display:none; position:fixed; top:14px; left:14px; z-index:200;
+  background:#2A3448; border:none; color:#fff;
+  width:42px; height:42px; border-radius:10px; font-size:18px;
+  cursor:pointer; align-items:center; justify-content:center;
+}
+
+/* ── PRINT ── */
+@media print {
+  #sb,#hbg{display:none!important}
+  #main{margin-left:0}
+  .kcard{page-break-inside:avoid}
+  .pq .ans-body{display:block!important}
+  .code-wrap pre{border:1px solid var(--border)}
+}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  :root{--sb:0px}
+  #sb{transform:translateX(-260px);width:260px;transition:transform .25s}
+  #sb.open{transform:translateX(0)}
+  #main{margin-left:0}
+  #hbg{display:flex}
+  #cover{padding:64px 24px 36px}
+  .stage-div,.kcard{padding:28px 24px 36px}
+  .cover-grid{grid-template-columns:1fr 1fr}
+}
+
+</style>
+</head>
+<body>
+<button id="hbg" onclick="document.getElementById('sb').classList.toggle('open')">☰</button>
+
+<!-- ══ SIDEBAR ══ -->
+<nav id="sb">
+  <div class="sb-logo">
+    <h1>Xavier 知識說明手冊</h1>
+    <p>對應 Python 學習單 · 原理 + 練習</p>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-lbl c1">第一階段</div>
+    <a class="sb-a" href="#k1-1"><span class="id">1-1</span>負數與溫度</a>
+    <a class="sb-a" href="#k1-2"><span class="id">1-2</span>因數與質數</a>
+    <a class="sb-a" href="#k1-3"><span class="id">1-3</span>比例與 RGB</a>
+    <a class="sb-a" href="#k1-4"><span class="id">1-4</span>隨機與邏輯</a>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-lbl c2">第二階段</div>
+    <a class="sb-a" href="#k2-1"><span class="id">2-1</span>一元一次方程式</a>
+    <a class="sb-a" href="#k2-2"><span class="id">2-2</span>坐標系與直線</a>
+    <a class="sb-a" href="#k2-3"><span class="id">2-3</span>不等式</a>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-lbl c3">第三階段</div>
+    <a class="sb-a" href="#k3-1"><span class="id">3-1</span>一次函數與等速運動</a>
+    <a class="sb-a" href="#k3-2"><span class="id">3-2</span>正反比與功</a>
+    <a class="sb-a" href="#k3-3"><span class="id">3-3</span>拋體運動</a>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-lbl c4">第四階段</div>
+    <a class="sb-a" href="#k4-1"><span class="id">4-1</span>自由落體與二次函數</a>
+    <a class="sb-a" href="#k4-2"><span class="id">4-2</span>二次函數頂點</a>
+    <a class="sb-a" href="#k4-3"><span class="id">4-3</span>探究設計思維</a>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-sec-lbl c5">第五階段</div>
+    <a class="sb-a" href="#k5-abc"><span class="id">5</span>探究作品的三條路</a>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+
+<!-- COVER -->
+<section id="cover">
+  <div class="eyebrow">Python 數理探索 · 知識說明手冊</div>
+  <h1>每個任務背後的<br>數學與物理</h1>
+  <p class="sub">對應 Python 學習單 · 原理說明 · 延伸學習 · 練習題</p>
+  <div class="cover-grid">
+    <div class="cg-item"><div class="cg-n">第一階段</div><div class="cg-t">數感基礎</div></div>
+    <div class="cg-item"><div class="cg-n">第二階段</div><div class="cg-t">代數與方程</div></div>
+    <div class="cg-item"><div class="cg-n">第三階段</div><div class="cg-t">函數與運動</div></div>
+    <div class="cg-item"><div class="cg-n">第四階段</div><div class="cg-t">二次關係</div></div>
+    <div class="cg-item"><div class="cg-n">第五階段</div><div class="cg-t">探究整合</div></div>
+  </div>
+  <div class="cover-note">這份手冊不是課本的複製。每個知識點都從「為什麼這樣」出發，說明原理，再接到你在 Python 裡看到的東西。練習題附有提示和解答，點「看解答」展開。</div>
+</section>
+
+<!-- ══════════════ 第一階段 ══════════════ -->
+<div class="stage-div">
+  <div class="stage-pill" style="background:var(--s1)">第一階段</div>
+  <h2>第一階段　數感基礎：讓數字有意義</h2>
+  <p class="stage-blurb" style="background:var(--s1t);border-left:3px solid var(--s1)">
+    這個階段的四個任務看起來主題不同，但底層都在問同一件事：「數字代表什麼？」負數有方向，質數有結構，RGB 是比例，隨機有規律。這個階段建立的是「數感」——對數字的直覺。
+  </p>
+</div>
+
+<!-- ══ K1-1 負數與溫度 ══ -->
+<div class="kcard" id="k1-1">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s1)">1-1</div>
+    <div>
+      <h3>負數、溫標與絕對零度</h3>
+      <div class="kc-sub">對應學習單：1-1 溫度換算器</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s1)">負數</span>
+    <span class="topic-tag" style="color:var(--s2)">溫度換算</span>
+    <span class="topic-tag" style="color:var(--s3)">熱力學第三定律（延伸）</span>
+  </div>
+
+  <div class="sec-lbl">核心概念</div>
+  <div class="concept">
+    <h4>負數是「方向」，不是「少了什麼」</h4>
+    <p>在日常生活裡，負數最自然的出現是溫度。0°C 不代表「沒有溫度」，而是一個我們定義的基準點（水的冰點）。比這個基準點冷，就是負數；比它熱，就是正數。</p>
+    <p>這說明負數的本質：它是數線上相對於基準點的方向，不是「缺少」的意思。同樣的道理也出現在：樓層（B1 = 地下一層）、海拔（海平面以下）、帳戶餘額（負債）。</p>
+  </div>
+
+  <div class="sec-lbl">三種溫標：為什麼有這麼多種？</div>
+  <div class="formula-card" style="background:var(--s1t);border:1.5px solid var(--s1)">
+    <div class="f-label" style="color:var(--s1)">攝氏 ↔ 華氏換算</div>
+    <div class="f-main">°F = °C × 9/5 + 32</div>
+    <div class="f-explain">
+      <span>9/5</span> 是刻度間距的比值：華氏從冰點到沸點有 180 格，攝氏有 100 格，所以比值是 180/100 = 9/5。<br>
+      <span>+32</span> 是因為華氏的冰點定在 32°F，而不是 0°F。
+    </div>
+  </div>
+  <div class="formula-card" style="background:var(--s2t);border:1.5px solid var(--s2)">
+    <div class="f-label" style="color:var(--s2)">攝氏 ↔ 克氏（絕對溫標）換算</div>
+    <div class="f-main">K = °C + 273.15</div>
+    <div class="f-explain">
+      克氏溫標的 <span>0 K</span> 是物理上真正的最低溫（絕對零度），等於 −273.15°C。這是分子停止熱運動的理論下限。克氏的刻度大小和攝氏完全相同，只是起點不同。
+    </div>
+  </div>
+
+  <div class="sec-lbl">推導：為什麼 −40°C = −40°F？</div>
+  <div class="derive">
+    <div class="d-title">找出攝氏和華氏相等的那個點</div>
+    <div class="step"><div class="step-n">1</div><div class="step-body">設攝氏和華氏相等，令 °C = °F = x<div class="eq">x = x × 9/5 + 32</div></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body">移項整理<div class="eq">x − 9x/5 = 32　→　−4x/5 = 32</div></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body">解出 x<div class="eq">x = 32 × (−5/4) = −40</div><div class="note">所以 −40°C = −40°F，是唯一一個攝氏和華氏讀數相同的溫度。</div></div></div>
+  </div>
+
+  <div class="sec-lbl">延伸：絕對零度能到達嗎？</div>
+  <div class="extension">
+    <div class="e-label">熱力學第三定律（延伸知識）</div>
+    <p>熱力學第三定律告訴我們：任何物質的溫度可以無限接近絕對零度（0 K），但永遠無法真正到達。這不是技術上的限制，而是物理定律本身。</p>
+    <ul>
+      <li>目前人類實驗室達到的最低溫度是約 0.000000001 K（10⁻⁹ K），比外太空（約 2.7 K）還要冷得多</li>
+      <li>在接近絕對零度時，一些奇特的量子現象會出現，例如「玻色-愛因斯坦凝聚態」——原子幾乎完全靜止，集體表現得像一個量子態</li>
+      <li>絕對零度是熵（disorder，混亂程度）為零的狀態</li>
+    </ul>
+  </div>
+
+  <div class="analogy">
+    <div class="a-label">換個方式想</div>
+    <p>攝氏溫標就像是用海平面當 0 的地圖：水面以上是正，水面以下是負。克氏溫標則是重新畫了地圖，把宇宙中最冷的地方定為 0——這樣所有溫度都是正數，物理計算方便得多。</p>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">人體正常體溫是 37°C。請計算：（a）換成華氏是幾度？（b）換成克氏是幾 K？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">（a）°F = 37 × 9/5 + 32 = 66.6 + 32 = 98.6°F　　（b）K = 37 + 273.15 = 310.15 K</span>
+        <div class="steps">體溫 98.6°F 就是為什麼美國人用這個數字判斷發燒。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>推理</span> 題目 2</div>
+      <div class="q">火星的平均氣溫約為 −60°C。請計算換成克氏是幾 K？並說明為什麼科學家更常用克氏而不是攝氏來描述行星溫度。</div>
+      <div class="q-hint">提示：想想負數在計算上的麻煩。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">K = −60 + 273.15 = 213.15 K</span>
+        <div class="steps">使用克氏的原因：克氏沒有負數，計算能量、壓力等物理量時不會出現「負溫度」造成的錯誤。例如，氣體的壓力和體積的乘積 PV 正比於溫度（克氏），如果溫度是負數，計算結果就沒有意義。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>延伸思考</span> 題目 3</div>
+      <div class="q">如果有人設計了一種新的溫標「X 氏」，規定水的冰點是 100°X，沸點是 0°X（剛好和攝氏顛倒），那麼人體體溫 37°C 換成 X 氏是幾度？請推導換算公式。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">°X = 100 − °C　所以 37°C = 63°X</span>
+        <div class="steps">推導：X 氏的刻度大小和攝氏相同（同樣是 100 格），只是方向顛倒。冰點在攝氏是 0，在 X 氏是 100，所以加上一個 100 的偏移，再把方向反過來：°X = 100 − °C。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ K1-2 因數與質數 ══ -->
+<div class="kcard" id="k1-2">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s1)">1-2</div>
+    <div>
+      <h3>因數、質數與數論基礎</h3>
+      <div class="kc-sub">對應學習單：1-2 質數篩選器</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s1)">因數與倍數</span>
+    <span class="topic-tag" style="color:var(--s2)">質數的定義與性質</span>
+    <span class="topic-tag" style="color:var(--s3)">質數在密碼學的應用（延伸）</span>
+  </div>
+
+  <div class="sec-lbl">核心概念</div>
+  <div class="concept">
+    <h4>質數：數字世界的「原子」</h4>
+    <p>化學有元素週期表，所有物質都由元素組成。數論也有類似的東西：所有大於 1 的整數，都可以分解成質數的乘積。質數是數字世界的基本組成單位。</p>
+    <p>質數的定義：只有 1 和它自己兩個因數的正整數（且大於 1）。1 不是質數，因為它只有一個因數。</p>
+  </div>
+
+  <div class="formula-card" style="background:var(--s1t);border:1.5px solid var(--s1)">
+    <div class="f-label" style="color:var(--s1)">算術基本定理</div>
+    <div class="f-main">每個大於 1 的整數，都能唯一地寫成質數的乘積</div>
+    <div class="f-explain">
+      例如：<span>360 = 2³ × 3² × 5</span>　　<span>100 = 2² × 5²</span>　　<span>17 = 17</span>（本身就是質數）<br>
+      這個分解方式只有一種（不考慮順序），稱為「唯一分解定理」。
+    </div>
+  </div>
+
+  <div class="sec-lbl">為什麼判斷質數只需要試到 √n？</div>
+  <div class="derive">
+    <div class="d-title">一個重要的省力技巧</div>
+    <div class="step"><div class="step-n">1</div><div class="step-body">假設 n 不是質數，那麼它有一個因數 a，使得 n = a × b，其中 a ≤ b</div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body">因為 a ≤ b，所以 a × a ≤ a × b = n，意思是 a ≤ √n<div class="note">換句話說：如果 n 有因數，其中較小的那個一定不超過 √n</div></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body">結論：只需要試除 2 到 √n，如果都沒有整除，n 就是質數<div class="eq">if n % i == 0 for any i in range(2, int(n**0.5)+1) → not prime</div><div class="note">這讓程式快很多：判斷 10,000 是否是質數，只需要試到 100，不是 10,000 次</div></div></div>
+  </div>
+
+  <div class="sec-lbl">質數有多少個？</div>
+  <div class="concept">
+    <h4>質數有無限多個（歐幾里得的證明，約 300 BC）</h4>
+    <p>假設質數只有有限個，設它們是 p₁, p₂, ..., pₙ。考慮數字 N = p₁ × p₂ × ... × pₙ + 1。N 除以任何已知的質數，餘數都是 1，所以 N 不能被任何已知質數整除——但每個大於 1 的數都必須有質因數，這個質因數就是一個新的質數。矛盾！所以質數有無限多個。</p>
+    <p>這是人類最古老的數學證明之一，距今超過 2300 年，卻至今仍然完美。</p>
+  </div>
+
+  <div class="sec-lbl">延伸：質數在密碼學的應用</div>
+  <div class="extension">
+    <div class="e-label">RSA 加密（你的 HTTPS 就是這個）</div>
+    <p>每次你看到瀏覽器網址欄的「鎖頭」，背後用的就是質數。RSA 加密的核心邏輯：</p>
+    <ul>
+      <li>把兩個超大質數相乘很容易（電腦瞬間完成）</li>
+      <li>但把乘積反過來分解回兩個質數，卻極度困難——即使是全世界最快的電腦，也需要數十億年</li>
+      <li>這個「正向容易、逆向困難」的不對稱性，就是密碼學的基礎</li>
+      <li>現代加密用的質數大約有 1024 到 4096 個二進位位元——一個幾百位數的質數</li>
+    </ul>
+  </div>
+
+  <div class="analogy">
+    <div class="a-label">換個方式想</div>
+    <p>質數就像樂高積木中的最小單元——一個 1×1 的小方塊。任何複雜的積木造型都可以拆解成這些小方塊。數字世界的「造型」（所有整數）都可以拆解成「小方塊」（質數）。但注意：積木可以相同方塊用多次，數字也可以。</p>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">不用電腦，手動判斷以下數字是否是質數：97、91、101。說明你的判斷過程。</div>
+      <div class="q-hint">提示：97 的平方根約 9.8，91 的平方根約 9.5，所以只需試到 9。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">97：是質數　　91：不是質數（91 = 7 × 13）　　101：是質數</span>
+        <div class="steps">97：試除 2,3,5,7（2→不整除，3→不整除，5→不整除，7→不整除），所以是質數。<br>91：7 × 13 = 91，所以不是質數。<br>101：試除 2,3,5,7（都不整除），√101 ≈ 10.05，所以只需試到 10，101 是質數。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>分析</span> 題目 2</div>
+      <div class="q">360 = 2³ × 3² × 5。請問 360 共有幾個因數？（提示：不需要一個一個列出來）</div>
+      <div class="q-hint">提示：若 n = pᵃ × qᵇ × rᶜ，則因數個數 = (a+1)(b+1)(c+1)</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">360 的因數個數 = (3+1)(2+1)(1+1) = 4 × 3 × 2 = 24 個</span>
+        <div class="steps">為什麼這個公式成立？因為每個因數由選擇 2 用幾次（0到3，共4種）× 3 用幾次（0到2，共3種）× 5 用幾次（0到1，共2種）組合而成。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>思考</span> 題目 3</div>
+      <div class="q">孿生質數是指差值為 2 的一對質數，例如 (3,5)、(11,13)、(17,19)。數學家猜測孿生質數有無限多對，但至今沒有人能證明這件事。你覺得：如果質數有無限多個，孿生質數就一定也有無限多對嗎？為什麼？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">不一定。質數有無限多個，不代表孿生質數也有無限多對。</span>
+        <div class="steps">類比：正整數有無限多個，但「完全平方數」（1, 4, 9, 16...）也有無限多個，但兩者「密度」不同。質數會越來越稀疏，所以相鄰質數之間的間距可能越來越大，孿生質數是否一直存在，是數學史上最著名的未解問題之一（孿生質數猜想）。2013 年，張益唐證明存在無限多對質數，其差值小於 7000 萬，這是一個里程碑，但還不是最終答案。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ K1-3 比例與RGB ══ -->
+<div class="kcard" id="k1-3">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s1)">1-3</div>
+    <div>
+      <h3>比例、光的三原色與色彩科學</h3>
+      <div class="kc-sub">對應學習單：1-3 RGB 調色盤</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s1)">比與比例</span>
+    <span class="topic-tag" style="color:var(--s2)">光的加法混色</span>
+    <span class="topic-tag" style="color:var(--s3)">人眼的色覺原理（延伸）</span>
+  </div>
+
+  <div class="sec-lbl">核心概念</div>
+  <div class="concept">
+    <h4>光的三原色 vs 顏料的三原色：為什麼不一樣？</h4>
+    <p>你學過的顏料三原色（紅、黃、藍）和螢幕的 RGB（紅、綠、藍）是不同的。原因是混合方式不同：</p>
+    <p><strong>顏料</strong>是「減法混色」：顏料吸收某些光，剩下的才反射到你眼睛。混越多，吸收越多，越接近黑色。</p>
+    <p><strong>光（螢幕）</strong>是「加法混色」：光是自己發出的，混越多，越亮，三種全開就是白色（255, 255, 255）；三種全關就是黑色（0, 0, 0）。</p>
+  </div>
+
+  <div class="formula-card" style="background:var(--s1t);border:1.5px solid var(--s1)">
+    <div class="f-label" style="color:var(--s1)">RGB 的比例結構</div>
+    <div class="f-main">顏色 = (R/255, G/255, B/255)</div>
+    <div class="f-explain">
+      每個通道 0–255，共 256 個值（2⁸，8 個二進位位元）。三個通道組合可以表示 256³ = <span>16,777,216</span> 種顏色（約 1670 萬色）。這就是為什麼螢幕說「支援 16 百萬色」。
+    </div>
+  </div>
+
+  <div class="sec-lbl">比例如何決定顏色感覺</div>
+  <div class="compare-wrap">
+    <table class="compare-table">
+      <tr><th>RGB 值</th><th>比例特性</th><th>顏色</th><th>原因</th></tr>
+      <tr><td>(255, 0, 0)</td><td>R 獨大</td><td>純紅</td><td>只有紅光</td></tr>
+      <tr><td>(0, 255, 0)</td><td>G 獨大</td><td>純綠</td><td>只有綠光</td></tr>
+      <tr><td>(0, 0, 255)</td><td>B 獨大</td><td>純藍</td><td>只有藍光</td></tr>
+      <tr><td>(255, 255, 0)</td><td>R=G，無B</td><td class="hl">黃色</td><td>紅+綠=黃（加法混色！）</td></tr>
+      <tr><td>(255, 0, 255)</td><td>R=B，無G</td><td class="hl">洋紅</td><td>紅+藍=洋紅</td></tr>
+      <tr><td>(128, 128, 128)</td><td>三者相等（非零）</td><td>灰色</td><td>等比例混合</td></tr>
+      <tr><td>(255, 165, 0)</td><td>R最大，G中，無B</td><td>橘色</td><td>偏紅的黃</td></tr>
+    </table>
+  </div>
+
+  <div class="sec-lbl">延伸：為什麼人眼看得到顏色？</div>
+  <div class="extension">
+    <div class="e-label">視錐細胞與色覺（色彩生物學）</div>
+    <p>人的視網膜有三種視錐細胞，分別對長波（紅）、中波（綠）、短波（藍）的光最敏感。所有顏色的感知，都是這三種細胞的興奮程度組合而成——這和 RGB 的三通道結構完全對應，不是巧合。</p>
+    <ul>
+      <li>色盲的人通常缺少某一種視錐細胞，例如紅綠色盲（最常見）是長波和中波視錐細胞的色素相似</li>
+      <li>有些鳥類、蝦類有 4 種甚至 16 種視錐細胞，看到的色彩世界比人類豐富得多</li>
+      <li>狗只有 2 種視錐細胞（類似人類的藍色和黃色），所以看到的世界像「雙色色盲」</li>
+    </ul>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">顏色 (200, 100, 50) 的三個通道各占最大值（255）的百分比是多少？這個顏色偏暖還是偏冷？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">R: 200/255 ≈ 78%　　G: 100/255 ≈ 39%　　B: 50/255 ≈ 20%　　偏暖色（R 遠大於 B）</span>
+        <div class="steps">這個顏色 R 最高，B 最低，是一種橘棕色。偏暖是因為紅色比藍色強很多。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>推理</span> 題目 2</div>
+      <div class="q">如果一個 RGB 顏色三個值完全相同（例如 (100, 100, 100)），它看起來一定是灰色嗎？當三個值都是 0 和 255 時分別是什麼顏色？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">是的，三個值相同時一定是灰色（或黑/白）。(0,0,0) = 黑色，(255,255,255) = 白色</span>
+        <div class="steps">灰色是「中性色」，意思是三種光的比例完全相等。不同亮度的灰色只是三個值同樣大小不同：(50,50,50) 深灰，(200,200,200) 淺灰。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>創意</span> 題目 3</div>
+      <div class="q">台灣的太平洋日出，你覺得日出時天空的橘紅色大約是什麼 RGB？天空由深藍轉橘紅，這個「過渡」在 RGB 數值上會怎麼變化？（用語言描述趨勢，不用算精確值）</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">日出橘紅大約：(255, 120, 30) 左右。趨勢：B 從高到低，R 從中低到高，G 先降後升。</span>
+        <div class="steps">天空漸變的 RGB 趨勢：深藍夜空 (10, 10, 80) → 黎明深紫 (80, 30, 100) → 橘紅日出 (255, 100, 30) → 日出後金黃 (255, 200, 80) → 白天藍天 (100, 150, 255)。B 通道先高後低，R 通道從低到高，G 通道在日出時最低（橘紅色沒什麼綠）。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ K1-4 隨機與邏輯 ══ -->
+<div class="kcard" id="k1-4">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s1)">1-4</div>
+    <div>
+      <h3>隨機、機率與資訊量</h3>
+      <div class="kc-sub">對應學習單：1-4 猜數字遊戲</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s1)">隨機數</span>
+    <span class="topic-tag" style="color:var(--s2)">二元搜尋策略</span>
+    <span class="topic-tag" style="color:var(--s3)">資訊熵（延伸）</span>
+  </div>
+
+  <div class="sec-lbl">核心概念：最聰明的猜法</div>
+  <div class="concept">
+    <h4>每次都猜中間：二元搜尋（Binary Search）</h4>
+    <p>猜 1–100 的數字，如果你每次都猜「剩餘範圍的中間值」，最多幾次能猜到？答案是 7 次。因為每次猜錯都能把範圍砍半：100 → 50 → 25 → 13 → 7 → 4 → 2 → 1。</p>
+    <p>這個策略叫「二元搜尋」，是電腦科學中最重要的演算法之一。</p>
+  </div>
+
+  <div class="formula-card" style="background:var(--s2t);border:1.5px solid var(--s2)">
+    <div class="f-label" style="color:var(--s2)">最多需要幾次？</div>
+    <div class="f-main">最多次數 = ⌈log₂(n)⌉</div>
+    <div class="f-explain">
+      <span>n</span> = 範圍大小（例如 100）。<span>log₂(100) ≈ 6.64</span>，取上整是 7。<br>
+      意思是：每次可以消除一半的可能性，所以需要「把 n 減半多少次才到 1」，答案就是以 2 為底的對數。
+    </div>
+  </div>
+
+  <div class="sec-lbl">電腦的隨機數是真的隨機嗎？</div>
+  <div class="concept">
+    <h4>偽隨機數（Pseudo-random）</h4>
+    <p>Python 的 random.randint() 產生的不是「真正的隨機」，而是用數學公式計算出來的「偽隨機數」。它看起來隨機，但如果你知道起始種子（seed），就能完全預測。</p>
+    <p>真正的隨機來自物理：例如用放射性衰變的時間、電路噪音、甚至大氣噪音來產生隨機數。網站 random.org 就是用大氣噪音。</p>
+  </div>
+
+  <div class="sec-lbl">延伸：資訊量與熵</div>
+  <div class="extension">
+    <div class="e-label">資訊理論（Claude Shannon，1948）</div>
+    <p>猜數字遊戲可以用「資訊量」來理解：每次得到「太大」或「太小」的答覆，你獲得了 1 bit 的資訊（消除了一半的可能性）。</p>
+    <ul>
+      <li>猜 1–100：需要約 log₂(100) ≈ 6.64 bits 才能確定答案</li>
+      <li>猜 1–1000000：需要約 log₂(1000000) ≈ 20 bits</li>
+      <li>這就是為什麼 8 位元（8 bits）能表示 256 個值（2⁸ = 256）——8 次二元選擇</li>
+      <li>Shannon 的資訊熵理論是現代通訊、壓縮（ZIP）、網路的基礎</li>
+    </ul>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">猜 1–1000 的數字，用二元搜尋策略，最多需要幾次？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">最多 10 次。log₂(1000) ≈ 9.97，取上整 = 10。</span>
+        <div class="steps">驗證：1000 → 500 → 250 → 125 → 63 → 32 → 16 → 8 → 4 → 2 → 1，剛好 10 步。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>策略</span> 題目 2</div>
+      <div class="q">在猜數字遊戲中，如果你知道對手「偏好猜比較大的數」，你應該怎麼調整你「想的數字」的策略？這是否公平？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">如果對手偏好猜大數，你應該多想小的數，讓他花更多次猜到。這不違反規則，但利用了對手的偏見。</span>
+        <div class="steps">這是博弈論的基礎：了解對手的策略傾向，然後選擇讓對手代價最高的策略。真正的「隨機」（每個數都等機率）是最難被對手利用的策略，這叫「混合策略納什均衡」。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ══════════════ 第二階段 ══════════════ -->
+<div class="stage-div">
+  <div class="stage-pill" style="background:var(--s2)">第二階段</div>
+  <h2>第二階段　代數與方程式：讓未知數說話</h2>
+  <p class="stage-blurb" style="background:var(--s2t);border-left:3px solid var(--s2)">
+    代數的核心是：用符號（x）代表我們不知道的東西，然後根據它滿足的條件找出它的值。這個思路本身就是科學方法的縮影——從觀察到的結果，推斷看不見的原因。
+  </p>
+</div>
+
+<!-- ══ K2-1 一元一次方程式 ══ -->
+<div class="kcard" id="k2-1">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s2)">2-1</div>
+    <div>
+      <h3>一元一次方程式的本質</h3>
+      <div class="kc-sub">對應學習單：2-1 方程式求解器</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s2)">移項與等量公理</span>
+    <span class="topic-tag" style="color:var(--s3)">邊界情況</span>
+    <span class="topic-tag" style="color:var(--s4)">線性代數的起點（延伸）</span>
+  </div>
+
+  <div class="sec-lbl">核心概念</div>
+  <div class="concept">
+    <h4>方程式是一個「平衡」的表達</h4>
+    <p>等號的意思是：左邊和右邊的值完全相等。方程式描述的是一種「約束關係」——x 必須是某個值，才能讓這個平衡成立。</p>
+    <p>解方程式的每一步，都必須對等號兩邊做「完全相同的事」，才不會破壞平衡。這個原則叫「等量公理」（等式兩邊加、減、乘、除同一個數，等式仍成立）。</p>
+  </div>
+
+  <div class="derive">
+    <div class="d-title">為什麼 ax + b = 0 的解是 x = −b/a？</div>
+    <div class="step"><div class="step-n">1</div><div class="step-body">目標：把 x 單獨留在一邊<div class="eq">ax + b = 0</div></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body">兩邊都減去 b（等量公理）<div class="eq">ax = −b</div></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body">兩邊都除以 a（假設 a ≠ 0）<div class="eq">x = −b/a</div><div class="note">如果 a = 0，就不能除，這就是為什麼要特別處理 a = 0 的情況</div></div></div>
+  </div>
+
+  <div class="sec-lbl">特殊情況：無解 vs 無限多解</div>
+  <div class="concept">
+    <h4>當 a = 0 時發生什麼？</h4>
+    <p>方程式變成 <strong>0 × x + b = 0</strong>，也就是 <strong>b = 0</strong>。這和 x 完全無關。</p>
+    <p>如果 b = 0：方程式是 0 = 0，任何 x 都成立 → <strong>無限多解</strong>。</p>
+    <p>如果 b ≠ 0：方程式是 b = 0，這是假的 → <strong>無解</strong>（矛盾）。</p>
+  </div>
+
+  <div class="sec-lbl">延伸：從一個方程式到多個</div>
+  <div class="extension">
+    <div class="e-label">聯立方程式與矩陣（線性代數的入口）</div>
+    <p>一個方程式解一個未知數。兩個方程式可以解兩個未知數（聯立）。n 個方程式可以解 n 個未知數——這就是「線性代數」和「矩陣」要解決的問題。</p>
+    <ul>
+      <li>工程師用聯立方程式計算橋樑的受力</li>
+      <li>經濟學家用它分析市場供需</li>
+      <li>AI 的神經網路，本質上是解一個超大的聯立方程式系統（數億個未知數）</li>
+      <li>Google 的 PageRank（網頁排名）演算法，是解一個包含幾十億個未知數的矩陣方程</li>
+    </ul>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">解以下方程式，並驗算：<br>（a）3x − 7 = 2　　（b）−5x + 15 = 0　　（c）0x + 3 = 0</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">（a）x = 3　（b）x = 3　（c）無解</span>
+        <div class="steps">（a）3x = 9 → x = 3，驗算：3(3)−7 = 2 ✓<br>（b）−5x = −15 → x = 3，驗算：−5(3)+15 = 0 ✓<br>（c）0x + 3 = 0 → 3 = 0，矛盾，無解</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>應用</span> 題目 2</div>
+      <div class="q">某商店原價賣某商品。打折後售價 630 元，是原價的 70%。請列出方程式並解出原價。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">原價 = 900 元</span>
+        <div class="steps">設原價為 x 元，方程式：0.7x = 630，解：x = 630/0.7 = 900。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>思考</span> 題目 3</div>
+      <div class="q">為什麼方程式「除以 a」的步驟需要限制「a ≠ 0」？如果允許除以 0，會發生什麼事？試著用一個具體的例子說明。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">除以 0 是未定義的，它會導致「任何數都成立」的矛盾。</span>
+        <div class="steps">假設允許除以 0：從 1 = 2 可以推導出… 設 a = b，則 a² = ab，a²−b² = ab−b²，(a−b)(a+b) = b(a−b)，兩邊「除以(a−b)」（但 a=b 所以 a−b=0！），得 a+b = b，即 2b = b，即 2 = 1。這個著名的「1=2 假證明」，就是因為偷偷除以了 0。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ K2-2 坐標系與直線 ══ -->
+<div class="kcard" id="k2-2">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s2)">2-2</div>
+    <div>
+      <h3>坐標系、直線方程式與斜率</h3>
+      <div class="kc-sub">對應學習單：2-2 第一張圖表</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s2)">坐標系</span>
+    <span class="topic-tag" style="color:var(--s3)">斜率的物理意義</span>
+    <span class="topic-tag" style="color:var(--s4)">解析幾何（延伸）</span>
+  </div>
+
+  <div class="sec-lbl">核心概念</div>
+  <div class="concept">
+    <h4>笛卡兒坐標系：把幾何翻譯成代數</h4>
+    <p>17 世紀，笛卡兒（René Descartes）發明了坐標系。這個發明的偉大之處在於：它把「形狀」這個視覺的東西，翻譯成了「方程式」這個計算的東西。從此幾何問題可以用代數來解，代數問題可以用幾何來理解——兩個數學分支互相幫助。</p>
+  </div>
+
+  <div class="formula-card" style="background:var(--s2t);border:1.5px solid var(--s2)">
+    <div class="f-label" style="color:var(--s2)">直線方程式（斜截式）</div>
+    <div class="f-main">y = kx + b</div>
+    <div class="f-explain">
+      <span>k</span> = 斜率：每往右移動 1，y 的變化量。k &gt; 0 往右上，k &lt; 0 往右下，k = 0 水平線。<br>
+      <span>b</span> = y 截距：直線和 y 軸的交點的 y 坐標（x = 0 時，y = b）。
+    </div>
+  </div>
+
+  <div class="sec-lbl">斜率的計算與意義</div>
+  <div class="derive">
+    <div class="d-title">斜率 = 「上升量 / 水平移動量」</div>
+    <div class="step"><div class="step-n">1</div><div class="step-body">取直線上兩個點：(x₁, y₁) 和 (x₂, y₂)<div class="eq">k = (y₂ − y₁) / (x₂ − x₁)</div></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body">斜率代表「x 每增加 1，y 增加多少」<div class="note">如果斜率 k = 3，意思是每往右走 1，就往上走 3</div></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body">斜率是變化率——這個概念在物理、經濟、科學裡無處不在<div class="note">速度 = 距離/時間（d-t 圖的斜率）；加速度 = 速度/時間（v-t 圖的斜率）；利率 = 利息/本金</div></div></div>
+  </div>
+
+  <div class="sec-lbl">延伸：解析幾何的力量</div>
+  <div class="extension">
+    <div class="e-label">笛卡兒的革命：幾何 = 代數</div>
+    <ul>
+      <li>兩條直線的交點，就是解聯立方程式的解</li>
+      <li>圓的方程式：x² + y² = r²（所有距離原點 r 的點）</li>
+      <li>拋物線的方程式：y = ax²（這是下一個階段的核心）</li>
+      <li>GPS 定位：用你到三個衛星的距離（三個球面方程式），解出你的位置坐標</li>
+      <li>電腦圖形學：每個 3D 模型都是坐標點的集合，動畫是坐標隨時間的方程式</li>
+    </ul>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">過點 (2, 5) 和 (6, 13) 的直線，斜率是多少？寫出直線方程式。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">k = 2，方程式：y = 2x + 1</span>
+        <div class="steps">斜率：k = (13−5)/(6−2) = 8/4 = 2。代入點 (2,5)：5 = 2(2) + b → b = 1。所以 y = 2x + 1。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>應用</span> 題目 2</div>
+      <div class="q">一輛車在 t=0 時位置在 d=10 公尺，以 v=30 m/s 等速行駛。寫出 d 和 t 的關係式，並說明這個式子裡的斜率和截距各代表什麼物理意義。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">d = 30t + 10　　斜率 30 = 速度（m/s）　　截距 10 = 初始位置（m）</span>
+        <div class="steps">這個式子和 y = kx + b 完全相同結構：d 是 y，t 是 x，速度 v = 30 是斜率 k，初始位置 d₀ = 10 是截距 b。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>思考</span> 題目 3</div>
+      <div class="q">斜率為 0 的直線是水平線（y = b）。斜率「無限大」的直線又是什麼？它能用 y = kx + b 的形式寫嗎？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">斜率無限大的直線是垂直線，形式是 x = c（常數），不能用 y = kx + b 表達。</span>
+        <div class="steps">垂直線上，x 固定不變，y 可以是任何值。它的斜率是「任意 y 的變化 / 0 的 x 變化」= 除以 0 = 無定義。這就是 y = kx + b 這個形式無法表達垂直線的原因——直線方程式有兩種形式：斜截式（無法表達垂直線）和一般式 ax + by + c = 0（可以表達所有直線）。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ K2-3 不等式 ══ -->
+<div class="kcard" id="k2-3">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s2)">2-3</div>
+    <div>
+      <h3>不等式：描述「範圍」而非「點」</h3>
+      <div class="kc-sub">對應學習單：2-3 不等式視覺化</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s2)">不等號方向</span>
+    <span class="topic-tag" style="color:var(--s3)">解集合</span>
+    <span class="topic-tag" style="color:var(--s4)">線性規劃（延伸）</span>
+  </div>
+
+  <div class="sec-lbl">核心概念</div>
+  <div class="concept">
+    <h4>方程式 vs 不等式：點 vs 區域</h4>
+    <p>方程式的解是「特定的值」（一個點或有限個點）。不等式的解是「一個範圍」——所有讓不等式成立的 x 值的集合，叫做解集合。</p>
+  </div>
+
+  <div class="formula-card" style="background:var(--s2t);border:1.5px solid var(--s2)">
+    <div class="f-label" style="color:var(--s2)">最重要的規則：除以負數要翻轉</div>
+    <div class="f-main">如果 a &lt; b，且 c &lt; 0，則 ac &gt; bc</div>
+    <div class="f-explain">
+      直觀理解：在數線上，−2 在 2 的左邊，所以 −2 &lt; 2。但乘以 −1 後，2 在 −2 的左邊，所以 2 &gt; −2。乘以負數讓數線上的「左右」關係翻轉。
+    </div>
+  </div>
+
+  <div class="derive">
+    <div class="d-title">解 −3x + 6 &gt; 0</div>
+    <div class="step"><div class="step-n">1</div><div class="step-body">移項<div class="eq">−3x &gt; −6</div></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body">兩邊除以 −3（負數！不等號翻轉）<div class="eq">x &lt; 2</div><div class="note">解集合：所有小於 2 的 x 值，在數線上是從 2 往左的射線（不包含 2）</div></div></div>
+  </div>
+
+  <div class="sec-lbl">延伸：線性規劃——最大化與最小化</div>
+  <div class="extension">
+    <div class="e-label">不等式的大用途</div>
+    <p>現實中的問題常常是「在某些限制條件下，找出最好的方案」。這類問題叫線性規劃（Linear Programming）。</p>
+    <ul>
+      <li>工廠生產：原料有限（不等式限制），如何安排生產讓利潤最大？</li>
+      <li>飲食計畫：卡路里不超過 2000（不等式），蛋白質至少 60g（不等式），如何選擇食物讓花費最少？</li>
+      <li>物流配送：每輛車限重 5 噸（不等式），如何安排讓運輸成本最低？</li>
+      <li>1947 年，George Dantzig 發明了單純形法（Simplex Method）來解這類問題，至今仍是工業界最重要的最佳化工具之一</li>
+    </ul>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">解不等式並在數線上說明解集合：（a）2x − 4 &gt; 0　　（b）−4x + 8 ≤ 0</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">（a）x &gt; 2，從 2 往右的射線（不含 2）　（b）x ≥ 2，從 2 往右的射線（含 2）</span>
+        <div class="steps">（a）2x &gt; 4，x &gt; 2（除以正數，方向不變）<br>（b）−4x ≤ −8，x ≥ 2（除以負數，方向翻轉，且有等號）</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>應用</span> 題目 2</div>
+      <div class="q">你有 200 元，每杯珍奶 60 元，每個甜甜圈 25 元。如果你要買至少 2 杯珍奶，最多還能買幾個甜甜圈？請列出不等式解題。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">最多 3 個甜甜圈</span>
+        <div class="steps">2 杯珍奶花了 120 元，剩 80 元。設買 n 個甜甜圈：25n ≤ 80，n ≤ 3.2，因為 n 必須是整數，所以 n ≤ 3。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ 第三階段 ══════════════ -->
+<div class="stage-div">
+  <div class="stage-pill" style="background:var(--s3)">第三階段</div>
+  <h2>第三階段　函數與運動：數學如何描述物理世界</h2>
+  <p class="stage-blurb" style="background:var(--s3t);border-left:3px solid var(--s3)">
+    最重要的橋樑：一次函數 y=kx+b 和等速運動 d=vt 是同一件事。掌握這個連結，你就理解了「函數」的本質——它不是抽象的符號遊戲，而是描述事物如何變化的語言。
+  </p>
+</div>
+
+<!-- ══ K3-1 一次函數與等速運動 ══ -->
+<div class="kcard" id="k3-1">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s3)">3-1</div>
+    <div>
+      <h3>一次函數、速度與變化率</h3>
+      <div class="kc-sub">對應學習單：3-1 速度比較圖</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s3)">一次函數 y=kx+b</span>
+    <span class="topic-tag" style="color:var(--s2)">等速直線運動</span>
+    <span class="topic-tag" style="color:var(--s4)">導數的直觀（延伸）</span>
+  </div>
+
+  <div class="sec-lbl">核心概念：數學和物理的同一件事</div>
+  <div class="compare-wrap">
+    <table class="compare-table">
+      <tr><th>數學語言</th><th>物理語言</th><th>圖形意義</th></tr>
+      <tr><td class="hl">y = kx + b</td><td class="hl">d = vt + d₀</td><td>直線</td></tr>
+      <tr><td>x（自變數）</td><td>t（時間）</td><td>橫軸</td></tr>
+      <tr><td>y（因變數）</td><td>d（距離）</td><td>縱軸</td></tr>
+      <tr><td>k（斜率）</td><td>v（速度）</td><td>直線的傾斜程度</td></tr>
+      <tr><td>b（截距）</td><td>d₀（初始位置）</td><td>直線和縱軸的交點</td></tr>
+    </table>
+  </div>
+
+  <div class="formula-card" style="background:var(--s3t);border:1.5px solid var(--s3)">
+    <div class="f-label" style="color:var(--s3)">速度的定義</div>
+    <div class="f-main">v = Δd / Δt = (d₂ − d₁) / (t₂ − t₁)</div>
+    <div class="f-explain">
+      速度是距離對時間的「變化率」。在 d-t 圖上，這就是斜率。<br>
+      <span>平均速度</span> = 總距離 / 總時間<br>
+      <span>瞬時速度</span> = 在某一時刻的速度（需要微積分的概念）
+    </div>
+  </div>
+
+  <div class="sec-lbl">延伸：斜率就是導數</div>
+  <div class="extension">
+    <div class="e-label">微積分的入口：導數（Derivative）</div>
+    <p>在等速運動中，速度是固定的——d-t 圖是直線，斜率到處都一樣。但如果運動不是等速的呢？例如汽車在加速？</p>
+    <ul>
+      <li>這時 d-t 圖是曲線，不同位置的斜率不同</li>
+      <li>「某一點的斜率」就是微積分中的「導數」——它告訴你在那個瞬間，速度是多少</li>
+      <li>牛頓和萊布尼茲在 17 世紀發明微積分，就是為了計算這種「瞬時變化率」</li>
+      <li>現代物理、工程、AI 的優化算法，都建立在導數的概念上</li>
+    </ul>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">一輛車在 t=2 秒時位置 d=30 公尺，在 t=8 秒時位置 d=90 公尺。（a）計算這段時間的平均速度。（b）寫出 d 和 t 的關係式（假設等速）。（c）t=0 時這輛車在哪裡？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">（a）v = 10 m/s　（b）d = 10t + 10　（c）d₀ = 10 公尺</span>
+        <div class="steps">（a）v = (90−30)/(8−2) = 60/6 = 10 m/s<br>（b）d = 10t + b，代入 (2,30)：30 = 20 + b → b = 10，所以 d = 10t + 10<br>（c）t=0 時，d = 0 + 10 = 10 公尺</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>比較</span> 題目 2</div>
+      <div class="q">兩輛車：車 A 從 d=0 以 v=20 m/s 出發；車 B 從 d=100 以 v=−15 m/s（往回走）出發。它們什麼時候在同一個位置？那個位置在哪裡？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">t = 100/35 ≈ 2.86 秒，位置 d ≈ 57.1 公尺</span>
+        <div class="steps">車 A：dA = 20t　車 B：dB = 100 − 15t<br>相遇：20t = 100 − 15t → 35t = 100 → t = 100/35 ≈ 2.86 秒<br>位置：dA = 20 × 2.86 ≈ 57.1 公尺</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ K3-2 正反比與功 ══ -->
+<div class="kcard" id="k3-2">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s3)">3-2</div>
+    <div>
+      <h3>正比、反比與功的概念</h3>
+      <div class="kc-sub">對應學習單：3-2 正反比互動模擬</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s3)">正比關係 y = kx</span>
+    <span class="topic-tag" style="color:var(--s2)">反比關係 y = k/x</span>
+    <span class="topic-tag" style="color:var(--s4)">功與能量（物理）</span>
+  </div>
+
+  <div class="sec-lbl">正比 vs 反比：形狀的對比</div>
+  <div class="compare-wrap">
+    <table class="compare-table">
+      <tr><th>類型</th><th>數學形式</th><th>圖形形狀</th><th>物理例子</th></tr>
+      <tr><td class="hl">正比</td><td>y = kx（k &gt; 0）</td><td>過原點的直線</td><td>等速：距離 ∝ 時間</td></tr>
+      <tr><td class="hl">反比</td><td>y = k/x</td><td>雙曲線（L 形曲線）</td><td>固定功：力 ↑ 則位移 ↓</td></tr>
+    </table>
+  </div>
+
+  <div class="formula-card" style="background:var(--s3t);border:1.5px solid var(--s3)">
+    <div class="f-label" style="color:var(--s3)">功的定義</div>
+    <div class="f-main">W = F × d</div>
+    <div class="f-explain">
+      <span>W</span> = 功（焦耳，J）　<span>F</span> = 力（牛頓，N）　<span>d</span> = 位移（公尺，m）<br>
+      功是「把東西移動一段距離」所花費的能量。固定功 W 時，F 和 d 成反比：力越大，能推的距離越短。
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>為什麼反比曲線永遠不會碰到坐標軸？</h4>
+    <p>y = k/x 中，x 無論多大，y 都是正數（趨近 0 但不等於 0）；x 無論多小（正數），y 都趨近無限大但不是無限大。曲線永遠在靠近坐標軸卻永遠碰不到，這樣的線叫做「漸近線」。</p>
+    <p>現實意義：力絕對不可能是 0，否則功 W = 0 × d = 0；位移也不可能是 0，否則你沒有移動任何東西。所以物理上，力和位移都必須大於 0。</p>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">你用 50 牛頓的力推一個箱子走了 4 公尺。（a）做了多少焦耳的功？（b）如果換用 25 牛頓的力做同樣的功，需要走多遠？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">（a）200 焦耳　（b）8 公尺</span>
+        <div class="steps">（a）W = 50 × 4 = 200 J<br>（b）200 = 25 × d → d = 8 公尺（力減半，距離加倍，反比關係）</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>比較</span> 題目 2</div>
+      <div class="q">y = 2x 和 y = 2/x 在 x = 1, 2, 4, 8 時各自的 y 值是多少？填入表格並說明兩者的差異。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">正比 y=2x：2, 4, 8, 16（x 加倍，y 加倍）。反比 y=2/x：2, 1, 0.5, 0.25（x 加倍，y 減半）</span>
+        <div class="steps">正比：x 乘以常數因子，y 也乘以同樣因子（同向）。反比：x 乘以常數因子，y 除以同樣因子（反向）。這就是「正比」和「反比」名稱的來源。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ K3-3 拋體運動 ══ -->
+<div class="kcard" id="k3-3">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s3)">3-3</div>
+    <div>
+      <h3>拋體運動：二維的運動分析</h3>
+      <div class="kc-sub">對應學習單：3-3 拋體模擬動畫</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s3)">運動分解</span>
+    <span class="topic-tag" style="color:var(--s2)">重力加速度</span>
+    <span class="topic-tag" style="color:var(--s4)">最佳射程角度的推導（延伸）</span>
+  </div>
+
+  <div class="sec-lbl">核心概念：把二維運動拆成兩個一維</div>
+  <div class="concept">
+    <h4>伽利略的天才洞見（約 1600 年）</h4>
+    <p>拋體同時做兩種運動：水平方向的等速運動，和垂直方向的加速運動。這兩個方向完全獨立，互不影響。把它們分開分析，各自都很簡單；合在一起就得到美麗的拋物線。</p>
+  </div>
+
+  <div class="formula-card" style="background:var(--s3t);border:1.5px solid var(--s3)">
+    <div class="f-label" style="color:var(--s3)">拋體運動的兩個方向</div>
+    <div class="f-main">x = v₀cos(θ)·t　　　y = v₀sin(θ)·t − ½gt²</div>
+    <div class="f-explain">
+      <span>v₀</span> = 初速度　<span>θ</span> = 拋出角度　<span>g = 9.8 m/s²</span> = 重力加速度<br>
+      水平：等速，速度分量 v₀cos(θ) 不變<br>
+      垂直：初速 v₀sin(θ) 往上，但重力加速度 g 往下減速，再反向加速
+    </div>
+  </div>
+
+  <div class="derive">
+    <div class="d-title">推導：為什麼 45° 射程最遠？</div>
+    <div class="step"><div class="step-n">1</div><div class="step-body">落地時 y = 0，解出飛行時間 T<div class="eq">0 = v₀sin(θ)·T − ½gT² → T = 2v₀sin(θ)/g</div></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body">代入水平距離公式<div class="eq">R = v₀cos(θ) × T = v₀cos(θ) × 2v₀sin(θ)/g = v₀²sin(2θ)/g</div></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body">sin(2θ) 在 2θ = 90° 時最大，即 θ = 45° 時射程最遠<div class="note">當 θ 和 90°−θ 是互補角時，sin(2θ) 相同，所以 30° 和 60° 的射程相等</div></div></div>
+  </div>
+
+  <div class="sec-lbl">延伸：為什麼現實中最佳角度不一定是 45°？</div>
+  <div class="extension">
+    <div class="e-label">空氣阻力、地球曲率與實際彈道</div>
+    <ul>
+      <li><strong>空氣阻力</strong>：越快越費力，所以高速拋體（如炮彈、棒球）的最佳角度低於 45°，大約 35°–40°</li>
+      <li><strong>高差</strong>：如果落點比出發點低（例如從山頂投擲），最佳角度也低於 45°</li>
+      <li><strong>地球曲率</strong>：對於遠程導彈，地球是圓的，彈道需要用更複雜的方程式（考慮地球半徑）</li>
+      <li><strong>網球發球</strong>：需要球越過球網（限制 y 高度），所以最佳角度完全不同，球員通常以幾乎水平的角度發球</li>
+    </ul>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">以 20 m/s 的初速度，45° 角拋出一個球。（a）計算最大射程。（b）計算最大高度。（c）飛行時間是多少？（g = 9.8 m/s²）</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">（a）R ≈ 40.8 m　（b）H ≈ 10.2 m　（c）T ≈ 2.89 秒</span>
+        <div class="steps">（a）R = v₀²sin(2×45°)/g = 400×1/9.8 ≈ 40.8 m<br>（b）最高點 t = T/2 ≈ 1.44 秒，H = 20sin(45°)×1.44 − ½×9.8×1.44² ≈ 20.4 − 10.2 ≈ 10.2 m<br>（c）T = 2×20×sin(45°)/9.8 = 2×14.14/9.8 ≈ 2.89 秒</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>比較</span> 題目 2</div>
+      <div class="q">以相同初速度，30° 和 60° 的射程為什麼相同？用 sin(2θ) 的性質說明。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">因為 sin(2×30°) = sin(60°) = sin(120°) = sin(2×60°)</span>
+        <div class="steps">R = v₀²sin(2θ)/g。2×30° = 60°，2×60° = 120°。sin(60°) = sin(180°−60°) = sin(120°)，所以兩者相等。一般規律：θ 和 90°−θ（互餘）的射程永遠相同。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>應用</span> 題目 3</div>
+      <div class="q">在月球上（g = 1.6 m/s²），以 20 m/s、45° 拋出球。射程是地球上的幾倍？說明原因。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">月球射程是地球的 9.8/1.6 ≈ 6.1 倍</span>
+        <div class="steps">R = v₀²sin(2θ)/g。v₀ 和 θ 相同時，R 和 g 成反比。月球/地球 = g地球/g月球 = 9.8/1.6 ≈ 6.1。月球上球飛的距離是地球的 6 倍多，這就是為什麼太空人在月球能輕鬆打出超遠高爾夫球。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ 第四階段 ══════════════ -->
+<div class="stage-div">
+  <div class="stage-pill" style="background:var(--s4)">第四階段</div>
+  <h2>第四階段　二次關係：曲線比直線更接近真實</h2>
+  <p class="stage-blurb" style="background:var(--s4t);border-left:3px solid var(--s4)">
+    當 y 和 x² 成正比，圖形就從直線變成拋物線。重力造成的所有運動都遵循二次關係。同一條數學曲線，描述了許多不同的物理現象。
+  </p>
+</div>
+
+<!-- ══ K4-1 自由落體 ══ -->
+<div class="kcard" id="k4-1">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s4)">4-1</div>
+    <div>
+      <h3>自由落體、重力加速度與二次函數</h3>
+      <div class="kc-sub">對應學習單：4-1 自由落體計算器</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s4)">等加速運動</span>
+    <span class="topic-tag" style="color:var(--s2)">平方根的幾何意義</span>
+    <span class="topic-tag" style="color:var(--s3)">為什麼重的物體不會落得更快（延伸）</span>
+  </div>
+
+  <div class="sec-lbl">核心概念</div>
+  <div class="concept">
+    <h4>重力讓速度均勻增加：等加速運動</h4>
+    <p>在沒有空氣阻力的情況下，所有物體（無論輕重）以相同的加速度 g ≈ 9.8 m/s² 向下加速。每過一秒，速度增加 9.8 m/s。</p>
+    <p>因為速度在增加，物體在第 1 秒走的距離，比第 2 秒少，比第 3 秒更少……這種「越來越快」的累積，就是 t² 出現的原因。</p>
+  </div>
+
+  <div class="formula-card" style="background:var(--s4t);border:1.5px solid var(--s4)">
+    <div class="f-label" style="color:var(--s4)">自由落體的核心公式</div>
+    <div class="f-main">h = ½gt²　　→　　t = √(2h/g)</div>
+    <div class="f-explain">
+      <span>h</span> = 落下高度（m）　<span>g = 9.8 m/s²</span>　<span>t</span> = 落地時間（秒）<br>
+      落地速度：<span>v = gt = √(2gh)</span>（與質量完全無關！）
+    </div>
+  </div>
+
+  <div class="derive">
+    <div class="d-title">為什麼 h = ½gt²？（從加速度推導）</div>
+    <div class="step"><div class="step-n">1</div><div class="step-body">加速度的定義：每秒速度增加 g<div class="eq">v = g × t（從靜止開始）</div></div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body">距離 = 平均速度 × 時間（初速 0，末速 gt，平均是 gt/2）<div class="eq">h = (gt/2) × t = gt²/2 = ½gt²</div></div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body">直觀理解：前 t 秒的平均速度是 gt/2，乘以時間 t 得到距離<div class="note">這個 ½ 就是梯形面積公式（v-t 圖下的三角形面積）</div></div></div>
+  </div>
+
+  <div class="diagram">
+    <svg viewBox="0 0 500 200" width="500" height="200">
+      <!-- v-t 圖 -->
+      <line x1="50" y1="170" x2="460" y2="170" stroke="#DDE3F0" stroke-width="1.5"/>
+      <line x1="50" y1="20" x2="50" y2="170" stroke="#DDE3F0" stroke-width="1.5"/>
+      <!-- 軸標籤 -->
+      <text x="465" y="175" font-size="13" fill="#7A8699" font-family="Noto Sans TC">t</text>
+      <text x="35" y="18" font-size="13" fill="#7A8699" font-family="Noto Sans TC">v</text>
+      <!-- 速度直線 v = gt -->
+      <line x1="50" y1="170" x2="420" y2="30" stroke="#A85B0E" stroke-width="2.5"/>
+      <!-- 三角形面積（距離） -->
+      <polygon points="50,170 420,170 420,30" fill="rgba(168,91,14,0.12)"/>
+      <!-- 標籤 -->
+      <text x="200" y="145" font-size="13" fill="#A85B0E" font-family="Noto Sans TC">面積 = 距離 h</text>
+      <text x="360" y="100" font-size="13" fill="#A85B0E" font-family="Noto Sans TC">v = gt</text>
+      <text x="50" y="192" font-size="11" fill="#7A8699" font-family="Noto Sans TC">0</text>
+      <text x="415" y="192" font-size="11" fill="#7A8699" font-family="Noto Sans TC">t</text>
+      <text x="430" y="35" font-size="11" fill="#7A8699" font-family="Noto Sans TC">gt</text>
+    </svg>
+    <div class="d-cap">v-t 圖：速度從 0 線性增加到 gt。三角形的面積就是落下的距離 h = ½gt²</div>
+  </div>
+
+  <div class="sec-lbl">延伸：為什麼重的物體不落得更快？</div>
+  <div class="extension">
+    <div class="e-label">伽利略推翻亞里斯多德（約 1590 年）</div>
+    <p>亞里斯多德認為重的東西落得更快（這個「常識」流傳了 2000 年）。伽利略用邏輯反駁了它：</p>
+    <ul>
+      <li>假設重球比輕球落得快。把它們綁在一起，輕球「拖慢」重球，應該比重球慢、比輕球快——但綁在一起比兩顆都重，應該更快。矛盾！</li>
+      <li>唯一解決矛盾的方式：重量不影響落體速度，所有物體落得一樣快</li>
+      <li>伽利略在比薩斜塔的實驗（可能是傳說），以及後來在真空中的羽毛和保齡球實驗，都驗證了這個結論</li>
+      <li>牛頓後來解釋：重力 F = mg，但加速度 a = F/m = mg/m = g，質量剛好消掉了</li>
+    </ul>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">台北 101 的觀景台高度約 382 公尺。如果從觀景台落下一個球（忽略空氣阻力），（a）需要幾秒落地？（b）落地時速度是多少 m/s，相當於時速幾 km/h？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">（a）約 8.83 秒　（b）約 86.5 m/s，相當於約 311 km/h</span>
+        <div class="steps">（a）t = √(2×382/9.8) = √77.96 ≈ 8.83 秒<br>（b）v = 9.8 × 8.83 ≈ 86.5 m/s = 86.5 × 3.6 ≈ 311 km/h（比台灣高鐵最高時速 300 km/h 還快！）</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>反向推理</span> 題目 2</div>
+      <div class="q">你往上直直丟一顆球，3 秒後球落回你手中（從出手到接住共 3 秒）。這顆球的初速度是多少？丟出的最高點有多高？</div>
+      <div class="q-hint">提示：上升和下降的時間各占一半。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">初速度 14.7 m/s，最高點 11.03 公尺</span>
+        <div class="steps">上升時間 = 下降時間 = 1.5 秒。上升頂點時 v = 0：0 = v₀ − g×1.5 → v₀ = 9.8×1.5 = 14.7 m/s。最高點：h = v₀×1.5 − ½×9.8×1.5² = 22.05 − 11.025 = 11.03 m（約 3 層樓高）。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ K4-2 二次函數頂點 ══ -->
+<div class="kcard" id="k4-2">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s4)">4-2</div>
+    <div>
+      <h3>二次函數、頂點與最大值問題</h3>
+      <div class="kc-sub">對應學習單：4-2 升級版拋體模擬</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s4)">二次函數 y = ax² + bx + c</span>
+    <span class="topic-tag" style="color:var(--s3)">頂點座標公式</span>
+    <span class="topic-tag" style="color:var(--s2)">對稱軸</span>
+  </div>
+
+  <div class="sec-lbl">核心概念</div>
+  <div class="concept">
+    <h4>拋物線的三種形式</h4>
+    <p>二次函數的圖形叫拋物線。它有一個最高點（a &lt; 0）或最低點（a &gt; 0），叫頂點。三種常用的寫法，各有不同的好處：</p>
+  </div>
+
+  <div class="compare-wrap">
+    <table class="compare-table">
+      <tr><th>形式</th><th>形式說明</th><th>直接可讀的資訊</th></tr>
+      <tr><td class="hl">標準式</td><td>y = ax² + bx + c</td><td>y 截距 = c</td></tr>
+      <tr><td class="hl">頂點式</td><td>y = a(x − h)² + k</td><td>頂點 = (h, k)</td></tr>
+      <tr><td class="hl">因式分解式</td><td>y = a(x − r₁)(x − r₂)</td><td>x 截距 = r₁, r₂</td></tr>
+    </table>
+  </div>
+
+  <div class="formula-card" style="background:var(--s4t);border:1.5px solid var(--s4)">
+    <div class="f-label" style="color:var(--s4)">頂點座標公式（從標準式推導）</div>
+    <div class="f-main">頂點 x 坐標 = −b/(2a)　　頂點 y 坐標代入得到</div>
+    <div class="f-explain">
+      對稱軸：x = −b/(2a)（拋物線左右對稱的中心線）<br>
+      在拋體模擬中：y 對 t 的函數 y = v₀sin(θ)·t − ½gt²，頂點 t = v₀sin(θ)/g，就是最高點時間。
+    </div>
+  </div>
+
+  <div class="derive">
+    <div class="d-title">為什麼 30° 和 60° 的軌跡形狀不同但射程相同？</div>
+    <div class="step"><div class="step-n">1</div><div class="step-body">30° 的軌跡：低平寬廣（初速的水平分量大，垂直分量小）</div></div>
+    <div class="step"><div class="step-n">2</div><div class="step-body">60° 的軌跡：高峻窄長（初速的垂直分量大，水平分量小）</div></div>
+    <div class="step"><div class="step-n">3</div><div class="step-body">雖然形狀不同，射程相同——因為 sin(2×30°) = sin(2×60°) = sin(60°) = √3/2<div class="note">兩條不同形狀的拋物線，有相同的起點和終點（落地點），但頂點高度完全不同</div></div></div>
+  </div>
+
+  <div class="sec-lbl">練習題</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> 題目 1</div>
+      <div class="q">二次函數 y = −2x² + 8x − 3，求頂點坐標和對稱軸。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">頂點 (2, 5)，對稱軸 x = 2</span>
+        <div class="steps">頂點 x = −b/(2a) = −8/(2×(−2)) = −8/(−4) = 2。頂點 y = −2(4) + 8(2) − 3 = −8 + 16 − 3 = 5。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>應用</span> 題目 2</div>
+      <div class="q">一個球以 v₀ = 20 m/s、θ = 60° 拋出。（a）最高點在幾秒時到達？（b）最高點的高度是多少？（c）最高點的水平位置在哪裡？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">（a）約 1.77 秒　（b）約 15.3 公尺　（c）約 17.7 公尺</span>
+        <div class="steps">垂直初速 = 20×sin(60°) = 20×0.866 = 17.32 m/s<br>（a）t_top = 17.32/9.8 ≈ 1.77 秒<br>（b）h = 17.32×1.77 − ½×9.8×1.77² ≈ 30.65 − 15.35 ≈ 15.3 m<br>（c）水平位置 = 20×cos(60°)×1.77 = 20×0.5×1.77 = 17.7 m</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ K4-3 探究設計思維 ══ -->
+<div class="kcard" id="k4-3">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s4)">4-3</div>
+    <div>
+      <h3>探究設計：科學方法的結構</h3>
+      <div class="kc-sub">對應學習單：4-3 探究主題提案</div>
+    </div>
+  </div>
+  <div class="topic-bar">
+    <span class="topic-tag" style="color:var(--s4)">提問與假設</span>
+    <span class="topic-tag" style="color:var(--s2)">控制變量</span>
+    <span class="topic-tag" style="color:var(--s3)">誤差分析</span>
+  </div>
+
+  <div class="sec-lbl">什麼是科學探究？</div>
+  <div class="concept">
+    <h4>科學不是找「正確答案」，是找「最好的問題」</h4>
+    <p>一個好的探究問題有幾個特徵：它是可以測量的、它的答案不是顯然已知的、它連結到你真正好奇的事情。「什麼角度的拋體飛最遠？」是好問題。「為什麼物理很重要？」不是探究問題。</p>
+  </div>
+
+  <div class="compare-wrap">
+    <table class="compare-table">
+      <tr><th>探究的步驟</th><th>在你的 Python 探究中對應什麼</th></tr>
+      <tr><td class="hl">提問</td><td>「不同星球上同樣的拋體飛多遠？」</td></tr>
+      <tr><td class="hl">假設</td><td>「我猜月球飛最遠，因為重力最小」</td></tr>
+      <tr><td class="hl">設計實驗</td><td>改變 g 的值，其他條件（v₀, θ）固定</td></tr>
+      <tr><td class="hl">收集數據</td><td>跑程式，記錄各星球的射程</td></tr>
+      <tr><td class="hl">分析</td><td>射程和 g 成反比，畫圖確認</td></tr>
+      <tr><td class="hl">結論</td><td>「射程 = v₀²sin(2θ)/g，g 越小射程越大」</td></tr>
+      <tr><td class="hl">延伸問題</td><td>「如果初速度也不同呢？太陽表面呢？」</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>控制變量：讓比較有意義</h4>
+    <p>比較不同星球的拋體時，你只改變 g（重力加速度），v₀ 和 θ 保持不變。這叫「控制變量」——確保你觀察到的差異，真的是因為你想測試的那個因素造成的，而不是其他原因。</p>
+    <p>這是整個實驗科學方法的核心。如果你同時改了 g 也改了 v₀，你就無法知道是哪個造成差異。</p>
+  </div>
+
+  <div class="sec-lbl">練習：批判一個壞實驗</div>
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>批判思考</span> 題目 1</div>
+      <div class="q">小明想測試「喝能量飲料是否提升反應速度」。他喝了能量飲料之後，做了反應速度測試，結果比昨天快了 0.05 秒。他說：「有效！能量飲料讓我反應更快。」這個實驗的問題在哪裡？你會怎麼改進？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">至少三個問題：沒有對照組、沒有控制其他變量、樣本太小（只測一次）。</span>
+        <div class="steps">改進方式：（1）設對照組：同樣時間喝安慰劑（外觀相同但無成分的飲料），看反應速度是否也提升；（2）控制其他變量：確保睡眠、食物、測試時間相同；（3）多次測試取平均；（4）讓測試者不知道自己喝的是哪種（盲測）。科學實驗必須排除「其他解釋的可能性」，才能確定因果關係。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ 第五階段 ══════════════ -->
+<div class="stage-div">
+  <div class="stage-pill" style="background:var(--s5)">第五階段</div>
+  <h2>第五階段　探究作品的三條路：知識背景</h2>
+  <p class="stage-blurb" style="background:var(--s5t);border-left:3px solid var(--s5)">
+    三個探究主題，各有不同的知識背景。這個章節讓你在開始做之前，對自己選的主題有更深的理解——不只是「怎麼做」，還有「這件事為什麼有趣」。
+  </p>
+</div>
+
+<!-- ══ K5-ABC ══ -->
+<div class="kcard" id="k5-abc">
+<div class="kcard-inner">
+  <div class="kc-head">
+    <div class="kc-num" style="background:var(--s5)">5</div>
+    <div>
+      <h3>探究作品的三條路：深入知識背景</h3>
+      <div class="kc-sub">主題 A 星球拋體 · 主題 B 大數法則 · 主題 C 足球物理</div>
+    </div>
+  </div>
+
+  <!-- 主題A -->
+  <div class="topic-bar"><span class="topic-tag" style="color:var(--s5)">主題 A</span><span class="topic-tag" style="color:var(--s2)">星球拋體比較</span></div>
+
+  <div class="sec-lbl">主題 A 的知識背景：不同星球的重力</div>
+  <div class="compare-wrap">
+    <table class="compare-table">
+      <tr><th>星球</th><th>g（m/s²）</th><th>相對地球</th><th>原因（質量和半徑）</th></tr>
+      <tr><td>地球</td><td>9.8</td><td>1 倍</td><td>基準</td></tr>
+      <tr><td>月球</td><td>1.6</td><td>約 1/6</td><td>質量小，半徑也小</td></tr>
+      <tr><td>火星</td><td>3.7</td><td>約 3/8</td><td>質量約地球 1/10，半徑約 1/2</td></tr>
+      <tr><td>木星</td><td>24.8</td><td>約 2.5 倍</td><td>質量超大（318 倍地球），但半徑也很大</td></tr>
+      <tr><td>金星</td><td>8.87</td><td>約 0.9 倍</td><td>大小和地球很接近（「地球的孿生星」）</td></tr>
+    </table>
+  </div>
+
+  <div class="formula-card" style="background:var(--s5t);border:1.5px solid var(--s5)">
+    <div class="f-label" style="color:var(--s5)">重力加速度的決定因素</div>
+    <div class="f-main">g = GM/R²</div>
+    <div class="f-explain">
+      <span>G</span> = 萬有引力常數　<span>M</span> = 星球質量　<span>R</span> = 星球半徑<br>
+      g 和質量成正比，和半徑平方成反比。木星雖然比地球重 318 倍，但半徑是地球的 11 倍，R² = 121 倍，所以 g 只有地球的 318/121 ≈ 2.6 倍。
+    </div>
+  </div>
+
+  <div class="extension">
+    <div class="e-label">延伸思考</div>
+    <ul>
+      <li>如果你在木星表面（假設它有固體表面），你的「體重感」會是地球的 2.5 倍——75 kg 的人感覺像 187 kg</li>
+      <li>在太陽表面（g ≈ 274 m/s²），你的體重是地球的 28 倍，無法站立</li>
+      <li>中子星的 g 可以達到 10¹² m/s²（1 兆倍地球）——落下 1 公分所花的能量，相當於地球上數百公斤炸藥</li>
+    </ul>
+  </div>
+
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> A-1</div>
+      <div class="q">在火星（g = 3.7 m/s²）上，以 20 m/s、45° 拋出一個球。射程是地球上同樣拋法的幾倍？飛行時間呢？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">射程約 2.65 倍，飛行時間約 2.65 倍</span>
+        <div class="steps">R 和 T 都和 1/g 成正比。9.8/3.7 ≈ 2.65。所以在火星上，球飛的更遠、更久，但速度不變。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主題B -->
+  <div class="topic-bar" style="margin-top:40px"><span class="topic-tag" style="color:var(--s5)">主題 B</span><span class="topic-tag" style="color:var(--s2)">骰子真的公平嗎？</span></div>
+
+  <div class="sec-lbl">主題 B 的知識背景：大數法則與機率</div>
+  <div class="concept">
+    <h4>機率是「長期頻率」的預測，不是每次的保證</h4>
+    <p>擲一顆公平骰子，每面出現的機率都是 1/6 ≈ 0.167。這不是說「每 6 次一定各出現一次」，而是說「擲非常非常多次之後，每面的比例會趨近 1/6」。這就是大數法則。</p>
+  </div>
+
+  <div class="formula-card" style="background:var(--s5t);border:1.5px solid var(--s5)">
+    <div class="f-label" style="color:var(--s5)">大數法則（雅各布·伯努利，1713）</div>
+    <div class="f-main">當 n → ∞，實際頻率 → 理論機率</div>
+    <div class="f-explain">
+      n 次試驗中，事件 A 發生 k 次，則 k/n 隨著 n 增大，會越來越接近 P(A)（事件 A 的理論機率）。<br>
+      但注意：「接近」不是「等於」——就算擲 100 萬次，各面也不會完全相等，只是非常接近。
+    </div>
+  </div>
+
+  <div class="concept">
+    <h4>標準差：量化「偏差」</h4>
+    <p>如果每面理論機率是 p = 1/6，n 次試驗後，各面出現比例的標準差（不確定度）約為 √(p(1−p)/n)。</p>
+    <p>n = 10 時，標準差約 ±0.149（很大的偏差是正常的）。n = 10000 時，標準差約 ±0.0047（非常接近 1/6）。這就是「擲越多次越準」的數學依據。</p>
+  </div>
+
+  <div class="extension">
+    <div class="e-label">延伸：賭場如何靠大數法則賺錢</div>
+    <ul>
+      <li>輪盤有 0 和 00（美式），讓銀行有 5.26% 的優勢（house edge）</li>
+      <li>每一局，賭客有可能贏；但長期下來，大數法則保證賭場必然獲利</li>
+      <li>這就是為什麼「系統性賭博策略」長期無法打敗賭場——除非能預測隨機結果</li>
+      <li>MIT 的「黑傑克小組」是真實故事：他們用「記牌」（不是隨機！）系統性地改變機率，打敗了拉斯維加斯</li>
+    </ul>
+  </div>
+
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>計算</span> B-1</div>
+      <div class="q">擲 1000 次骰子，理論上「6」應該出現幾次？如果實際出現了 180 次，這正常嗎？（提示：計算標準差 σ = √(np(1−p)) ）</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">理論期望 ≈ 167 次，標準差 ≈ 11.8。180 次在 1 個標準差之內，算正常。</span>
+        <div class="steps">期望次數 = 1000 × 1/6 ≈ 166.7。σ = √(1000 × 1/6 × 5/6) = √138.9 ≈ 11.8。180 − 167 = 13，約 1.1 個標準差，這在統計上很正常（68% 的情況都在 1 個標準差內）。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主題C -->
+  <div class="topic-bar" style="margin-top:40px"><span class="topic-tag" style="color:var(--s5)">主題 C</span><span class="topic-tag" style="color:var(--s2)">我的足球飛多遠？</span></div>
+
+  <div class="sec-lbl">主題 C 的知識背景：測量、誤差與模型的限制</div>
+  <div class="concept">
+    <h4>模型 ≠ 現實：誤差的三個來源</h4>
+    <p>你的 Python 程式是「理想模型」——沒有空氣阻力、球是質點、地面是平的。現實中的足球有三個主要誤差來源：</p>
+  </div>
+
+  <div class="compare-wrap">
+    <table class="compare-table">
+      <tr><th>誤差來源</th><th>影響方向</th><th>大小估計</th></tr>
+      <tr><td class="hl">空氣阻力</td><td>讓球飛得更近</td><td>可達理論射程的 20–40%</td></tr>
+      <tr><td class="hl">旋轉效應（馬格努斯力）</td><td>讓球曲線飛行</td><td>視旋轉速度而定</td></tr>
+      <tr><td class="hl">角度測量誤差</td><td>射程敏感地依賴角度</td><td>5° 誤差可導致 10% 射程誤差</td></tr>
+    </table>
+  </div>
+
+  <div class="concept">
+    <h4>香蕉球的物理：馬格努斯效應</h4>
+    <p>足球繞著自身旋轉時，一側的空氣被「帶動」加速，另一側被減速。根據白努利定理（快速流動的流體壓力較低），壓力差造成球朝特定方向偏轉——這就是足球的「香蕉球」、棒球的「變化球」、網球的「上旋球」。</p>
+  </div>
+
+  <div class="extension">
+    <div class="e-label">延伸：為什麼真實彈道比模擬複雜得多</div>
+    <ul>
+      <li>空氣阻力正比於速度的平方（速度越快，阻力增加四倍），而不是速度本身</li>
+      <li>在海平面和高海拔（例如高原），空氣密度不同，同樣踢法射程不同（這就是為什麼高原球場容易踢出好成績）</li>
+      <li>FIFA 世界盃中，2010 年南非比賽用的 Jabulani 球因為氣流不穩定，守門員難以預測，引起很大爭議</li>
+    </ul>
+  </div>
+
+  <div class="practice">
+    <div class="pq">
+      <div class="qn"><span>應用</span> C-1</div>
+      <div class="q">你測量自己踢球的距離是 30 公尺，估計角度是 30°。（a）用公式反推初速度。（b）如果角度其實是 35°（你測量有誤差），真正的初速度應該是多少？兩者差距多大百分比？</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">（a）v₀ ≈ 18.5 m/s　（b）v₀ ≈ 17.0 m/s，差距約 8.1%</span>
+        <div class="steps">（a）v₀ = √(30×9.8/sin(60°)) = √(294/0.866) = √339.5 ≈ 18.4 m/s<br>（b）v₀ = √(30×9.8/sin(70°)) = √(294/0.940) = √312.8 ≈ 17.7 m/s<br>差距：(18.4−17.7)/18.4 ≈ 3.8%（實際計算可能因精確值略有不同）。5° 的角度誤差導致約 4% 的速度計算誤差——這說明角度測量的準確度很重要。</div>
+      </div>
+    </div>
+    <div class="pq">
+      <div class="qn"><span>思考</span> C-2</div>
+      <div class="q">你的程式模擬假設沒有空氣阻力，但真實足球有。如果程式計算出射程 40 公尺，你實際踢的球可能落在幾公尺？說明你的推理。</div>
+      <button class="ans-toggle" onclick="toggleAns(this)">看解答</button>
+      <div class="ans-body">
+        <span class="key">可能落在 24–34 公尺之間（約縮短 15–40%）</span>
+        <div class="steps">空氣阻力讓球損失能量，射程會比理想模型短。對於一般強度的踢球（初速 15–25 m/s），空氣阻力造成的射程損失約 15%–40%，取決於球的旋轉、風速等因素。這就是「模型的限制」——即使數學完全正確，現實也會不同。好的科學家不會說「模型錯了」，而是說「模型有哪些假設，這些假設在什麼情況下成立或不成立」。</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// Answer toggles
+function toggleAns(btn) {
+  btn.classList.toggle('open');
+  const ans = btn.nextElementSibling;
+  ans.classList.toggle('show');
+}
+
+// Active sidebar
+const links = document.querySelectorAll('.sb-a');
+const cards = document.querySelectorAll('.kcard');
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.sb-a[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { threshold: 0.2 });
+cards.forEach(c => io.observe(c));
+
+links.forEach(l => l.addEventListener('click', () => {
+  document.getElementById('sb').classList.remove('open');
+}));
+</script>
+</body>
+</html>

@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xavier 的 Python 學習單</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+:root {
+  --bg:       #F7F8FB;
+  --surface:  #FFFFFF;
+  --border:   #DDE3EE;
+  --text:     #1A2033;
+  --soft:     #4A5568;
+  --hint:     #8A96AA;
+
+  --s1: #0A7A6E;
+  --s2: #1A5FAA;
+  --s3: #5530A8;
+  --s4: #9A5800;
+  --s5: #156830;
+
+  --s1t: #E5F4F2;
+  --s2t: #E8F0FB;
+  --s3t: #EDE8FB;
+  --s4t: #FBF2E5;
+  --s5t: #E5F5EB;
+
+  --parent-bg:  #FEF8EE;
+  --parent-bdr: #D8A830;
+  --code-bg:    #F5F7FA;
+  --code-border:#DDE3EE;
+  --code-text:  #2A3550;
+
+  --sidebar-w: 260px;
+  --content-max: 760px;
+  --font: 'Noto Sans TC', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+#sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: #2A3448;
+  overflow-y: auto;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+.sb-logo {
+  padding: 22px 20px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.sb-logo h1 { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.4; letter-spacing:.03em; }
+.sb-logo p  { font-size: 11px; color: #8A9AB8; margin-top: 3px; }
+.sb-sec { padding: 12px 0 4px; }
+.sb-sec-lbl {
+  font-size: 10px; font-weight: 700; letter-spacing:.12em; text-transform:uppercase;
+  padding: 0 20px; margin-bottom: 4px;
+}
+.c1{color:#2ABDA8}.c2{color:#5A9AE0}.c3{color:#9A70F0}.c4{color:#D08830}.c5{color:#3AC870}
+.sb-a {
+  display:flex; align-items:baseline; gap:8px;
+  padding: 7px 20px; font-size: 13px; color: #8090B0;
+  text-decoration: none; transition: background .12s, color .12s; line-height:1.4;
+}
+.sb-a:hover  { background: rgba(255,255,255,.07); color: #D8E0F0; }
+.sb-a.active { background: rgba(255,255,255,.12); color: #fff; }
+.sb-a .id { font-family: var(--mono); font-size: 10px; color: #5A6A8A; min-width:36px; flex-shrink:0; }
+.sb-a.active .id { color: #7A8AB0; }
+
+#cover {
+  background: #2A3448;
+  color: #fff;
+  padding: 64px 56px 52px;
+}
+.cover-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing:.14em; text-transform:uppercase;
+  color: #2ABDA8; margin-bottom: 14px;
+}
+#cover h1 { font-size: 32px; font-weight: 900; line-height: 1.2; margin-bottom: 10px; }
+#cover .sub { font-size: 16px; color: #8A9AB8; margin-bottom: 40px; }
+.cover-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; max-width:680px; margin-bottom:32px; }
+.cg-item {
+  background: rgba(255,255,255,.07); border-radius: 8px;
+  padding: 12px 10px; border-left: 3px solid transparent;
+}
+.cg-item:nth-child(1){border-color:#2ABDA8}.cg-item:nth-child(2){border-color:#5A9AE0}
+.cg-item:nth-child(3){border-color:#9A70F0}.cg-item:nth-child(4){border-color:#D08830}
+.cg-item:nth-child(5){border-color:#3AC870}
+.cg-n { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:5px; }
+.cg-item:nth-child(1) .cg-n{color:#2ABDA8}.cg-item:nth-child(2) .cg-n{color:#5A9AE0}
+.cg-item:nth-child(3) .cg-n{color:#9A70F0}.cg-item:nth-child(4) .cg-n{color:#D08830}
+.cg-item:nth-child(5) .cg-n{color:#3AC870}
+.cg-t { font-size: 12px; color: #B0C0D8; line-height: 1.4; }
+.cover-note {
+  max-width: 620px; padding: 16px 20px;
+  background: rgba(255,255,255,.06); border-left: 3px solid #8A9AB8;
+  border-radius: 0 8px 8px 0; font-size: 14px; color: #8A9AB8; line-height: 1.7;
+}
+
+#main { margin-left: var(--sidebar-w); }
+
+.stage-div {
+  padding: 40px 56px 22px;
+  border-bottom: 1.5px solid var(--border);
+}
+.stage-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  padding: 5px 14px; border-radius:100px;
+  font-size: 12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color: #fff; margin-bottom: 12px;
+}
+.stage-div h2 { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
+.stage-blurb {
+  font-size: 15px; color: var(--soft); line-height: 1.75;
+  max-width: 640px; padding: 12px 18px; border-radius: 8px;
+}
+
+.ws { padding: 48px 56px 56px; border-bottom: 2px solid var(--border); }
+.ws-inner { max-width: var(--content-max); }
+
+.ws-head { display:flex; align-items:flex-start; gap:16px; margin-bottom:24px; }
+.ws-num {
+  font-family: var(--mono); font-size:12px; font-weight:500;
+  padding: 5px 12px; border-radius:7px; color:#fff; white-space:nowrap; flex-shrink:0; margin-top:4px;
+}
+.ws-head h3 { font-size: 24px; font-weight: 900; color: var(--text); line-height:1.2; }
+.ws-sub { font-size: 15px; color: var(--hint); margin-top:4px; }
+
+.ws-meta {
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:1px; background:var(--border); border:1.5px solid var(--border);
+  border-radius:10px; overflow:hidden; margin-bottom:22px;
+}
+.ws-meta-cell { background: var(--surface); padding: 11px 14px; }
+.meta-lbl {
+  font-size: 10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  color: var(--hint); margin-bottom: 3px;
+}
+.meta-val { font-size: 14px; color: var(--text); font-weight:600; line-height:1.4; }
+
+/* goal */
+.goal {
+  background: var(--text);
+  color: #fff; border-radius: 12px;
+  padding: 20px 24px; margin-bottom: 26px;
+  display:flex; gap:12px; align-items:flex-start;
+}
+.goal-icon { font-size: 22px; flex-shrink:0; margin-top:1px; }
+.goal-body strong {
+  display:block; font-size:11px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase; color:#8090B0; margin-bottom:5px;
+}
+.goal-body p { font-size: 17px; font-weight:600; color:#fff; line-height:1.5; }
+
+/* section label */
+.sec-label {
+  font-size: 12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  margin: 28px 0 12px; display:flex; align-items:center; gap:8px; color: var(--soft);
+}
+.sec-label::after { content:''; flex:1; height:1.5px; background:var(--border); }
+
+/* parent box */
+details.parent-box {
+  background: var(--parent-bg);
+  border: 1.5px solid var(--parent-bdr);
+  border-radius: 10px; margin-bottom:8px;
+}
+details.parent-box summary {
+  cursor:pointer; padding:14px 18px;
+  font-size: 14px; font-weight:700; color:#7A5800;
+  display:flex; align-items:center; gap:8px;
+  list-style:none; user-select:none;
+}
+details.parent-box summary::-webkit-details-marker { display:none; }
+details.parent-box summary::after {
+  content:'▾'; margin-left:auto; font-size:13px; color:#B88020; transition:transform .2s;
+}
+details.parent-box[open] summary::after { transform:rotate(180deg); }
+.parent-body { padding:0 18px 16px; border-top:1px solid rgba(216,168,48,.3); }
+.parent-body ul { list-style:none; margin-top:10px; display:flex; flex-direction:column; gap:6px; }
+.parent-body ul li {
+  font-size: 15px; color: #5A4010; padding-left:18px;
+  position:relative; line-height:1.7;
+}
+.parent-body ul li::before { content:'·'; position:absolute; left:4px; font-size:18px; color:#D8A830; line-height:1.4; }
+
+/* code */
+.code-wrap { margin:8px 0 18px; border-radius:10px; overflow:hidden; border:1.5px solid var(--border); }
+.code-title {
+  background: #EEF1F8; padding:8px 18px;
+  font-family:var(--mono); font-size:12px; color:var(--hint);
+  border-bottom:1.5px solid var(--border);
+}
+.code-wrap pre {
+  background: var(--code-bg); padding:18px 22px;
+  font-family:var(--mono); font-size:14.5px; line-height:1.9;
+  overflow-x:auto; tab-size:4; color:var(--code-text);
+}
+.kw{color:#1A5FAA;font-weight:600}.fn{color:#7A4A00}.st{color:#AA3020}
+.nm{color:#1A6820}.cm{color:#8A9AB0;font-style:italic}.cl{color:#0A6A80}
+.vr{color:#2A4A8A}.op{color:#4A5568}
+
+/* task list */
+.task-list { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.task-list li {
+  display:flex; align-items:flex-start; gap:14px;
+  background:var(--surface); border:1.5px solid var(--border);
+  border-radius:10px; padding:14px 18px;
+  font-size: 16px; font-weight:500; color:var(--text); line-height:1.6;
+}
+.task-list li::before {
+  content:''; flex-shrink:0; width:20px; height:20px;
+  border-radius:5px; border:2px solid var(--border);
+  background:var(--bg); margin-top:3px;
+}
+
+/* q list */
+.q-list { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.q-list li {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:12px 16px; background:var(--s3t);
+  border-radius:9px; font-size:15.5px; color:var(--text); line-height:1.6;
+}
+.q-list li::before {
+  content:'Q'; font-family:var(--mono); font-size:11px; font-weight:700;
+  color:var(--s3); background:#fff; border-radius:5px;
+  padding:2px 6px; flex-shrink:0; margin-top:2px;
+}
+
+/* challenge */
+.challenge {
+  background: var(--s4t); border:1.5px solid #E0C070;
+  border-radius:10px; padding:16px 20px; margin-top:14px;
+}
+.challenge-label {
+  font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--s4); margin-bottom:10px;
+}
+.challenge ul { list-style:none; display:flex; flex-direction:column; gap:6px; }
+.challenge ul li {
+  font-size: 15px; color:#6A4000; padding-left:20px; position:relative; line-height:1.6;
+}
+.challenge ul li::before { content:'→'; position:absolute; left:0; color:var(--s4); font-weight:700; }
+
+/* record */
+.record {
+  background: var(--s5t); border:1.5px solid #80C898;
+  border-radius:10px; padding:16px 20px; margin-top:18px;
+}
+.record-label { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--s5); margin-bottom:10px; }
+.record ul { list-style:none; display:flex; flex-direction:column; gap:6px; }
+.record ul li { font-size:15px; color:#0A4820; padding-left:22px; position:relative; line-height:1.6; }
+.record ul li::before { content:'✓'; position:absolute; left:0; color:var(--s5); font-weight:700; }
+
+/* checklist */
+.checklist {
+  background: var(--s5t); border:2px solid #60B880;
+  border-radius:12px; padding:20px 24px; margin-top:22px;
+}
+.checklist-label { font-size:14px; font-weight:800; color:var(--s5); margin-bottom:14px; }
+.checklist ul { list-style:none; display:flex; flex-direction:column; gap:10px; }
+.checklist ul li {
+  display:flex; align-items:flex-start; gap:12px;
+  font-size:15.5px; color:#0A4820; font-weight:500; line-height:1.55;
+}
+.checklist ul li::before {
+  content:''; flex-shrink:0; width:20px; height:20px;
+  border:2px solid #80C898; border-radius:5px; background:#fff; margin-top:2px;
+}
+
+/* theme grid */
+.theme-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:14px; }
+.theme-card { border:2px solid var(--border); border-radius:12px; padding:18px 16px; background:var(--surface); }
+.theme-tag { font-size:10px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
+.theme-card h4 { font-size:15px; font-weight:800; color:var(--text); margin-bottom:8px; line-height:1.3; }
+.theme-card p { font-size:14px; color:var(--soft); line-height:1.65; }
+.tc-a{border-color:#80C898}.tc-a .theme-tag{color:var(--s5)}
+.tc-b{border-color:#80B0E0}.tc-b .theme-tag{color:var(--s2)}
+.tc-c{border-color:#E09080}.tc-c .theme-tag{color:#AA2810}
+
+/* write lines */
+.write-line { border-bottom:2px solid #C8D4E8; min-height:44px; margin-bottom:18px; font-size:13px; color:var(--hint); padding-top:4px; }
+
+/* measure table */
+.meas-table { width:100%; border-collapse:collapse; font-size:15px; margin-top:14px; border-radius:10px; overflow:hidden; }
+.meas-table th { background:var(--text); color:#fff; padding:10px 14px; text-align:left; font-size:13px; font-weight:700; }
+.meas-table td { padding:11px 14px; border-bottom:1.5px solid var(--border); background:var(--surface); }
+.meas-table tr:last-child td { background:var(--bg); font-weight:700; }
+
+/* hamburger */
+#hamburger {
+  display:none; position:fixed; top:14px; left:14px; z-index:200;
+  background:#2A3448; border:none; color:#fff;
+  width:42px; height:42px; border-radius:10px; font-size:18px;
+  cursor:pointer; align-items:center; justify-content:center;
+}
+
+/* print */
+@media print {
+  #sidebar,#hamburger{display:none!important}
+  #main{margin-left:0}
+  .ws{page-break-inside:avoid}
+  details.parent-box .parent-body{display:block!important}
+  .code-wrap pre{border:1px solid var(--border)}
+}
+
+/* responsive */
+@media(max-width:860px){
+  :root{--sidebar-w:0px}
+  #sidebar{transform:translateX(-260px);width:260px;transition:transform .25s}
+  #sidebar.open{transform:translateX(0)}
+  #main{margin-left:0}
+  #hamburger{display:flex}
+  #cover{padding:60px 24px 36px}
+  .stage-div,.ws{padding:28px 24px 36px}
+  .ws-meta{grid-template-columns:1fr 1fr}
+  .theme-grid{grid-template-columns:1fr}
+}
+
+</style>
+</head>
+<body>
+
+<button id="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+
+<!-- ══ SIDEBAR ══════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-title">Xavier 的 Python 學習單</div>
+    <div class="sb-logo-sub">基礎打底 → 完成探究作品</div>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-label c1">第一階段</div>
+    <a class="sb-link" href="#ws-1-1"><span class="sb-id">1-1</span>溫度換算器</a>
+    <a class="sb-link" href="#ws-1-2"><span class="sb-id">1-2</span>質數篩選器</a>
+    <a class="sb-link" href="#ws-1-3"><span class="sb-id">1-3</span>RGB 調色盤</a>
+    <a class="sb-link" href="#ws-1-4"><span class="sb-id">1-4</span>猜數字遊戲</a>
+  </div>
+  <div class="sb-section">
+    <div class="sb-section-label c2">第二階段</div>
+    <a class="sb-link" href="#ws-2-1"><span class="sb-id">2-1</span>方程式求解器</a>
+    <a class="sb-link" href="#ws-2-2"><span class="sb-id">2-2</span>第一張圖表</a>
+    <a class="sb-link" href="#ws-2-3"><span class="sb-id">2-3</span>不等式視覺化</a>
+  </div>
+  <div class="sb-section">
+    <div class="sb-section-label c3">第三階段</div>
+    <a class="sb-link" href="#ws-3-1"><span class="sb-id">3-1</span>速度比較圖</a>
+    <a class="sb-link" href="#ws-3-2"><span class="sb-id">3-2</span>正反比模擬</a>
+    <a class="sb-link" href="#ws-3-3"><span class="sb-id">3-3★</span>拋體模擬動畫</a>
+  </div>
+  <div class="sb-section">
+    <div class="sb-section-label c4">第四階段</div>
+    <a class="sb-link" href="#ws-4-1"><span class="sb-id">4-1</span>自由落體計算器</a>
+    <a class="sb-link" href="#ws-4-2"><span class="sb-id">4-2</span>升級版拋體</a>
+    <a class="sb-link" href="#ws-4-3"><span class="sb-id">4-3</span>探究主題提案</a>
+  </div>
+  <div class="sb-section">
+    <div class="sb-section-label c5">第五階段（選一）</div>
+    <a class="sb-link" href="#ws-5-a"><span class="sb-id">A</span>星球拋體比較</a>
+    <a class="sb-link" href="#ws-5-b"><span class="sb-id">B</span>骰子真的公平嗎</a>
+    <a class="sb-link" href="#ws-5-c"><span class="sb-id">C</span>我的足球飛多遠</a>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══════════════════════════════════════════ -->
+<div id="main">
+
+<!-- COVER -->
+<section id="cover">
+  <div class="cover-eyebrow">Python 數理探索計畫</div>
+  <h1>Xavier 的 Python 學習單</h1>
+  <p class="cover-sub">基礎打底到八年級結束 · 共 13 份學習單</p>
+  <div class="cover-stages">
+    <div class="cover-stage-row"><span class="csn">第一階段</span><span class="cst">用 Python 看懂數字</span><span class="csp">基礎打底</span></div>
+    <div class="cover-stage-row"><span class="csn">第二階段</span><span class="cst">讓方程式跑起來</span><span class="csp">代數探索</span></div>
+    <div class="cover-stage-row"><span class="csn">第三階段</span><span class="cst">函數與運動的連結</span><span class="csp">函數物理</span></div>
+    <div class="cover-stage-row"><span class="csn">第四階段</span><span class="cst">從模擬到探究</span><span class="csp">深入探究</span></div>
+    <div class="cover-stage-row"><span class="csn">第五階段</span><span class="cst">完成探究作品</span><span class="csp">完成作品</span></div>
+  </div>
+  <div class="cover-note">「給家長說」預設收合，點擊才展開。每次上課結束一定要有一個<strong style="color:#E8C878">可以跑的東西</strong>才算完成。截圖 + 手機錄音 → 存 Google Drive。</div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════
+     第一階段
+══════════════════════════════════════════════ -->
+<div class="stage-divider">
+  <div class="stage-pill" style="background:var(--s1)">第一階段</div>
+  <h2>第一階段　用 Python 看懂數字</h2>
+  <p class="stage-blurb" style="background:var(--s1t); border-left:3px solid var(--s1)">
+    X 已有 print、變數、if/else 基礎。這個階段讓他「感覺到數學在動」——每次上課結束都要有一個可以給別人看的東西。
+  </p>
+</div>
+
+<!-- 1-1 溫度換算器 -->
+<div class="ws" id="ws-1-1">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s1)">1-1</div>
+    <div>
+      <h3>溫度換算器</h3>
+      <div class="ws-sub">讓負數自然出現，理解「數的方向」</div>
+    </div>
+  </div>
+
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Google Colab</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">負數與整數四則（七上）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">口頭聊：絕對零度</div></div>
+  </div>
+
+  <div class="goal">
+    <span class="goal-icon">🎯</span>
+    <div class="goal-body">
+      <strong>這次目標</strong>
+      <p>做出一個可以輸入溫度、自動換算攝氏／華氏／克氏的程式</p>
+    </div>
+  </div>
+
+  <details class="parent-box">
+    <summary>📋 給家長說（備課重點）</summary>
+    <div class="parent-body"><ul>
+      <li>先問 X：「你知道水的沸點是幾度嗎？」（100°C）「那換成華氏呢？」</li>
+      <li>引出換算公式：F = C × 9/5 + 32　；　K = C + 273.15</li>
+      <li>重點：讓他注意克氏溫度永遠是正數，負數攝氏換成克氏還是正的——這就是負數的生活意義。</li>
+      <li>結尾口頭問：「那 0 K 是什麼意思？理論上比這更冷存在嗎？」不用他回答完整，引起好奇就好。</li>
+    </ul></div>
+  </details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap">
+    <div class="code-title">temperature.py</div>
+    <pre><span class="cm"># 溫度換算器</span>
+<span class="vr">celsius</span> <span class="op">=</span> <span class="cl">float</span>(<span class="fn">input</span>(<span class="st">'請輸入攝氏溫度：'</span>))
+
+<span class="vr">fahrenheit</span> <span class="op">=</span> <span class="vr">celsius</span> <span class="op">*</span> <span class="nm">9</span><span class="op">/</span><span class="nm">5</span> <span class="op">+</span> <span class="nm">32</span>
+<span class="vr">kelvin</span>     <span class="op">=</span> <span class="vr">celsius</span> <span class="op">+</span> <span class="nm">273.15</span>
+
+<span class="fn">print</span>(<span class="st">f'<span class="op">{</span><span class="vr">celsius</span><span class="op">}</span>°C = <span class="op">{</span><span class="vr">fahrenheit</span><span class="op">}</span>°F'</span>)
+<span class="fn">print</span>(<span class="st">f'<span class="op">{</span><span class="vr">celsius</span><span class="op">}</span>°C = <span class="op">{</span><span class="vr">kelvin</span><span class="op">}</span> K'</span>)</pre>
+  </div>
+
+  <div class="sec-label" style="color:var(--s1)">X 來做做看</div>
+  <ul class="task-list">
+    <li>把程式貼進 Colab，執行看看</li>
+    <li>輸入 100（水的沸點），確認結果是 212°F 和 373.15 K</li>
+    <li>輸入 -40（有趣！攝氏和華氏在這裡相等）</li>
+    <li>輸入 -273.15，看 K 變成多少？</li>
+    <li>修改程式：加一行 print，說明這個溫度是「冷／涼／熱／燙」</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認（問他，他說就好）</div>
+  <ul class="q-list">
+    <li>為什麼克氏溫度沒有負數？</li>
+    <li>如果輸入 -300，程式會跑出什麼？這在現實中有意義嗎？</li>
+    <li>f-string 裡的大括號 {} 是在做什麼？</li>
+  </ul>
+
+  <div class="challenge">
+    <div class="challenge-label">⚡ 進階挑戰（做完有餘力再試）</div>
+    <ul>
+      <li>加 if/else：判斷攝氏溫度是冰點以下、室溫、體溫以上、沸點以上</li>
+      <li>讓程式可以反向換算：輸入華氏，換回攝氏</li>
+    </ul>
+  </div>
+
+  <div class="record">
+    <div class="record-label">📁 作品記錄</div>
+    <ul>
+      <li>截圖程式執行結果</li>
+      <li>手機錄音：X 說「這個程式在做什麼」（30 秒就好）</li>
+      <li>存入 Google Drive／Xavier 作品資料夾</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- 1-2 質數篩選器 -->
+<div class="ws" id="ws-1-2">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s1)">1-2</div>
+    <div><h3>質數篩選器</h3><div class="ws-sub">第一次用迴圈——讓程式幫你數</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Google Colab</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">因數、倍數、質數（七上）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">—</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>用 for 迴圈印出 1 到 100 之間的所有質數</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>先口頭確認：質數是什麼？（只有 1 和自己兩個因數）</li>
+    <li>1 是不是質數？（不是。特別說清楚，很多人搞錯）</li>
+    <li>問他：「要怎麼讓電腦判斷一個數是不是質數？」引導他說出：試著除看看，除得盡就不是質數</li>
+    <li>% 運算子（取餘數）是這堂課的新語法，先示範：print(10 % 3) 是幾？</li>
+    <li>def 是定義函式，range(2, n) 從 2 開始到 n-1，因為不用試除 1</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">第一步：% 是什麼</div>
+  <div class="code-wrap"><div class="code-title">step1.py</div><pre><span class="fn">print</span>(<span class="nm">10</span> <span class="op">%</span> <span class="nm">3</span>)   <span class="cm"># 餘數是 1</span>
+<span class="fn">print</span>(<span class="nm">9</span>  <span class="op">%</span> <span class="nm">3</span>)   <span class="cm"># 餘數是 0，代表整除</span></pre></div>
+
+  <div class="sec-label" style="color:var(--s2)">第二步：判斷一個數是不是質數</div>
+  <div class="code-wrap"><div class="code-title">step2.py</div><pre><span class="kw">def</span> <span class="fn">is_prime</span>(<span class="vr">n</span>):
+    <span class="kw">if</span> <span class="vr">n</span> <span class="op">&lt;</span> <span class="nm">2</span>:
+        <span class="kw">return</span> <span class="kw">False</span>
+    <span class="kw">for</span> <span class="vr">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">2</span>, <span class="vr">n</span>):
+        <span class="kw">if</span> <span class="vr">n</span> <span class="op">%</span> <span class="vr">i</span> <span class="op">==</span> <span class="nm">0</span>:   <span class="cm"># 有一個數能整除它</span>
+            <span class="kw">return</span> <span class="kw">False</span>  <span class="cm"># 就不是質數</span>
+    <span class="kw">return</span> <span class="kw">True</span>
+
+<span class="fn">print</span>(<span class="fn">is_prime</span>(<span class="nm">7</span>))   <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="fn">is_prime</span>(<span class="nm">10</span>))  <span class="cm"># False</span></pre></div>
+
+  <div class="sec-label" style="color:var(--s2)">第三步：印出 100 以內所有質數</div>
+  <div class="code-wrap"><div class="code-title">step3.py</div><pre><span class="vr">primes</span> <span class="op">=</span> []
+<span class="kw">for</span> <span class="vr">n</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">2</span>, <span class="nm">101</span>):
+    <span class="kw">if</span> <span class="fn">is_prime</span>(<span class="vr">n</span>):
+        <span class="vr">primes</span>.<span class="fn">append</span>(<span class="vr">n</span>)
+
+<span class="fn">print</span>(<span class="st">'100 以內的質數：'</span>)
+<span class="fn">print</span>(<span class="vr">primes</span>)
+<span class="fn">print</span>(<span class="st">f'共 <span class="op">{</span><span class="fn">len</span>(<span class="vr">primes</span>)<span class="op">}</span> 個'</span>)</pre></div>
+
+  <div class="sec-label" style="color:var(--s1)">X 來做做看</div>
+  <ul class="task-list">
+    <li>一步一步執行，每個 cell 跑完再往下</li>
+    <li>把範圍改成 1 到 200，質數變多少個？</li>
+    <li>試試 is_prime(97)、is_prime(100)，正確嗎？</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>range(2, n) 為什麼從 2 開始，不從 1 開始？</li>
+    <li>為什麼找到一個能整除的數就可以 return False 不用繼續找了？</li>
+    <li>你覺得質數有沒有最大的那一個？</li>
+  </ul>
+
+  <div class="challenge"><div class="challenge-label">⚡ 進階挑戰</div><ul>
+    <li>質數除了 2 以外都是奇數。可以讓程式先排除偶數，跑更快嗎？</li>
+    <li>找出 1000 以內所有「孿生質數」（差值是 2 的兩個質數，例如 3 和 5）</li>
+  </ul></div>
+
+  <div class="record"><div class="record-label">📁 作品記錄</div><ul>
+    <li>截圖印出的質數表</li>
+    <li>X 口頭說明：「is_prime 函式是怎麼判斷的？」</li>
+    <li>存入 Google Drive</li>
+  </ul></div>
+</div>
+</div>
+
+<!-- 1-3 RGB 調色盤 -->
+<div class="ws" id="ws-1-3">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s1)">1-3</div>
+    <div><h3>RGB 調色盤</h3><div class="ws-sub">比例的真實應用</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + matplotlib</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">比與比例（七下預習）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">—</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>輸入 RGB 三個數值，程式說明顏色偏暖／偏冷，並畫出色塊</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>RGB：螢幕顏色由紅(R)、綠(G)、藍(B)三個數組成，每個 0–255</li>
+    <li>純紅 (255,0,0)；純白 (255,255,255)；純黑 (0,0,0)</li>
+    <li>這是「比例」的真實應用：三個數的比例決定顏色感覺</li>
+    <li>matplotlib 是 Python 畫圖套件，今天第一次用，讓他看到「Python 可以畫圖」就好</li>
+    <li>偏暖／冷的邏輯：R 比 B 大就偏暖，B 比 R 大就偏冷</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">rgb_palette.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+<span class="kw">import</span> <span class="cl">matplotlib.patches</span> <span class="kw">as</span> <span class="cl">patches</span>
+
+<span class="vr">r</span> <span class="op">=</span> <span class="cl">int</span>(<span class="fn">input</span>(<span class="st">'Red (0–255)：'</span>))
+<span class="vr">g</span> <span class="op">=</span> <span class="cl">int</span>(<span class="fn">input</span>(<span class="st">'Green (0–255)：'</span>))
+<span class="vr">b</span> <span class="op">=</span> <span class="cl">int</span>(<span class="fn">input</span>(<span class="st">'Blue (0–255)：'</span>))
+
+<span class="kw">if</span> <span class="vr">r</span> <span class="op">&gt;</span> <span class="vr">b</span> <span class="op">+</span> <span class="nm">30</span>:
+    <span class="vr">feel</span> <span class="op">=</span> <span class="st">'偏暖色（紅橙黃方向）'</span>
+<span class="kw">elif</span> <span class="vr">b</span> <span class="op">&gt;</span> <span class="vr">r</span> <span class="op">+</span> <span class="nm">30</span>:
+    <span class="vr">feel</span> <span class="op">=</span> <span class="st">'偏冷色（藍紫方向）'</span>
+<span class="kw">elif</span> <span class="fn">abs</span>(<span class="vr">r</span><span class="op">-</span><span class="vr">g</span>) <span class="op">&lt;</span> <span class="nm">20</span> <span class="kw">and</span> <span class="fn">abs</span>(<span class="vr">g</span><span class="op">-</span><span class="vr">b</span>) <span class="op">&lt;</span> <span class="nm">20</span>:
+    <span class="vr">feel</span> <span class="op">=</span> <span class="st">'接近灰色（三色相近）'</span>
+<span class="kw">else</span>:
+    <span class="vr">feel</span> <span class="op">=</span> <span class="st">'中性色'</span>
+
+<span class="fn">print</span>(<span class="st">f'你的顏色：RGB(<span class="op">{</span><span class="vr">r</span><span class="op">}</span>, <span class="op">{</span><span class="vr">g</span><span class="op">}</span>, <span class="op">{</span><span class="vr">b</span><span class="op">}</span>)  →  <span class="op">{</span><span class="vr">feel</span><span class="op">}</span>'</span>)
+
+<span class="vr">fig</span>, <span class="vr">ax</span> <span class="op">=</span> <span class="cl">plt</span>.<span class="fn">subplots</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">3</span>, <span class="nm">3</span>))
+<span class="vr">color</span> <span class="op">=</span> (<span class="vr">r</span><span class="op">/</span><span class="nm">255</span>, <span class="vr">g</span><span class="op">/</span><span class="nm">255</span>, <span class="vr">b</span><span class="op">/</span><span class="nm">255</span>)
+<span class="vr">rect</span> <span class="op">=</span> <span class="cl">patches</span>.<span class="fn">Rectangle</span>((<span class="nm">0</span>,<span class="nm">0</span>), <span class="nm">1</span>, <span class="nm">1</span>, <span class="vr">color</span><span class="op">=</span><span class="vr">color</span>)
+<span class="vr">ax</span>.<span class="fn">add_patch</span>(<span class="vr">rect</span>)
+<span class="vr">ax</span>.<span class="fn">set_xlim</span>(<span class="nm">0</span>,<span class="nm">1</span>); <span class="vr">ax</span>.<span class="fn">set_ylim</span>(<span class="nm">0</span>,<span class="nm">1</span>); <span class="vr">ax</span>.<span class="fn">axis</span>(<span class="st">'off'</span>)
+<span class="vr">ax</span>.<span class="fn">set_title</span>(<span class="st">f'RGB(<span class="op">{</span><span class="vr">r</span><span class="op">}</span>, <span class="op">{</span><span class="vr">g</span><span class="op">}</span>, <span class="op">{</span><span class="vr">b</span><span class="op">}</span>)'</span>)
+<span class="cl">plt</span>.<span class="fn">show</span>()</pre></div>
+
+  <div class="sec-label" style="color:var(--s1)">X 來做做看</div>
+  <ul class="task-list">
+    <li>試試幾種顏色：(255,0,0)、(0,0,255)、(128,128,128)、(255,165,0)</li>
+    <li>試試你最喜歡的顏色，猜猜看 RGB 大概是多少</li>
+    <li>找出「天空藍」大概是什麼 RGB</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>為什麼 matplotlib 要把 RGB 除以 255？</li>
+    <li>灰色的條件是什麼？為什麼三個值要相近？</li>
+    <li>白色和黑色的 RGB 分別是什麼？</li>
+  </ul>
+
+  <div class="challenge"><div class="challenge-label">⚡ 進階挑戰</div><ul>
+    <li>加一個計算：亮度 = (R+G+B)/3，判斷是深色還是淺色</li>
+    <li>讓程式同時顯示 4 種顏色並排（4 個 subplot）</li>
+  </ul></div>
+  <div class="record"><div class="record-label">📁 作品記錄</div><ul>
+    <li>截圖色塊圖（包含自己最喜歡的顏色）</li>
+    <li>X 口頭說明：「RGB 比例怎麼決定顏色？」</li>
+    <li>存入 Google Drive</li>
+  </ul></div>
+</div>
+</div>
+
+<!-- 1-4 猜數字遊戲 -->
+<div class="ws" id="ws-1-4">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s1)">1-4</div>
+    <div><h3>猜數字遊戲（整合）</h3><div class="ws-sub">把學過的全部放進一個完整程式</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">60 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Google Colab</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">整合：條件、迴圈、隨機數</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">—</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>完成一個有計數器、有難度分級、可以玩到結束的完整猜數字遊戲</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>這是第一階段的整合任務，不引入新概念，把所有東西組合起來</li>
+    <li>random.randint(1, 100) 是新語法，先示範讓他看到「電腦可以隨機」</li>
+    <li>while True 搭配 break：loop 永遠跑，直到我說停</li>
+    <li>讓他自己決定要加什麼功能，學習單只是起點</li>
+    <li>完成後請他當「老師」，說明遊戲規則給你聽</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼（基礎版）</div>
+  <div class="code-wrap"><div class="code-title">guess_game.py</div><pre><span class="kw">import</span> <span class="cl">random</span>
+
+<span class="vr">secret</span> <span class="op">=</span> <span class="cl">random</span>.<span class="fn">randint</span>(<span class="nm">1</span>, <span class="nm">100</span>)
+<span class="vr">count</span>  <span class="op">=</span> <span class="nm">0</span>
+
+<span class="fn">print</span>(<span class="st">'我想了一個 1 到 100 的數字，你來猜！'</span>)
+
+<span class="kw">while</span> <span class="kw">True</span>:
+    <span class="vr">guess</span> <span class="op">=</span> <span class="cl">int</span>(<span class="fn">input</span>(<span class="st">'你猜：'</span>))
+    <span class="vr">count</span> <span class="op">+=</span> <span class="nm">1</span>
+
+    <span class="kw">if</span> <span class="vr">guess</span> <span class="op">&lt;</span> <span class="vr">secret</span>:
+        <span class="fn">print</span>(<span class="st">'太小了！'</span>)
+    <span class="kw">elif</span> <span class="vr">guess</span> <span class="op">&gt;</span> <span class="vr">secret</span>:
+        <span class="fn">print</span>(<span class="st">'太大了！'</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="st">f'猜對了！你猜了 <span class="op">{</span><span class="vr">count</span><span class="op">}</span> 次'</span>)
+        <span class="kw">break</span></pre></div>
+
+  <div class="sec-label" style="color:var(--s1)">X 來做做看</div>
+  <ul class="task-list">
+    <li>先跑基礎版，感覺一下</li>
+    <li>加功能：猜超過 10 次還沒猜到，print 一個提示</li>
+    <li>加難度選擇：一開始問「簡單（1–50）還是困難（1–200）？」</li>
+    <li>加分數系統：10 次以內 100 分，20 次以內 80 分，以此類推</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>random.randint(1, 100) 和 range(1, 100) 有什麼差？</li>
+    <li>count += 1 是什麼意思？還有沒有別的寫法？</li>
+    <li>如果把 while True 改成 while count &lt; 10 會怎樣？</li>
+  </ul>
+
+  <div class="challenge"><div class="challenge-label">⚡ 進階挑戰</div><ul>
+    <li>讓程式記住歷史最佳紀錄（最少猜幾次），每次顯示出來</li>
+    <li>讓程式可以連續玩幾局，最後統計平均猜幾次</li>
+  </ul></div>
+  <div class="record"><div class="record-label">📁 作品記錄</div><ul>
+    <li>截圖一局完整的遊戲過程</li>
+    <li>X 說明遊戲規則給你聽（他當老師）</li>
+    <li>存入 Google Drive</li>
+  </ul></div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     第二階段
+══════════════════════════════════════════════ -->
+<div class="stage-divider">
+  <div class="stage-pill" style="background:var(--s2)">第二階段</div>
+  <h2>第二階段　讓方程式跑起來</h2>
+  <p class="stage-blurb" style="background:var(--s2t); border-left:3px solid var(--s2)">
+    這個階段讓 Python 成為「解方程的工具」，然後問「為什麼它可以解？」。也引入 matplotlib 畫圖。
+  </p>
+</div>
+
+<!-- 2-1 -->
+<div class="ws" id="ws-2-1">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s2)">2-1</div>
+    <div><h3>方程式求解器</h3><div class="ws-sub">ax + b = 0，程式比手算快</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Google Colab</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">一元一次方程式（七上）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">—</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>寫出一個輸入 a 和 b，自動解出 ax+b=0 答案的程式，並處理無解和無限多解的情況</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>先口頭問：ax + b = 0，x 是多少？（x = -b/a）讓他手算：3x + 6 = 0（x = -2）</li>
+    <li>然後問：「可以讓電腦自動解嗎？」</li>
+    <li>特殊情況：a=0 時無解或無限多解，需要處理——這是「邊界情況」的概念</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">equation_solver.py</div><pre><span class="vr">a</span> <span class="op">=</span> <span class="cl">float</span>(<span class="fn">input</span>(<span class="st">'輸入 a（x 的係數）：'</span>))
+<span class="vr">b</span> <span class="op">=</span> <span class="cl">float</span>(<span class="fn">input</span>(<span class="st">'輸入 b（常數項）：'</span>))
+
+<span class="fn">print</span>(<span class="st">f'你的方程式是：<span class="op">{</span><span class="vr">a</span><span class="op">}</span>x + <span class="op">{</span><span class="vr">b</span><span class="op">}</span> = 0'</span>)
+
+<span class="kw">if</span> <span class="vr">a</span> <span class="op">==</span> <span class="nm">0</span>:
+    <span class="kw">if</span> <span class="vr">b</span> <span class="op">==</span> <span class="nm">0</span>:
+        <span class="fn">print</span>(<span class="st">'任何 x 都是解（無限多解）'</span>)
+    <span class="kw">else</span>:
+        <span class="fn">print</span>(<span class="st">'無解'</span>)
+<span class="kw">else</span>:
+    <span class="vr">x</span> <span class="op">=</span> <span class="op">-</span><span class="vr">b</span> <span class="op">/</span> <span class="vr">a</span>
+    <span class="fn">print</span>(<span class="st">f'解：x = <span class="op">{</span><span class="vr">x</span><span class="op">}</span>'</span>)
+    <span class="cm"># 驗算</span>
+    <span class="vr">check</span> <span class="op">=</span> <span class="vr">a</span> <span class="op">*</span> <span class="vr">x</span> <span class="op">+</span> <span class="vr">b</span>
+    <span class="fn">print</span>(<span class="st">f'驗算：<span class="op">{</span><span class="vr">a</span><span class="op">}</span> × <span class="op">{</span><span class="vr">x</span><span class="op">}</span> + <span class="op">{</span><span class="vr">b</span><span class="op">}</span> = <span class="op">{</span><span class="vr">check</span>:<span class="nm">.6f</span><span class="op">}</span>'</span>)</pre></div>
+
+  <div class="sec-label" style="color:var(--s2)">X 來做做看</div>
+  <ul class="task-list">
+    <li>測試：a=3, b=6（答案應該是 x = -2）</li>
+    <li>測試：a=0, b=5（無解）</li>
+    <li>測試：a=0, b=0（無限多解）</li>
+    <li>改成解 ax + b = c 的形式（多輸入一個 c）</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>驗算那行的 {check:.6f} 是什麼意思？</li>
+    <li>為什麼要驗算？直接信任答案不行嗎？</li>
+    <li>為什麼 a=0 要特別處理？</li>
+  </ul>
+
+  <div class="record"><div class="record-label">📁 作品記錄</div><ul>
+    <li>截圖三種不同情況的執行結果（有解、無解、無限多解）</li>
+    <li>X 口頭說明：「為什麼 a=0 要特別處理？」</li>
+  </ul></div>
+</div>
+</div>
+
+<!-- 2-2 -->
+<div class="ws" id="ws-2-2">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s2)">2-2</div>
+    <div><h3>第一張圖表</h3><div class="ws-sub">讓 Python 幫你畫數學圖</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + matplotlib</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">坐標系、直線（七上）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">口頭：位置怎麼用數字表示</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>用 matplotlib 畫出幾條直線，用眼睛看出斜率和截距的視覺意義</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>先確認他懂坐標系：「點在 (3, 5) 你知道它在哪裡嗎？」</li>
+    <li>重點不是記 matplotlib 語法，而是「數學圖可以用程式畫出來」這個感覺</li>
+    <li>y = 2x + 1：斜率是 2（每往右 1，往上 2），截距是 1（從 y 軸的 1 出發）</li>
+    <li>讓他改數字，觀察圖的變化，而不是死記公式</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">first_plot.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+<span class="kw">import</span> <span class="cl">numpy</span> <span class="kw">as</span> <span class="cl">np</span>
+
+<span class="vr">x</span> <span class="op">=</span> <span class="cl">np</span>.<span class="fn">linspace</span>(<span class="op">-</span><span class="nm">5</span>, <span class="nm">5</span>, <span class="nm">100</span>)
+<span class="vr">y</span> <span class="op">=</span> <span class="nm">2</span><span class="op">*</span><span class="vr">x</span> <span class="op">+</span> <span class="nm">1</span>
+
+<span class="cl">plt</span>.<span class="fn">figure</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">6</span>, <span class="nm">5</span>))
+<span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">x</span>, <span class="vr">y</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'blue'</span>, <span class="vr">label</span><span class="op">=</span><span class="st">'y = 2x + 1'</span>)
+<span class="cl">plt</span>.<span class="fn">axhline</span>(<span class="nm">0</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'black'</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">0.5</span>)
+<span class="cl">plt</span>.<span class="fn">axvline</span>(<span class="nm">0</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'black'</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">0.5</span>)
+<span class="cl">plt</span>.<span class="fn">grid</span>(<span class="kw">True</span>, <span class="vr">linestyle</span><span class="op">=</span><span class="st">'--'</span>, <span class="vr">alpha</span><span class="op">=</span><span class="nm">0.5</span>)
+<span class="cl">plt</span>.<span class="fn">legend</span>()
+<span class="cl">plt</span>.<span class="fn">title</span>(<span class="st">'y = 2x + 1'</span>)
+<span class="cl">plt</span>.<span class="fn">xlabel</span>(<span class="st">'x'</span>); <span class="cl">plt</span>.<span class="fn">ylabel</span>(<span class="st">'y'</span>)
+<span class="cl">plt</span>.<span class="fn">show</span>()</pre></div>
+
+  <div class="sec-label" style="color:var(--s2)">X 來做做看</div>
+  <ul class="task-list">
+    <li>跑出基本版，看看圖長什麼樣子</li>
+    <li>把斜率改成 -2，圖怎麼變？</li>
+    <li>在同一張圖上畫 3 條線：y=x、y=2x、y=3x，觀察斜率的效果</li>
+    <li>畫 y=x+1、y=x+2、y=x-1，觀察截距的效果</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>斜率越大，線越陡還是越平？</li>
+    <li>斜率是負數的時候，線的方向是什麼？</li>
+    <li>np.linspace(-5, 5, 100) 中的 100 是什麼意思？改成 5 會怎樣？</li>
+  </ul>
+
+  <div class="challenge"><div class="challenge-label">⚡ 進階挑戰</div><ul>
+    <li>畫出 y = x² 的拋物線（提示：y = x**2）</li>
+    <li>在圖上標出直線和 x 軸的交點</li>
+  </ul></div>
+  <div class="record"><div class="record-label">📁 作品記錄</div><ul>
+    <li>截圖多條線的比較圖</li>
+    <li>X 口頭說明：「斜率和截距怎麼影響直線？」</li>
+  </ul></div>
+</div>
+</div>
+
+<!-- 2-3 -->
+<div class="ws" id="ws-2-3">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s2)">2-3</div>
+    <div><h3>不等式視覺化</h3><div class="ws-sub">數線上的解集合長什麼樣？</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + matplotlib</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">一元一次不等式（七上）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">—</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>輸入不等式 ax+b&gt;c，程式解出解集合並用數線圖顯示出來</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>先手算：2x + 1 &gt; 5，x &gt; 2（移項、除以正數不等號方向不變）</li>
+    <li>問他：「這個解怎麼在數線上畫出來？」（從 2 往右的射線）</li>
+    <li>特別注意：除以負數時不等號要反向，這是很多人搞錯的地方</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">inequality.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+
+<span class="vr">a</span> <span class="op">=</span> <span class="cl">float</span>(<span class="fn">input</span>(<span class="st">'ax + b > c，輸入 a：'</span>))
+<span class="vr">b</span> <span class="op">=</span> <span class="cl">float</span>(<span class="fn">input</span>(<span class="st">'輸入 b：'</span>))
+<span class="vr">c</span> <span class="op">=</span> <span class="cl">float</span>(<span class="fn">input</span>(<span class="st">'輸入 c：'</span>))
+
+<span class="vr">rhs</span> <span class="op">=</span> <span class="vr">c</span> <span class="op">-</span> <span class="vr">b</span>
+
+<span class="kw">if</span> <span class="vr">a</span> <span class="op">==</span> <span class="nm">0</span>:
+    <span class="fn">print</span>(<span class="st">'無法解（a 不能是 0）'</span>)
+<span class="kw">elif</span> <span class="vr">a</span> <span class="op">&gt;</span> <span class="nm">0</span>:
+    <span class="vr">boundary</span> <span class="op">=</span> <span class="vr">rhs</span> <span class="op">/</span> <span class="vr">a</span>
+    <span class="vr">direction</span> <span class="op">=</span> <span class="st">'right'</span>
+    <span class="fn">print</span>(<span class="st">f'解：x > <span class="op">{</span><span class="vr">boundary</span>:<span class="nm">.2f</span><span class="op">}</span>'</span>)
+<span class="kw">else</span>:
+    <span class="vr">boundary</span> <span class="op">=</span> <span class="vr">rhs</span> <span class="op">/</span> <span class="vr">a</span>
+    <span class="vr">direction</span> <span class="op">=</span> <span class="st">'left'</span>
+    <span class="fn">print</span>(<span class="st">f'解：x &lt; <span class="op">{</span><span class="vr">boundary</span>:<span class="nm">.2f</span><span class="op">}</span>  ← 除以負數，方向反轉！'</span>)
+
+<span class="vr">fig</span>, <span class="vr">ax</span> <span class="op">=</span> <span class="cl">plt</span>.<span class="fn">subplots</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">8</span>, <span class="nm">2</span>))
+<span class="vr">ax</span>.<span class="fn">axhline</span>(<span class="nm">0</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'black'</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">1.5</span>)
+<span class="vr">ax</span>.<span class="fn">set_xlim</span>(<span class="vr">boundary</span><span class="op">-</span><span class="nm">5</span>, <span class="vr">boundary</span><span class="op">+</span><span class="nm">5</span>)
+<span class="vr">ax</span>.<span class="fn">plot</span>(<span class="vr">boundary</span>, <span class="nm">0</span>, <span class="st">'o'</span>, <span class="vr">markersize</span><span class="op">=</span><span class="nm">12</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'white'</span>,
+       <span class="vr">markeredgecolor</span><span class="op">=</span><span class="st">'blue'</span>, <span class="vr">markeredgewidth</span><span class="op">=</span><span class="nm">2</span>)  <span class="cm"># 空心圓=不包含</span>
+<span class="vr">ax</span>.<span class="fn">set_yticks</span>([])
+<span class="vr">ax</span>.<span class="fn">set_title</span>(<span class="st">f'<span class="op">{</span><span class="vr">a</span><span class="op">}</span>x + <span class="op">{</span><span class="vr">b</span><span class="op">}</span> > <span class="op">{</span><span class="vr">c</span><span class="op">}</span>　解集合'</span>)
+<span class="cl">plt</span>.<span class="fn">tight_layout</span>(); <span class="cl">plt</span>.<span class="fn">show</span>()</pre></div>
+
+  <div class="sec-label" style="color:var(--s2)">X 來做做看</div>
+  <ul class="task-list">
+    <li>測試：2x + 1 &gt; 5（答案：x &gt; 2）</li>
+    <li>測試：-3x + 6 &gt; 0（注意除以負數！答案：x &lt; 2）</li>
+    <li>改成 ≥（大於等於），圓點改成實心</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>為什麼除以負數不等號方向要反？</li>
+    <li>空心圓和實心圓在數線上分別代表什麼？</li>
+  </ul>
+  <div class="record"><div class="record-label">📁 作品記錄</div><ul>
+    <li>截圖兩種情況的數線圖（a&gt;0 和 a&lt;0）</li>
+    <li>X 口頭說明不等號反向的原因</li>
+  </ul></div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     第三階段
+══════════════════════════════════════════════ -->
+<div class="stage-divider">
+  <div class="stage-pill" style="background:var(--s3)">第三階段</div>
+  <h2>第三階段　函數與運動的連結</h2>
+  <p class="stage-blurb" style="background:var(--s3t); border-left:3px solid var(--s3)">
+    一次函數 y=kx+b 和物理的等速運動 d=vt 是同一件事。數學和物理在這裡合體。這個階段的<strong>拋體模擬動畫</strong>是第一個可以對外展示的作品。
+  </p>
+</div>
+
+<!-- 3-1 -->
+<div class="ws" id="ws-3-1">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s3)">3-1</div>
+    <div><h3>速度比較圖</h3><div class="ws-sub">一次函數 = 等速運動</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + matplotlib</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">一次函數 y=kx+b，斜率（七下）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">等速直線運動 d=vt</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>畫出不同速度的 d-t 圖，用眼睛看出「斜率就是速度」</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>這堂課是數學和物理的橋樑：d = v × t 和 y = k × x 是同一件事</li>
+    <li>先口頭問：「一輛車時速 60 km，開 2 小時走多遠？」（120 km）</li>
+    <li>d=vt 中的 v 就是斜率：速度越快，d-t 圖的斜率越大，線越陡</li>
+    <li>讓他看圖然後說：「哪輛車最快？你怎麼看出來的？」</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">speed_comparison.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+<span class="kw">import</span> <span class="cl">numpy</span> <span class="kw">as</span> <span class="cl">np</span>
+
+<span class="vr">t</span> <span class="op">=</span> <span class="cl">np</span>.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="nm">10</span>, <span class="nm">100</span>)
+
+<span class="vr">v1</span>, <span class="vr">v2</span>, <span class="vr">v3</span> <span class="op">=</span> <span class="nm">10</span>, <span class="nm">25</span>, <span class="nm">50</span>  <span class="cm"># 速度 m/s</span>
+
+<span class="cl">plt</span>.<span class="fn">figure</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">7</span>, <span class="nm">5</span>))
+<span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">t</span>, <span class="vr">v1</span><span class="op">*</span><span class="vr">t</span>, <span class="vr">label</span><span class="op">=</span><span class="st">f'v = <span class="op">{</span><span class="vr">v1</span><span class="op">}</span> m/s（慢）'</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'green'</span>)
+<span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">t</span>, <span class="vr">v2</span><span class="op">*</span><span class="vr">t</span>, <span class="vr">label</span><span class="op">=</span><span class="st">f'v = <span class="op">{</span><span class="vr">v2</span><span class="op">}</span> m/s（中）'</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'orange'</span>)
+<span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">t</span>, <span class="vr">v3</span><span class="op">*</span><span class="vr">t</span>, <span class="vr">label</span><span class="op">=</span><span class="st">f'v = <span class="op">{</span><span class="vr">v3</span><span class="op">}</span> m/s（快）'</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'red'</span>)
+<span class="cl">plt</span>.<span class="fn">xlabel</span>(<span class="st">'時間 t（秒）'</span>); <span class="cl">plt</span>.<span class="fn">ylabel</span>(<span class="st">'距離 d（公尺）'</span>)
+<span class="cl">plt</span>.<span class="fn">title</span>(<span class="st">'d-t 圖：不同速度的比較'</span>)
+<span class="cl">plt</span>.<span class="fn">legend</span>(); <span class="cl">plt</span>.<span class="fn">grid</span>(<span class="kw">True</span>, <span class="vr">linestyle</span><span class="op">=</span><span class="st">'--'</span>, <span class="vr">alpha</span><span class="op">=</span><span class="nm">0.5</span>)
+<span class="cl">plt</span>.<span class="fn">show</span>()</pre></div>
+
+  <div class="sec-label" style="color:var(--s3)">X 來做做看</div>
+  <ul class="task-list">
+    <li>跑出圖，說說看哪條線斜率最大？和速度有什麼關係？</li>
+    <li>把 v3 改成 -10（負速度，往後走），圖會怎樣？</li>
+    <li>加一條「靜止的車」（v=0），在圖上看起來是什麼？</li>
+    <li>讓使用者輸入三個速度，程式自動畫圖</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>d-t 圖的斜率代表什麼？</li>
+    <li>如果兩輛車從不同起點出發，圖上怎麼表示？（截距）</li>
+    <li>速度是負數代表什麼現實意義？</li>
+  </ul>
+  <div class="record"><div class="record-label">📁 作品記錄</div><ul>
+    <li>截圖三速度比較圖</li>
+    <li>X 口頭說明「斜率就是速度」</li>
+  </ul></div>
+</div>
+</div>
+
+<!-- 3-2 -->
+<div class="ws" id="ws-3-2">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s3)">3-2</div>
+    <div><h3>正反比互動模擬</h3><div class="ws-sub">固定一個量，另外兩個怎麼變？</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + ipywidgets</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">正比、反比（七下）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">功 W = 力 F × 位移 d</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>做出互動滑桿：固定功（W），拖動改變力，即時看到位移怎麼變化</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>先說物理：功 W = 力 F × 位移 d，單位是焦耳</li>
+    <li>如果功固定，力越大，位移越小：這就是反比關係</li>
+    <li>widgets.interact 是互動滑桿，X 通常會喜歡這個效果</li>
+    <li>重點不是語法，而是「改變一個數，圖會即時更新」的感覺</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">work_power.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+<span class="kw">import</span> <span class="cl">numpy</span> <span class="kw">as</span> <span class="cl">np</span>
+<span class="kw">from</span> <span class="cl">ipywidgets</span> <span class="kw">import</span> <span class="cl">interact</span>, <span class="cl">FloatSlider</span>
+
+<span class="kw">def</span> <span class="fn">plot_work</span>(<span class="vr">W</span><span class="op">=</span><span class="nm">100.0</span>):
+    <span class="vr">F</span> <span class="op">=</span> <span class="cl">np</span>.<span class="fn">linspace</span>(<span class="nm">1</span>, <span class="nm">50</span>, <span class="nm">200</span>)
+    <span class="vr">d</span> <span class="op">=</span> <span class="vr">W</span> <span class="op">/</span> <span class="vr">F</span>
+
+    <span class="cl">plt</span>.<span class="fn">figure</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">6</span>, <span class="nm">4</span>))
+    <span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">F</span>, <span class="vr">d</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'blue'</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">2</span>)
+    <span class="cl">plt</span>.<span class="fn">xlabel</span>(<span class="st">'力 F（牛頓）'</span>); <span class="cl">plt</span>.<span class="fn">ylabel</span>(<span class="st">'位移 d（公尺）'</span>)
+    <span class="cl">plt</span>.<span class="fn">title</span>(<span class="st">f'固定功 W = <span class="op">{</span><span class="vr">W</span><span class="op">}</span> J　F 和 d 的關係'</span>)
+    <span class="cl">plt</span>.<span class="fn">grid</span>(<span class="kw">True</span>, <span class="vr">linestyle</span><span class="op">=</span><span class="st">'--'</span>, <span class="vr">alpha</span><span class="op">=</span><span class="nm">0.5</span>)
+    <span class="cl">plt</span>.<span class="fn">ylim</span>(<span class="nm">0</span>, <span class="nm">110</span>)
+    <span class="cl">plt</span>.<span class="fn">show</span>()
+
+<span class="fn">interact</span>(<span class="vr">plot_work</span>,
+         <span class="vr">W</span><span class="op">=</span><span class="cl">FloatSlider</span>(<span class="vr">min</span><span class="op">=</span><span class="nm">10</span>, <span class="vr">max</span><span class="op">=</span><span class="nm">300</span>, <span class="vr">step</span><span class="op">=</span><span class="nm">10</span>, <span class="vr">value</span><span class="op">=</span><span class="nm">100</span>))</pre></div>
+
+  <div class="sec-label" style="color:var(--s3)">X 來做做看</div>
+  <ul class="task-list">
+    <li>跑出來，拖動 W 的滑桿，觀察圖形的變化</li>
+    <li>W 很大時和 W 很小時，圖形有什麼差異？</li>
+    <li>在圖上加一條水平線：標出「當 d = 5 公尺時，F 需要多大」</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>這個圖是正比還是反比的形狀？兩者長相有什麼不同？</li>
+    <li>如果 F 趨近於 0，d 會怎樣？這在現實中代表什麼？</li>
+  </ul>
+  <div class="record"><div class="record-label">📁 作品記錄</div><ul>
+    <li>截圖不同 W 值的圖（截兩張對比）</li>
+    <li>X 說明：「正比和反比的圖長相有什麼不同」</li>
+  </ul></div>
+</div>
+</div>
+
+<!-- 3-3 大作品 -->
+<div class="ws" id="ws-3-3" style="border-left:4px solid var(--s3)">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s3)">3-3 ★</div>
+    <div>
+      <h3>拋體模擬動畫</h3>
+      <div class="ws-sub">里程碑大作品——第一個可以對外展示的東西</div>
+    </div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">90 分鐘（可分兩次）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + matplotlib.animation</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">一次函數（水平）＋ 二次函數（垂直）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">拋體運動：x 等速，y 受重力加速</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>完成可以調整初速度和角度的拋體動畫，存截圖＋口頭錄音說明</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>這是第三階段最重要的里程碑，給夠時間，不要急</li>
+    <li>物理概念先口頭說清楚：水平方向速度固定 x = v₀cos(θ)×t；垂直方向受重力 y = v₀sin(θ)×t - ½gt²</li>
+    <li>g = 9.8 m/s²（重力加速度）</li>
+    <li>他不需要記公式，公式在程式裡。他要做的是：改參數，看效果，說出觀察</li>
+    <li>完成後務必：截圖 + 請他錄音說明「這個動畫在模擬什麼」</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">第一步：靜態版先跑通</div>
+  <div class="code-wrap"><div class="code-title">projectile_static.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+<span class="kw">import</span> <span class="cl">numpy</span> <span class="kw">as</span> <span class="cl">np</span>
+
+<span class="vr">v0</span>    <span class="op">=</span> <span class="nm">20</span>    <span class="cm"># 初速度 m/s</span>
+<span class="vr">theta</span> <span class="op">=</span> <span class="nm">45</span>    <span class="cm"># 拋出角度（度）</span>
+<span class="vr">g</span>     <span class="op">=</span> <span class="nm">9.8</span>   <span class="cm"># 重力加速度 m/s²</span>
+
+<span class="vr">angle</span> <span class="op">=</span> <span class="cl">np</span>.<span class="fn">radians</span>(<span class="vr">theta</span>)
+<span class="vr">T</span>     <span class="op">=</span> <span class="nm">2</span> <span class="op">*</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="vr">angle</span>) <span class="op">/</span> <span class="vr">g</span>
+<span class="vr">t</span>     <span class="op">=</span> <span class="cl">np</span>.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="vr">T</span>, <span class="nm">300</span>)
+<span class="vr">x</span>     <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">cos</span>(<span class="vr">angle</span>) <span class="op">*</span> <span class="vr">t</span>
+<span class="vr">y</span>     <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="vr">angle</span>) <span class="op">*</span> <span class="vr">t</span> <span class="op">-</span> <span class="nm">0.5</span> <span class="op">*</span> <span class="vr">g</span> <span class="op">*</span> <span class="vr">t</span><span class="op">**</span><span class="nm">2</span>
+
+<span class="cl">plt</span>.<span class="fn">figure</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">8</span>, <span class="nm">4</span>))
+<span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">x</span>, <span class="vr">y</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'blue'</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">2</span>)
+<span class="cl">plt</span>.<span class="fn">xlabel</span>(<span class="st">'水平距離（公尺）'</span>); <span class="cl">plt</span>.<span class="fn">ylabel</span>(<span class="st">'高度（公尺）'</span>)
+<span class="cl">plt</span>.<span class="fn">title</span>(<span class="st">f'拋體軌跡：初速 <span class="op">{</span><span class="vr">v0</span><span class="op">}</span> m/s，角度 <span class="op">{</span><span class="vr">theta</span><span class="op">}</span>°'</span>)
+<span class="cl">plt</span>.<span class="fn">grid</span>(<span class="kw">True</span>, <span class="vr">linestyle</span><span class="op">=</span><span class="st">'--'</span>, <span class="vr">alpha</span><span class="op">=</span><span class="nm">0.5</span>)
+<span class="cl">plt</span>.<span class="fn">axhline</span>(<span class="nm">0</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'gray'</span>)
+<span class="cl">plt</span>.<span class="fn">show</span>()
+<span class="fn">print</span>(<span class="st">f'最大距離：<span class="op">{</span><span class="vr">x</span>[<span class="op">-</span><span class="nm">1</span>]:<span class="nm">.1f</span><span class="op">}</span> 公尺'</span>)
+<span class="fn">print</span>(<span class="st">f'最大高度：<span class="op">{</span><span class="fn">max</span>(<span class="vr">y</span>):<span class="nm">.1f</span><span class="op">}</span> 公尺'</span>)</pre></div>
+
+  <div class="sec-label" style="color:var(--s2)">第二步：動畫版</div>
+  <div class="code-wrap"><div class="code-title">projectile_animation.py</div><pre><span class="kw">from</span> <span class="cl">matplotlib.animation</span> <span class="kw">import</span> <span class="cl">FuncAnimation</span>
+<span class="kw">from</span> <span class="cl">IPython.display</span> <span class="kw">import</span> <span class="cl">HTML</span>
+<span class="cm"># （v0, theta, g, angle, T, t, x, y 沿用上面的值）</span>
+
+<span class="vr">fig</span>, <span class="vr">ax</span> <span class="op">=</span> <span class="cl">plt</span>.<span class="fn">subplots</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">8</span>, <span class="nm">4</span>))
+<span class="vr">ax</span>.<span class="fn">set_xlim</span>(<span class="nm">0</span>, <span class="fn">max</span>(<span class="vr">x</span>)<span class="op">*</span><span class="nm">1.1</span>); <span class="vr">ax</span>.<span class="fn">set_ylim</span>(<span class="op">-</span><span class="nm">1</span>, <span class="fn">max</span>(<span class="vr">y</span>)<span class="op">*</span><span class="nm">1.3</span>)
+<span class="vr">ax</span>.<span class="fn">axhline</span>(<span class="nm">0</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'gray'</span>)
+<span class="vr">ax</span>.<span class="fn">grid</span>(<span class="kw">True</span>, <span class="vr">linestyle</span><span class="op">=</span><span class="st">'--'</span>, <span class="vr">alpha</span><span class="op">=</span><span class="nm">0.5</span>)
+<span class="vr">line</span>, <span class="op">=</span> <span class="vr">ax</span>.<span class="fn">plot</span>([], [], <span class="st">'b-'</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">1.5</span>)
+<span class="vr">ball</span>, <span class="op">=</span> <span class="vr">ax</span>.<span class="fn">plot</span>([], [], <span class="st">'ro'</span>, <span class="vr">markersize</span><span class="op">=</span><span class="nm">10</span>)
+
+<span class="kw">def</span> <span class="fn">animate</span>(<span class="vr">i</span>):
+    <span class="vr">line</span>.<span class="fn">set_data</span>(<span class="vr">x</span>[:<span class="vr">i</span><span class="op">+</span><span class="nm">1</span>], <span class="vr">y</span>[:<span class="vr">i</span><span class="op">+</span><span class="nm">1</span>])
+    <span class="vr">ball</span>.<span class="fn">set_data</span>([<span class="vr">x</span>[<span class="vr">i</span>]], [<span class="vr">y</span>[<span class="vr">i</span>]])
+    <span class="kw">return</span> <span class="vr">line</span>, <span class="vr">ball</span>
+
+<span class="vr">ani</span> <span class="op">=</span> <span class="cl">FuncAnimation</span>(<span class="vr">fig</span>, <span class="vr">animate</span>, <span class="vr">frames</span><span class="op">=</span><span class="fn">len</span>(<span class="vr">t</span>), <span class="vr">interval</span><span class="op">=</span><span class="nm">50</span>)
+<span class="cl">HTML</span>(<span class="vr">ani</span>.<span class="fn">to_jshtml</span>())</pre></div>
+
+  <div class="sec-label" style="color:var(--s3)">X 來做做看</div>
+  <ul class="task-list">
+    <li>先跑靜態版，確認軌跡是拋物線</li>
+    <li>改角度：試 30°、45°、60°——哪個角度飛最遠？</li>
+    <li>改初速度：試 10 m/s 和 40 m/s，距離差多少？</li>
+    <li>跑動畫版，觀察球的飛行軌跡</li>
+    <li>試試：把 g 改成 1.6（月球），結果怎麼變？</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>45° 為什麼是最遠的角度？（口頭說說看）</li>
+    <li>水平方向的速度在飛行過程中有沒有改變？垂直方向呢？</li>
+    <li>月球上同樣的拋法飛多遠？為什麼？</li>
+  </ul>
+
+  <div class="checklist">
+    <div class="checklist-label">★ 里程碑大作品檢查</div>
+    <ul>
+      <li>靜態版和動畫版都可以執行</li>
+      <li>改過至少 3 種角度，觀察結果</li>
+      <li>截圖存入作品資料夾</li>
+      <li>X 錄音說明：「這個動畫在模擬什麼？」（2–3 分鐘）</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     第四階段
+══════════════════════════════════════════════ -->
+<div class="stage-divider">
+  <div class="stage-pill" style="background:var(--s4)">第四階段</div>
+  <h2>第四階段　從模擬到探究</h2>
+  <p class="stage-blurb" style="background:var(--s4t); border-left:3px solid var(--s4)">
+    這個階段從「跑程式」升級到「用程式問問題」。數學進入平方根和二次函數，每個任務都以真實物理情境為起點。
+  </p>
+</div>
+
+<!-- 4-1 -->
+<div class="ws" id="ws-4-1">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s4)">4-1</div>
+    <div><h3>自由落體計算器</h3><div class="ws-sub">h = ½gt² 就是二次函數</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + matplotlib</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">平方根、二次函數（八上）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">自由落體 h = ½gt²</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>輸入高度，計算落地時間；畫出 h-t 圖，看出它是一條拋物線</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>先口頭問：「從 10 樓丟一顆球，幾秒落地？」讓他猜猜看</li>
+    <li>公式：h = ½ × g × t²，反解：t = √(2h/g)，這裡出現平方根，和八上數學完全呼應</li>
+    <li>讓他注意：h-t 圖是彎的（拋物線），這就是二次函數</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">free_fall.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+<span class="kw">import</span> <span class="cl">numpy</span> <span class="kw">as</span> <span class="cl">np</span>
+
+<span class="vr">g</span> <span class="op">=</span> <span class="nm">9.8</span>
+<span class="vr">h</span> <span class="op">=</span> <span class="cl">float</span>(<span class="fn">input</span>(<span class="st">'輸入高度（公尺）：'</span>))
+
+<span class="vr">t_land</span> <span class="op">=</span> <span class="cl">np</span>.<span class="fn">sqrt</span>(<span class="nm">2</span> <span class="op">*</span> <span class="vr">h</span> <span class="op">/</span> <span class="vr">g</span>)
+<span class="vr">v_land</span> <span class="op">=</span> <span class="vr">g</span> <span class="op">*</span> <span class="vr">t_land</span>
+
+<span class="fn">print</span>(<span class="st">f'從 <span class="op">{</span><span class="vr">h</span><span class="op">}</span> 公尺高落下，需要 <span class="op">{</span><span class="vr">t_land</span>:<span class="nm">.2f</span><span class="op">}</span> 秒'</span>)
+<span class="fn">print</span>(<span class="st">f'落地速度：<span class="op">{</span><span class="vr">v_land</span>:<span class="nm">.2f</span><span class="op">}</span> m/s（約 <span class="op">{</span><span class="vr">v_land</span><span class="op">*</span><span class="nm">3.6</span>:<span class="nm">.1f</span><span class="op">}</span> km/h）'</span>)
+
+<span class="vr">t</span>      <span class="op">=</span> <span class="cl">np</span>.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="vr">t_land</span>, <span class="nm">200</span>)
+<span class="vr">height</span> <span class="op">=</span> <span class="vr">h</span> <span class="op">-</span> <span class="nm">0.5</span> <span class="op">*</span> <span class="vr">g</span> <span class="op">*</span> <span class="vr">t</span><span class="op">**</span><span class="nm">2</span>
+
+<span class="cl">plt</span>.<span class="fn">figure</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">6</span>, <span class="nm">4</span>))
+<span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">t</span>, <span class="vr">height</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'blue'</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">2</span>)
+<span class="cl">plt</span>.<span class="fn">xlabel</span>(<span class="st">'時間 t（秒）'</span>); <span class="cl">plt</span>.<span class="fn">ylabel</span>(<span class="st">'高度（公尺）'</span>)
+<span class="cl">plt</span>.<span class="fn">title</span>(<span class="st">f'自由落體 h-t 圖（初始高度 <span class="op">{</span><span class="vr">h</span><span class="op">}</span> m）'</span>)
+<span class="cl">plt</span>.<span class="fn">grid</span>(<span class="kw">True</span>); <span class="cl">plt</span>.<span class="fn">axhline</span>(<span class="nm">0</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'gray'</span>)
+<span class="cl">plt</span>.<span class="fn">show</span>()</pre></div>
+
+  <div class="sec-label" style="color:var(--s4)">X 來做做看</div>
+  <ul class="task-list">
+    <li>計算：10 m（約 3 樓）、45 m（約 15 樓）、442 m（台北 101）各需幾秒？</li>
+    <li>101 落地時速度是幾 km/h？比高鐵快嗎？</li>
+    <li>在月球（g = 1.6 m/s²）從同樣高度落下，要幾秒？</li>
+    <li>把 h-t 圖改成 v-t 圖（速度隨時間增加）</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>h-t 圖為什麼是彎曲的，不是直線？</li>
+    <li>如果 g 是 0（沒有重力），圖形會變什麼？</li>
+    <li>「落地速度」和「平均速度」有什麼不同？</li>
+  </ul>
+
+  <div class="challenge"><div class="challenge-label">⚡ 進階挑戰</div><ul>
+    <li>找出「讓落地時間剛好是 3 秒」需要多高（反解 h）</li>
+    <li>同時比較地球、月球、火星（g=3.7）的落體速度圖</li>
+  </ul></div>
+  <div class="record"><div class="record-label">📁 作品記錄</div><ul>
+    <li>截圖 h-t 圖</li>
+    <li>X 說明：「為什麼這個圖是彎的？和二次函數有什麼關係？」</li>
+  </ul></div>
+</div>
+</div>
+
+<!-- 4-2 -->
+<div class="ws" id="ws-4-2">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s4)">4-2</div>
+    <div><h3>升級版拋體模擬</h3><div class="ws-sub">加上最高點和落地點的標注</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">60 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + matplotlib + ipywidgets</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">二次函數的頂點（八上）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">最高點、射程計算</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>把七年級的拋體模擬升級：自動標出最高點和落地點，加互動滑桿</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>這是七年級拋體作品的升級版，讓他把舊程式找出來，一起加功能</li>
+    <li>最高點的時間：t_top = v₀sin(θ)/g（垂直速度變成 0 的時刻）</li>
+    <li>這和八上「二次函數的頂點」完全對應：頂點就是最高點</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">projectile_v2.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+<span class="kw">import</span> <span class="cl">numpy</span> <span class="kw">as</span> <span class="cl">np</span>
+<span class="kw">from</span> <span class="cl">ipywidgets</span> <span class="kw">import</span> <span class="cl">interact</span>, <span class="cl">FloatSlider</span>, <span class="cl">IntSlider</span>
+
+<span class="kw">def</span> <span class="fn">projectile</span>(<span class="vr">v0</span><span class="op">=</span><span class="nm">20</span>, <span class="vr">theta</span><span class="op">=</span><span class="nm">45</span>):
+    <span class="vr">g</span>     <span class="op">=</span> <span class="nm">9.8</span>
+    <span class="vr">angle</span> <span class="op">=</span> <span class="cl">np</span>.<span class="fn">radians</span>(<span class="vr">theta</span>)
+    <span class="vr">T</span>     <span class="op">=</span> <span class="nm">2</span> <span class="op">*</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="vr">angle</span>) <span class="op">/</span> <span class="vr">g</span>
+    <span class="vr">t</span>     <span class="op">=</span> <span class="cl">np</span>.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="vr">T</span>, <span class="nm">300</span>)
+    <span class="vr">x</span>     <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">cos</span>(<span class="vr">angle</span>) <span class="op">*</span> <span class="vr">t</span>
+    <span class="vr">y</span>     <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="vr">angle</span>) <span class="op">*</span> <span class="vr">t</span> <span class="op">-</span> <span class="nm">0.5</span> <span class="op">*</span> <span class="vr">g</span> <span class="op">*</span> <span class="vr">t</span><span class="op">**</span><span class="nm">2</span>
+
+    <span class="vr">t_top</span> <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="vr">angle</span>) <span class="op">/</span> <span class="vr">g</span>
+    <span class="vr">x_top</span> <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">cos</span>(<span class="vr">angle</span>) <span class="op">*</span> <span class="vr">t_top</span>
+    <span class="vr">y_top</span> <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="vr">angle</span>) <span class="op">*</span> <span class="vr">t_top</span> <span class="op">-</span> <span class="nm">0.5</span> <span class="op">*</span> <span class="vr">g</span> <span class="op">*</span> <span class="vr">t_top</span><span class="op">**</span><span class="nm">2</span>
+
+    <span class="cl">plt</span>.<span class="fn">figure</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">8</span>, <span class="nm">4</span>))
+    <span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">x</span>, <span class="vr">y</span>, <span class="st">'b-'</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">2</span>)
+    <span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">x_top</span>, <span class="vr">y_top</span>, <span class="st">'r^'</span>, <span class="vr">markersize</span><span class="op">=</span><span class="nm">12</span>,
+             <span class="vr">label</span><span class="op">=</span><span class="st">f'最高點 (<span class="op">{</span><span class="vr">x_top</span>:<span class="nm">.1f</span><span class="op">}</span>, <span class="op">{</span><span class="vr">y_top</span>:<span class="nm">.1f</span><span class="op">}</span>)'</span>)
+    <span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">x</span>[<span class="op">-</span><span class="nm">1</span>], <span class="nm">0</span>, <span class="st">'gs'</span>, <span class="vr">markersize</span><span class="op">=</span><span class="nm">12</span>,
+             <span class="vr">label</span><span class="op">=</span><span class="st">f'落地點 x=<span class="op">{</span><span class="vr">x</span>[<span class="op">-</span><span class="nm">1</span>]:<span class="nm">.1f</span><span class="op">}</span> m'</span>)
+    <span class="cl">plt</span>.<span class="fn">legend</span>(); <span class="cl">plt</span>.<span class="fn">grid</span>(<span class="kw">True</span>, <span class="vr">linestyle</span><span class="op">=</span><span class="st">'--'</span>, <span class="vr">alpha</span><span class="op">=</span><span class="nm">0.5</span>)
+    <span class="cl">plt</span>.<span class="fn">axhline</span>(<span class="nm">0</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'gray'</span>)
+    <span class="cl">plt</span>.<span class="fn">title</span>(<span class="st">f'拋體模擬 v₀=<span class="op">{</span><span class="vr">v0</span><span class="op">}</span> m/s, θ=<span class="op">{</span><span class="vr">theta</span><span class="op">}</span>°'</span>)
+    <span class="cl">plt</span>.<span class="fn">show</span>()
+    <span class="fn">print</span>(<span class="st">f'最大距離：<span class="op">{</span><span class="vr">x</span>[<span class="op">-</span><span class="nm">1</span>]:<span class="nm">.2f</span><span class="op">}</span> m  |  最大高度：<span class="op">{</span><span class="vr">y_top</span>:<span class="nm">.2f</span><span class="op">}</span> m'</span>)
+
+<span class="fn">interact</span>(<span class="vr">projectile</span>,
+         <span class="vr">v0</span><span class="op">=</span><span class="cl">FloatSlider</span>(<span class="vr">min</span><span class="op">=</span><span class="nm">5</span>, <span class="vr">max</span><span class="op">=</span><span class="nm">50</span>, <span class="vr">step</span><span class="op">=</span><span class="nm">1</span>, <span class="vr">value</span><span class="op">=</span><span class="nm">20</span>),
+         <span class="vr">theta</span><span class="op">=</span><span class="cl">IntSlider</span>(<span class="vr">min</span><span class="op">=</span><span class="nm">10</span>, <span class="vr">max</span><span class="op">=</span><span class="nm">80</span>, <span class="vr">step</span><span class="op">=</span><span class="nm">1</span>, <span class="vr">value</span><span class="op">=</span><span class="nm">45</span>))</pre></div>
+
+  <div class="sec-label" style="color:var(--s4)">X 來做做看</div>
+  <ul class="task-list">
+    <li>拖動角度滑桿，找出哪個角度讓距離最遠（45°？）</li>
+    <li>互補角（30° 和 60°）的飛行距離一樣嗎？為什麼？</li>
+    <li>找出讓最大高度剛好等於最大距離的角度</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>最高點的 x 座標和落地點的 x 座標有什麼關係？（中點）</li>
+    <li>30° 和 60° 飛的距離一樣，但軌跡一樣嗎？哪裡不同？</li>
+    <li>二次函數的「頂點」和拋體的「最高點」，有什麼數學上的連結？</li>
+  </ul>
+  <div class="record"><div class="record-label">📁 作品記錄</div><ul>
+    <li>截圖 30° 和 60° 的對比圖</li>
+    <li>X 說明：「二次函數的頂點在物理上是什麼？」</li>
+  </ul></div>
+</div>
+</div>
+
+<!-- 4-3 -->
+<div class="ws" id="ws-4-3">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s4)">4-3</div>
+    <div><h3>探究主題提案</h3><div class="ws-sub">從探索者到研究者——X 選定方向</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">30 分鐘（對話為主）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">對話、白板、回顧前作品</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">回顧整合</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">回顧整合</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>X 選定一個他真的有興趣的探究主題，並口頭說明「我想探究什麼、為什麼有趣」</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>這堂課不寫程式，是一次對話</li>
+    <li>把前幾個月的作品打開來，讓他回顧：哪個最有趣？有沒有還想繼續的問題？</li>
+    <li>不用急著開始做，這次只是「決定方向」</li>
+    <li>問他：「你想探究什麼問題？為什麼讓你覺得有意思？」讓他用嘴巴說出來，你用紙記</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s4)">三個候選主題（X 選一個）</div>
+  <div class="theme-grid">
+    <div class="theme-card tc-a">
+      <div class="theme-tag">主題 A</div>
+      <h4>不同星球上的拋體</h4>
+      <p>在月球、火星、木星投同一顆球，結果差多少？改 g 的值，跑同樣的模擬。</p>
+    </div>
+    <div class="theme-card tc-b">
+      <div class="theme-tag">主題 B</div>
+      <h4>骰子真的公平嗎？</h4>
+      <p>擲 10、100、1000 次，各面出現比例怎麼變？用程式模擬 + 畫圖。</p>
+    </div>
+    <div class="theme-card tc-c">
+      <div class="theme-tag">主題 C</div>
+      <h4>我的足球飛多遠？</h4>
+      <p>測量自己踢球的距離和角度，輸入程式，模擬真實球路。</p>
+    </div>
+  </div>
+
+  <div class="sec-label" style="color:var(--s4)" style="margin-top:28px">X 的決定</div>
+  <div class="write-line">我選主題___，因為</div>
+  <div class="write-line"></div>
+  <div class="write-line">我想回答的問題是：</div>
+  <div class="write-line"></div>
+  <div class="write-line">我覺得最有趣的部分是：</div>
+  <div class="write-line"></div>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     第五階段
+══════════════════════════════════════════════ -->
+<div class="stage-divider">
+  <div class="stage-pill" style="background:var(--s5)">第五階段</div>
+  <h2>第五階段　完成探究作品</h2>
+  <p class="stage-blurb" style="background:var(--s5t); border-left:3px solid var(--s5)">
+    只有一個任務：完成一個「有問題、有過程、有結果」的完整探究作品。<strong>三個主題只做自己選的那一個。</strong>
+    完成後的作品：Colab 程式碼 + 1 張關鍵圖表 + 3–5 分鐘口頭錄影。
+  </p>
+</div>
+
+<!-- 5-A -->
+<div class="ws" id="ws-5-a">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s5)">5-A</div>
+    <div><h3>不同星球上的拋體</h3><div class="ws-sub">主題 A 探究作品</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">2–3 次，每次 50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + matplotlib</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">二次函數、參數比較</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">拋體運動、重力加速度</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>製作比較多顆星球拋體差異的圖表，並能口頭說明觀察到的規律</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>這是最終作品，讓他主導，你只在卡住時提示</li>
+    <li>開始前問：「你猜哪個星球飛最遠？為什麼？」讓他先猜，再跑程式驗證</li>
+    <li>完成後的展示重點：他要能解釋「g 不同為什麼軌跡會這樣變」</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">planets_projectile.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+<span class="kw">import</span> <span class="cl">numpy</span> <span class="kw">as</span> <span class="cl">np</span>
+
+<span class="vr">planets</span> <span class="op">=</span> {
+    <span class="st">'地球'</span>: <span class="nm">9.8</span>,
+    <span class="st">'月球'</span>: <span class="nm">1.6</span>,
+    <span class="st">'火星'</span>: <span class="nm">3.7</span>,
+    <span class="st">'木星'</span>: <span class="nm">24.8</span>,
+    <span class="st">'金星'</span>: <span class="nm">8.87</span>,
+}
+
+<span class="vr">v0</span> <span class="op">=</span> <span class="nm">20</span>; <span class="vr">theta</span> <span class="op">=</span> <span class="nm">45</span>
+<span class="vr">angle</span> <span class="op">=</span> <span class="cl">np</span>.<span class="fn">radians</span>(<span class="vr">theta</span>)
+<span class="vr">colors</span> <span class="op">=</span> [<span class="st">'blue'</span>, <span class="st">'gray'</span>, <span class="st">'red'</span>, <span class="st">'orange'</span>, <span class="st">'gold'</span>]
+
+<span class="cl">plt</span>.<span class="fn">figure</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">10</span>, <span class="nm">5</span>))
+
+<span class="kw">for</span> (<span class="vr">planet</span>, <span class="vr">g</span>), <span class="vr">color</span> <span class="kw">in</span> <span class="fn">zip</span>(<span class="vr">planets</span>.<span class="fn">items</span>(), <span class="vr">colors</span>):
+    <span class="vr">T</span> <span class="op">=</span> <span class="nm">2</span> <span class="op">*</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="vr">angle</span>) <span class="op">/</span> <span class="vr">g</span>
+    <span class="vr">t</span> <span class="op">=</span> <span class="cl">np</span>.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="vr">T</span>, <span class="nm">300</span>)
+    <span class="vr">x</span> <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">cos</span>(<span class="vr">angle</span>) <span class="op">*</span> <span class="vr">t</span>
+    <span class="vr">y</span> <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="vr">angle</span>) <span class="op">*</span> <span class="vr">t</span> <span class="op">-</span> <span class="nm">0.5</span> <span class="op">*</span> <span class="vr">g</span> <span class="op">*</span> <span class="vr">t</span><span class="op">**</span><span class="nm">2</span>
+    <span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">x</span>, <span class="vr">y</span>, <span class="vr">label</span><span class="op">=</span><span class="st">f'<span class="op">{</span><span class="vr">planet</span><span class="op">}</span> (g=<span class="op">{</span><span class="vr">g</span><span class="op">}</span>)'</span>, <span class="vr">color</span><span class="op">=</span><span class="vr">color</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">2</span>)
+
+<span class="cl">plt</span>.<span class="fn">xlabel</span>(<span class="st">'水平距離（公尺）'</span>); <span class="cl">plt</span>.<span class="fn">ylabel</span>(<span class="st">'高度（公尺）'</span>)
+<span class="cl">plt</span>.<span class="fn">title</span>(<span class="st">f'各星球拋體比較（v₀=<span class="op">{</span><span class="vr">v0</span><span class="op">}</span> m/s, θ=<span class="op">{</span><span class="vr">theta</span><span class="op">}</span>°）'</span>)
+<span class="cl">plt</span>.<span class="fn">legend</span>(); <span class="cl">plt</span>.<span class="fn">grid</span>(<span class="kw">True</span>, <span class="vr">linestyle</span><span class="op">=</span><span class="st">'--'</span>, <span class="vr">alpha</span><span class="op">=</span><span class="nm">0.4</span>)
+<span class="cl">plt</span>.<span class="fn">axhline</span>(<span class="nm">0</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'black'</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">0.8</span>)
+<span class="cl">plt</span>.<span class="fn">show</span>()</pre></div>
+
+  <div class="sec-label" style="color:var(--s5)">X 來做做看</div>
+  <ul class="task-list">
+    <li>跑出圖，你的猜測正確嗎？</li>
+    <li>找出各星球的最大距離，做成表格 print 出來</li>
+    <li>如果在木星投籃，球能到達籃框高度（3 公尺）嗎？</li>
+    <li>加一顆你自己的「假想星球」（自訂 g 值）</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>為什麼月球飛最遠？用物理說明</li>
+    <li>為什麼木星飛最近？</li>
+  </ul>
+
+  <div class="checklist">
+    <div class="checklist-label">★ 最終作品檢查</div>
+    <ul>
+      <li>圖表完整（有標題、軸標籤、圖例）</li>
+      <li>程式可以重新執行，結果一樣</li>
+      <li>X 可以口頭說明：這個圖在比較什麼？</li>
+      <li>X 可以解釋：為什麼月球飛最遠？用物理說明</li>
+      <li>截圖 + 錄音（3–5 分鐘）已存入作品資料夾</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- 5-B -->
+<div class="ws" id="ws-5-b">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s5)">5-B</div>
+    <div><h3>骰子真的公平嗎？</h3><div class="ws-sub">主題 B 探究作品</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">2–3 次，每次 50 分鐘</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + matplotlib</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">統計圖表、機率（預習）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">—</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>用模擬驗證「擲越多次，每面出現的比例越接近 1/6」——用圖表說明大數法則</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>開始前問：「你覺得擲一個骰子 10 次，每面剛好各出現一次可能嗎？」</li>
+    <li>讓他猜：要擲幾次，結果才會「夠公平」？</li>
+    <li>大數法則：次數越多，頻率越接近理論機率，這是這個探究的核心結論</li>
+    <li>讓他設計實驗：要比較哪幾種次數？他來決定</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">dice_simulation.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+<span class="kw">import</span> <span class="cl">numpy</span> <span class="kw">as</span> <span class="cl">np</span>
+
+<span class="kw">def</span> <span class="fn">roll_dice</span>(<span class="vr">n</span>):
+    <span class="vr">rolls</span> <span class="op">=</span> <span class="cl">np</span>.<span class="vr">random</span>.<span class="fn">randint</span>(<span class="nm">1</span>, <span class="nm">7</span>, <span class="vr">size</span><span class="op">=</span><span class="vr">n</span>)
+    <span class="kw">return</span> [(<span class="vr">rolls</span> <span class="op">==</span> <span class="vr">i</span>).<span class="fn">sum</span>() <span class="op">/</span> <span class="vr">n</span> <span class="kw">for</span> <span class="vr">i</span> <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">7</span>)]
+
+<span class="vr">trials</span> <span class="op">=</span> [<span class="nm">10</span>, <span class="nm">100</span>, <span class="nm">1000</span>, <span class="nm">10000</span>]
+<span class="vr">fig</span>, <span class="vr">axes</span> <span class="op">=</span> <span class="cl">plt</span>.<span class="fn">subplots</span>(<span class="nm">1</span>, <span class="nm">4</span>, <span class="vr">figsize</span><span class="op">=</span>(<span class="nm">14</span>, <span class="nm">4</span>))
+
+<span class="kw">for</span> <span class="vr">ax</span>, <span class="vr">n</span> <span class="kw">in</span> <span class="fn">zip</span>(<span class="vr">axes</span>, <span class="vr">trials</span>):
+    <span class="vr">counts</span> <span class="op">=</span> <span class="fn">roll_dice</span>(<span class="vr">n</span>)
+    <span class="vr">ax</span>.<span class="fn">bar</span>(<span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">7</span>), <span class="vr">counts</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'steelblue'</span>, <span class="vr">alpha</span><span class="op">=</span><span class="nm">0.7</span>)
+    <span class="vr">ax</span>.<span class="fn">axhline</span>(<span class="nm">1</span><span class="op">/</span><span class="nm">6</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'red'</span>, <span class="vr">linestyle</span><span class="op">=</span><span class="st">'--'</span>, <span class="vr">label</span><span class="op">=</span><span class="st">'理論值 1/6'</span>)
+    <span class="vr">ax</span>.<span class="fn">set_ylim</span>(<span class="nm">0</span>, <span class="nm">0.5</span>)
+    <span class="vr">ax</span>.<span class="fn">set_title</span>(<span class="st">f'n = <span class="op">{</span><span class="vr">n</span><span class="op">}</span>'</span>)
+    <span class="vr">ax</span>.<span class="fn">legend</span>(<span class="vr">fontsize</span><span class="op">=</span><span class="nm">8</span>)
+
+<span class="cl">plt</span>.<span class="fn">suptitle</span>(<span class="st">'擲骰子次數與公平性'</span>, <span class="vr">fontsize</span><span class="op">=</span><span class="nm">13</span>)
+<span class="cl">plt</span>.<span class="fn">tight_layout</span>()
+<span class="cl">plt</span>.<span class="fn">show</span>()</pre></div>
+
+  <div class="sec-label" style="color:var(--s5)">X 來做做看</div>
+  <ul class="task-list">
+    <li>跑出圖，觀察：n 越大，各面的比例怎麼變化？</li>
+    <li>把 n=10000 的結果用數字 print 出來，最偏離 1/6 的是哪面？差多少？</li>
+    <li>試試「不公平的骰子」：讓 6 出現的機率是其他面的兩倍，怎麼做？</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>次數越多，圖有什麼變化？</li>
+    <li>什麼是大數法則？用自己的話說</li>
+    <li>真實的骰子怎麼驗證它是否公平？</li>
+  </ul>
+
+  <div class="checklist">
+    <div class="checklist-label">★ 最終作品檢查</div>
+    <ul>
+      <li>4 張對比圖完整清楚</li>
+      <li>X 可以說明：次數越多，圖有什麼變化？</li>
+      <li>X 可以解釋：什麼是大數法則？用自己的話說</li>
+      <li>截圖 + 錄音（3–5 分鐘）已存入作品資料夾</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<!-- 5-C -->
+<div class="ws" id="ws-5-c">
+<div class="ws-inner">
+  <div class="ws-head">
+    <div class="ws-num" style="background:var(--s5)">5-C</div>
+    <div><h3>我的足球飛多遠？</h3><div class="ws-sub">主題 C 探究作品</div></div>
+  </div>
+  <div class="ws-meta">
+    <div class="ws-meta-cell"><div class="meta-lbl">⏱ 時間</div><div class="meta-val">2–3 次 + 一次戶外測量</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🛠 工具</div><div class="meta-val">Colab + 手機 + 捲尺（選用）</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">📐 數學</div><div class="meta-val">拋體公式的反向應用</div></div>
+    <div class="ws-meta-cell"><div class="meta-lbl">🔬 物理</div><div class="meta-val">拋體運動、真實測量</div></div>
+  </div>
+  <div class="goal"><span class="goal-icon">🎯</span><div class="goal-body"><strong>這次目標</strong><p>估算自己踢球的初速度和角度，用程式模擬真實球路，並與實際結果比較</p></div></div>
+
+  <details class="parent-box"><summary>📋 給家長說（備課重點）</summary><div class="parent-body"><ul>
+    <li>這個主題需要一次戶外測量，讓他真的踢幾球</li>
+    <li>測量什麼：落地距離（x）和大概的仰角（目測或手機 app）</li>
+    <li>估算初速度：v₀ = √(xg / sin(2θ))</li>
+    <li>誤差是這個探究的重點：模擬和現實為什麼不一樣？（空氣阻力、旋轉、角度估算誤差）</li>
+    <li>讓他解釋誤差，比讓他解釋公式更有說服力</li>
+  </ul></div></details>
+
+  <div class="sec-label" style="color:var(--s2)">程式碼</div>
+  <div class="code-wrap"><div class="code-title">soccer_physics.py</div><pre><span class="kw">import</span> <span class="cl">matplotlib.pyplot</span> <span class="kw">as</span> <span class="cl">plt</span>
+<span class="kw">import</span> <span class="cl">numpy</span> <span class="kw">as</span> <span class="cl">np</span>
+
+<span class="vr">x_measured</span> <span class="op">=</span> <span class="cl">float</span>(<span class="fn">input</span>(<span class="st">'你踢出去的距離（公尺）：'</span>))
+<span class="vr">theta</span>      <span class="op">=</span> <span class="cl">float</span>(<span class="fn">input</span>(<span class="st">'估計的仰角（度）：'</span>))
+<span class="vr">g</span>          <span class="op">=</span> <span class="nm">9.8</span>
+<span class="vr">angle</span>      <span class="op">=</span> <span class="cl">np</span>.<span class="fn">radians</span>(<span class="vr">theta</span>)
+
+<span class="cm"># 反推初速度：x = v₀² × sin(2θ) / g</span>
+<span class="vr">v0</span> <span class="op">=</span> <span class="cl">np</span>.<span class="fn">sqrt</span>(<span class="vr">x_measured</span> <span class="op">*</span> <span class="vr">g</span> <span class="op">/</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="nm">2</span> <span class="op">*</span> <span class="vr">angle</span>))
+<span class="fn">print</span>(<span class="st">f'你的踢球初速度：<span class="op">{</span><span class="vr">v0</span>:<span class="nm">.1f</span><span class="op">}</span> m/s（<span class="op">{</span><span class="vr">v0</span><span class="op">*</span><span class="nm">3.6</span>:<span class="nm">.1f</span><span class="op">}</span> km/h）'</span>)
+
+<span class="vr">T</span>     <span class="op">=</span> <span class="nm">2</span> <span class="op">*</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="vr">angle</span>) <span class="op">/</span> <span class="vr">g</span>
+<span class="vr">t</span>     <span class="op">=</span> <span class="cl">np</span>.<span class="fn">linspace</span>(<span class="nm">0</span>, <span class="vr">T</span>, <span class="nm">300</span>)
+<span class="vr">x_sim</span> <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">cos</span>(<span class="vr">angle</span>) <span class="op">*</span> <span class="vr">t</span>
+<span class="vr">y_sim</span> <span class="op">=</span> <span class="vr">v0</span> <span class="op">*</span> <span class="cl">np</span>.<span class="fn">sin</span>(<span class="vr">angle</span>) <span class="op">*</span> <span class="vr">t</span> <span class="op">-</span> <span class="nm">0.5</span> <span class="op">*</span> <span class="vr">g</span> <span class="op">*</span> <span class="vr">t</span><span class="op">**</span><span class="nm">2</span>
+
+<span class="cl">plt</span>.<span class="fn">figure</span>(<span class="vr">figsize</span><span class="op">=</span>(<span class="nm">8</span>, <span class="nm">4</span>))
+<span class="cl">plt</span>.<span class="fn">plot</span>(<span class="vr">x_sim</span>, <span class="vr">y_sim</span>, <span class="st">'b-'</span>, <span class="vr">linewidth</span><span class="op">=</span><span class="nm">2</span>, <span class="vr">label</span><span class="op">=</span><span class="st">'模擬軌跡'</span>)
+<span class="cl">plt</span>.<span class="fn">axvline</span>(<span class="vr">x_measured</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'red'</span>, <span class="vr">linestyle</span><span class="op">=</span><span class="st">'--'</span>,
+            <span class="vr">label</span><span class="op">=</span><span class="st">f'實際落點 <span class="op">{</span><span class="vr">x_measured</span><span class="op">}</span> m'</span>)
+<span class="cl">plt</span>.<span class="fn">xlabel</span>(<span class="st">'距離（公尺）'</span>); <span class="cl">plt</span>.<span class="fn">ylabel</span>(<span class="st">'高度（公尺）'</span>)
+<span class="cl">plt</span>.<span class="fn">title</span>(<span class="st">f'我的足球軌跡（v₀≈<span class="op">{</span><span class="vr">v0</span>:<span class="nm">.1f</span><span class="op">}</span> m/s, θ=<span class="op">{</span><span class="vr">theta</span><span class="op">}</span>°）'</span>)
+<span class="cl">plt</span>.<span class="fn">legend</span>(); <span class="cl">plt</span>.<span class="fn">grid</span>(<span class="kw">True</span>, <span class="vr">linestyle</span><span class="op">=</span><span class="st">'--'</span>, <span class="vr">alpha</span><span class="op">=</span><span class="nm">0.5</span>)
+<span class="cl">plt</span>.<span class="fn">axhline</span>(<span class="nm">0</span>, <span class="vr">color</span><span class="op">=</span><span class="st">'gray'</span>)
+<span class="cl">plt</span>.<span class="fn">show</span>()</pre></div>
+
+  <div class="sec-label" style="color:var(--s5)">X 來做做看</div>
+  <ul class="task-list">
+    <li>去踢幾球，記錄距離，估算仰角</li>
+    <li>把數據輸入程式，看看估出來的速度合理嗎？</li>
+    <li>踢不同力度幾球，比較初速度的差異</li>
+    <li>用模擬試試：如果仰角改成 45°，理論上可以踢多遠？</li>
+    <li>想想：真實結果和模擬的差異從哪裡來？</li>
+  </ul>
+
+  <div class="sec-label" style="color:var(--s5)">測量記錄表</div>
+  <table class="meas-table">
+    <tr>
+      <th>次數</th>
+      <th>落地距離（m）</th>
+      <th>估計仰角（°）</th>
+      <th>推算初速度（m/s）</th>
+      <th>備注</th>
+    </tr>
+    <tr><td>1</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>2</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>3</td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>平均</td><td></td><td></td><td></td><td></td></tr>
+  </table>
+
+  <div class="sec-label" style="color:var(--s3)">口頭確認</div>
+  <ul class="q-list">
+    <li>我的踢球速度大概是多少 km/h？</li>
+    <li>模擬和現實的差異為什麼存在？</li>
+  </ul>
+
+  <div class="checklist">
+    <div class="checklist-label">★ 最終作品檢查</div>
+    <ul>
+      <li>有真實測量數據（記錄在上方表格）</li>
+      <li>程式可以執行，圖表清楚</li>
+      <li>X 可以說明：我的踢球速度大概是多少 km/h？</li>
+      <li>X 可以討論：模擬和現實的差異為什麼存在？</li>
+      <li>截圖 + 錄音（3–5 分鐘）已存入作品資料夾</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+const links = document.querySelectorAll('.sb-link');
+const sections = document.querySelectorAll('.ws');
+
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.sb-link[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { threshold: 0.25 });
+
+sections.forEach(s => io.observe(s));
+
+links.forEach(l => l.addEventListener('click', () => {
+  document.getElementById('sidebar').classList.remove('open');
+}));
+</script>
+</body>
+</html>
