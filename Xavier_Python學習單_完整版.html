@@ -56,7 +56,7 @@ body {
   top: 0; left: 0;
   width: var(--sidebar-w);
   height: 100vh;
-  background: #f5f5f5;
+  background: #2A3448;
   overflow-y: auto;
   z-index: 100;
   display: flex;
@@ -82,7 +82,7 @@ body {
 }
 .sb-a:hover  { background: rgba(255,255,255,.07); color: #D8E0F0; }
 .sb-a.active { background: rgba(255,255,255,.12); color: #fff; }
-.sb-a .id { font-family: var(--mono); font-size: 10px; color: #5A6A8A; min-width:36px; flex-shrink:0; }
+.sb-a.id { font-family: var(--mono); font-size: 10px; color: #5A6A8A; min-width:36px; flex-shrink:0; }
 .sb-a.active .id { color: #7A8AB0; }
 
 #cover {
@@ -350,34 +350,34 @@ details.parent-box[open] summary::after { transform:rotate(180deg); }
 
   <div class="sb-section">
     <div class="sb-section-label c1">第一階段</div>
-    <a class="sb-link" href="#ws-1-1"><span class="sb-id">1-1</span>溫度換算器</a>
-    <a class="sb-link" href="#ws-1-2"><span class="sb-id">1-2</span>質數篩選器</a>
-    <a class="sb-link" href="#ws-1-3"><span class="sb-id">1-3</span>RGB 調色盤</a>
-    <a class="sb-link" href="#ws-1-4"><span class="sb-id">1-4</span>猜數字遊戲</a>
+    <a class="sb-a" href="#ws-1-1"><span class="sb-id">1-1</span>溫度換算器</a>
+    <a class="sb-a" href="#ws-1-2"><span class="sb-id">1-2</span>質數篩選器</a>
+    <a class="sb-a" href="#ws-1-3"><span class="sb-id">1-3</span>RGB 調色盤</a>
+    <a class="sb-a" href="#ws-1-4"><span class="sb-id">1-4</span>猜數字遊戲</a>
   </div>
   <div class="sb-section">
     <div class="sb-section-label c2">第二階段</div>
-    <a class="sb-link" href="#ws-2-1"><span class="sb-id">2-1</span>方程式求解器</a>
-    <a class="sb-link" href="#ws-2-2"><span class="sb-id">2-2</span>第一張圖表</a>
-    <a class="sb-link" href="#ws-2-3"><span class="sb-id">2-3</span>不等式視覺化</a>
+    <a class="sb-a" href="#ws-2-1"><span class="sb-id">2-1</span>方程式求解器</a>
+    <a class="sb-a" href="#ws-2-2"><span class="sb-id">2-2</span>第一張圖表</a>
+    <a class="sb-a" href="#ws-2-3"><span class="sb-id">2-3</span>不等式視覺化</a>
   </div>
   <div class="sb-section">
     <div class="sb-section-label c3">第三階段</div>
-    <a class="sb-link" href="#ws-3-1"><span class="sb-id">3-1</span>速度比較圖</a>
-    <a class="sb-link" href="#ws-3-2"><span class="sb-id">3-2</span>正反比模擬</a>
-    <a class="sb-link" href="#ws-3-3"><span class="sb-id">3-3★</span>拋體模擬動畫</a>
+    <a class="sb-a" href="#ws-3-1"><span class="sb-id">3-1</span>速度比較圖</a>
+    <a class="sb-a" href="#ws-3-2"><span class="sb-id">3-2</span>正反比模擬</a>
+    <a class="sb-a" href="#ws-3-3"><span class="sb-id">3-3★</span>拋體模擬動畫</a>
   </div>
   <div class="sb-section">
     <div class="sb-section-label c4">第四階段</div>
-    <a class="sb-link" href="#ws-4-1"><span class="sb-id">4-1</span>自由落體計算器</a>
-    <a class="sb-link" href="#ws-4-2"><span class="sb-id">4-2</span>升級版拋體</a>
-    <a class="sb-link" href="#ws-4-3"><span class="sb-id">4-3</span>探究主題提案</a>
+    <a class="sb-a" href="#ws-4-1"><span class="sb-id">4-1</span>自由落體計算器</a>
+    <a class="sb-a" href="#ws-4-2"><span class="sb-id">4-2</span>升級版拋體</a>
+    <a class="sb-a" href="#ws-4-3"><span class="sb-id">4-3</span>探究主題提案</a>
   </div>
   <div class="sb-section">
     <div class="sb-section-label c5">第五階段（選一）</div>
-    <a class="sb-link" href="#ws-5-a"><span class="sb-id">A</span>星球拋體比較</a>
-    <a class="sb-link" href="#ws-5-b"><span class="sb-id">B</span>骰子真的公平嗎</a>
-    <a class="sb-link" href="#ws-5-c"><span class="sb-id">C</span>我的足球飛多遠</a>
+    <a class="sb-a" href="#ws-5-a"><span class="sb-id">A</span>星球拋體比較</a>
+    <a class="sb-a" href="#ws-5-b"><span class="sb-id">B</span>骰子真的公平嗎</a>
+    <a class="sb-a" href="#ws-5-c"><span class="sb-id">C</span>我的足球飛多遠</a>
   </div>
 </nav>
 
@@ -1618,14 +1618,14 @@ details.parent-box[open] summary::after { transform:rotate(180deg); }
 </div><!-- /main -->
 
 <script>
-const links = document.querySelectorAll('.sb-link');
+const links = document.querySelectorAll('.sb-a');
 const sections = document.querySelectorAll('.ws');
 
 const io = new IntersectionObserver(entries => {
   entries.forEach(e => {
     if (e.isIntersecting) {
       links.forEach(l => l.classList.remove('active'));
-      const a = document.querySelector(`.sb-link[href="#${e.target.id}"]`);
+      const a = document.querySelector(`.sb-a[href="#${e.target.id}"]`);
       if (a) a.classList.add('active');
     }
   });
