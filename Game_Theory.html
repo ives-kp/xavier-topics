@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>賽局理論完全指南 | Xavier的深度探究</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft JhengHei', '微軟正黑體', 'Arial', sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.8;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.8em;
+            color: #1a73e8;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+        
+        h2 {
+            font-size: 1.9em;
+            color: #1a73e8;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 4px solid #1a73e8;
+        }
+        
+        h3 {
+            font-size: 1.5em;
+            color: #2c3e50;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #34495e;
+            margin-top: 15px;
+            font-size: 1.2em;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+        
+        .layer-section {
+            background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+            border-left: 6px solid #1a73e8;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+        
+        .story-box {
+            background: linear-gradient(135deg, #fff3e0 0%, #fffde7 100%);
+            border-left: 6px solid #ff9800;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-style: italic;
+            color: #e65100;
+            font-weight: 500;
+        }
+        
+        .definition-box {
+            background: linear-gradient(135deg, #e0f2f1 0%, #f1f8e9 100%);
+            border: 3px solid #00897b;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #00695c;
+        }
+        
+        .matrix {
+            display: table;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background: #ffffff;
+            border: 3px solid #1a73e8;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .matrix-row {
+            display: table-row;
+        }
+        
+        .matrix-cell {
+            display: table-cell;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #1a73e8;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .matrix-header {
+            background: #1a73e8;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        
+        .chart-container {
+            background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+            min-height: 420px;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .code-block {
+            background: #f5f5f5;
+            border-left: 6px solid #4caf50;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #1b5e20;
+            line-height: 1.6;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .insight {
+            background: linear-gradient(135deg, #fff9c4 0%, #ffecb3 100%);
+            border-left: 6px solid #fbc02d;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: #f57f17;
+            font-weight: 500;
+            border: 2px solid #fbc02d;
+        }
+        
+        .insight::before {
+            content: "💡 ";
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #1a73e8, #1565c0);
+            color: #ffffff;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1.05em;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.3);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(26, 115, 232, 0.5);
+            background: linear-gradient(135deg, #1565c0, #0d47a1);
+        }
+        
+        .interactive-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #1a73e8;
+        }
+        
+        .parameter-input {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .parameter-input label {
+            min-width: 150px;
+            color: #1a73e8;
+            font-weight: bold;
+            font-size: 1.05em;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            min-width: 150px;
+            cursor: pointer;
+            height: 8px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #ff6b6b, #4caf50);
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1a73e8;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #1a73e8;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .value-display {
+            background: #1a73e8;
+            padding: 10px 20px;
+            border-radius: 8px;
+            min-width: 80px;
+            text-align: center;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 1.1em;
+            box-shadow: 0 2px 5px rgba(26, 115, 232, 0.3);
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-item {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 6px solid #2e7d32;
+            border: 2px solid #4caf50;
+        }
+        
+        .toc {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f0f4ff 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            border: 2px solid #1a73e8;
+        }
+        
+        .toc-item {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(26, 115, 232, 0.2);
+            font-size: 1.05em;
+        }
+        
+        .toc-item:last-child {
+            border-bottom: none;
+        }
+        
+        .toc-item a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .toc-item a:hover {
+            color: #0d47a1;
+            text-decoration: underline;
+        }
+        
+        .formula {
+            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-family: Georgia, serif;
+            color: #f57f17;
+            font-size: 1.15em;
+            border: 2px solid #fbc02d;
+            font-weight: bold;
+        }
+        
+        ul {
+            margin-left: 20px;
+        }
+        
+        li {
+            margin: 10px 0;
+            font-size: 1.05em;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .parameter-input {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .parameter-input label {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 賽局理論完全指南</h1>
+        <p class="subtitle">Xavier的深度探究｜從基礎到演化博弈</p>
+        
+        <!-- 目錄 -->
+        <div class="toc">
+            <h3 style="margin-top: 0; color: #1a73e8;">📑 目錄</h3>
+            <div class="toc-item">▸ <a href="#layer1">第一層：基礎直覺</a></div>
+            <div class="toc-item">▸ <a href="#layer2">第二層：博弈類型</a></div>
+            <div class="toc-item">▸ <a href="#layer3">第三層：演化博弈論</a></div>
+            <div class="toc-item">▸ <a href="#layer4">第四層：模擬實驗</a></div>
+        </div>
+        
+        <!-- 引言 -->
+        <div class="layer-section">
+            <h2>🤔 什麼是賽局理論？</h2>
+            <p>賽局理論研究的是：<strong>當你的決策會影響別人，別人的決策也會影響你時，應該怎麼選擇？</strong></p>
+            <p style="margin-top: 15px;">例如：</p>
+            <ul>
+                <li>🎯 和朋友決定去哪裡玩（他的選擇影響你的快樂）</li>
+                <li>📚 班級決定要不要作弊（別人作弊會影響你的排名）</li>
+                <li>🌍 各國決定要不要環保（別的國家污染會影響你）</li>
+                <li>💼 企業決定降價還是漲價（競爭對手會跟著反應）</li>
+            </ul>
+        </div>
+        
+        <!-- 第一層 -->
+        <div id="layer1" class="layer-section">
+            <h2>第一層：基礎直覺 🌱</h2>
+            
+            <h3>📊 報酬矩陣：用表格看結果</h3>
+            <p>博弈的結果可以用表格展示。表格的每一格代表一種選擇組合的結果。</p>
+            
+            <p style="margin-top: 20px;"><strong>例子：岔路口的選擇</strong></p>
+            <div class="story-box">
+                Xavier和小王一起去旅遊，到了岔路口。一個向左是海邊（Xavier喜歡），一個向右是山區（小王喜歡）。他們必須一起去，不能分開。
+            </div>
+            
+            <p style="margin-top: 20px;"><strong>報酬矩陣（數字越大越開心）：</strong></p>
+            <div style="overflow-x: auto;">
+                <table class="matrix">
+                    <tr>
+                        <td class="matrix-cell matrix-header">Xavier \ 小王</td>
+                        <td class="matrix-cell matrix-header">選山區</td>
+                        <td class="matrix-cell matrix-header">選海邊</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">選海邊</td>
+                        <td class="matrix-cell" style="background: #ffcdd2; color: #c62828;">💔 (0, 10)</td>
+                        <td class="matrix-cell" style="background: #c8e6c9; color: #2e7d32;">😊 (10, 10) ✓</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">選山區</td>
+                        <td class="matrix-cell" style="background: #fff9c4; color: #f57f17;">😐 (5, 5)</td>
+                        <td class="matrix-cell" style="background: #ffcdd2; color: #c62828;">😞 (0, 0)</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <p style="margin-top: 20px;"><strong>怎麼讀？</strong></p>
+            <div style="margin-left: 20px;">
+                <p>• <span style="color: #1a73e8; font-weight: bold;">左邊的數字</span> = Xavier的滿意度</p>
+                <p>• <span style="color: #1a73e8; font-weight: bold;">右邊的數字</span> = 小王的滿意度</p>
+                <p>• <span style="color: #2e7d32; font-weight: bold;">(10, 10)</span> = 都去海邊，兩人都最開心</p>
+            </div>
+            
+            <h3 style="margin-top: 40px;">⚠️ 囚徒困境：為什麼會背叛？</h3>
+            <div class="definition-box">
+                <strong>囚徒困境</strong>是最經典的博弈：每個人的「最好選擇」導致「最差結果」。
+            </div>
+            
+            <div class="story-box">
+                警察抓到兩個嫌犯。分別關在不同房間，無法溝通。<br><br>
+                警察跟每個人說：<br>
+                • 如果你背叛對方（坦白），你就自由。對方坐牢10年。<br>
+                • 如果你保持沉默（合作），都會這樣：<br>
+                &nbsp;&nbsp;- 你也沉默 → 都坐2年<br>
+                &nbsp;&nbsp;- 他背叛你 → 你坐10年，他自由
+            </div>
+            
+            <p style="margin-top: 20px;"><strong>報酬矩陣（用年數，越少越好）：</strong></p>
+            <div style="overflow-x: auto;">
+                <table class="matrix">
+                    <tr>
+                        <td class="matrix-cell matrix-header">我 \ 他</td>
+                        <td class="matrix-cell matrix-header">沉默</td>
+                        <td class="matrix-cell matrix-header">背叛</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">沉默</td>
+                        <td class="matrix-cell" style="background: #c8e6c9; color: #2e7d32;">😊 (-2, -2) 最好</td>
+                        <td class="matrix-cell" style="background: #ffcdd2; color: #c62828;">😞 (-10, 0)</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">背叛</td>
+                        <td class="matrix-cell" style="background: #ffcdd2; color: #c62828;">😞 (-0, -10)</td>
+                        <td class="matrix-cell" style="background: #fff9c4; color: #f57f17;">😐 (-5, -5) 現實</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="insight">
+                <strong>困境在哪裡？</strong><br>
+                無論對方選什麼，背叛都比沉默「對你個人」更好（坐監更少）。<br>
+                但結果：都背叛(5年) 比 都沉默(2年) 還糟！
+            </div>
+            
+            <h3 style="margin-top: 40px;">⚖️ 納許均衡：誰都不想改變</h3>
+            <div class="definition-box">
+                <strong>納許均衡</strong> = 每個人都選了最好的策略，沒有人想改變自己的選擇。
+            </div>
+            
+            <p style="margin-top: 20px;">在囚徒困境中：</p>
+            <div style="margin-left: 20px;">
+                <p><span style="color: #2e7d32; font-weight: bold;">✓ 納許均衡</span> = (背叛, 背叛) → (-5, -5)</p>
+                <p style="color: #1565c0; margin-top: 10px;"><strong>為什麼？</strong>看著彼此都背叛了，我想改成沉默嗎？</p>
+                <p style="color: #1565c0;"><strong>不想！</strong>因為如果我沉默，他背叛的話我會-10年。</p>
+                <p style="color: #1565c0;"><strong>所以誰都不想改變。</strong></p>
+                <br>
+                <p><span style="color: #c62828; font-weight: bold;">❌ 另一個可能的結果</span> = (沉默, 沉默) → (-2, -2)</p>
+                <p style="color: #666; margin-top: 10px;"><strong>雖然更好，但不穩定！</strong></p>
+                <p style="color: #666;">如果我知道他沉默，我會背叛去搶0年。</p>
+            </div>
+            
+            <div class="insight">
+                納許均衡的結果 (-5, -5) 不是「最好」的，但是「最穩定」的。<br>
+                這就是為什麼：儘管都環保更好，但人們還是污染。
+            </div>
+        </div>
+        
+        <!-- 第二層 -->
+        <div id="layer2" class="layer-section">
+            <h2>第二層：博弈類型 🎭</h2>
+            
+            <h3>🤝 協調博弈：雙贏就是均衡</h3>
+            <p>不是所有博弈都像囚徒困境。有些博弈的最好結果反而就是均衡。</p>
+            
+            <div class="story-box">
+                Xavier和小王計畫看電影。都看同一部最開心，各看各的沒人陪，最糟糕。
+            </div>
+            
+            <p style="margin-top: 20px;"><strong>報酬矩陣：</strong></p>
+            <div style="overflow-x: auto;">
+                <table class="matrix">
+                    <tr>
+                        <td class="matrix-cell matrix-header">Xavier \ 小王</td>
+                        <td class="matrix-cell matrix-header">科幻片</td>
+                        <td class="matrix-cell matrix-header">恐怖片</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">科幻片</td>
+                        <td class="matrix-cell" style="background: #c8e6c9; color: #2e7d32;">😊 (10, 10) ✓</td>
+                        <td class="matrix-cell" style="background: #ffcdd2; color: #c62828;">😞 (0, 0)</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">恐怖片</td>
+                        <td class="matrix-cell" style="background: #ffcdd2; color: #c62828;">😞 (0, 0)</td>
+                        <td class="matrix-cell" style="background: #c8e6c9; color: #2e7d32;">😊 (10, 10) ✓</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <p style="margin-top: 20px;"><strong>有兩個納許均衡！</strong></p>
+            <div style="margin-left: 20px;">
+                <p>✓ (科幻, 科幻) → (10, 10)</p>
+                <p>✓ (恐怖, 恐怖) → (10, 10)</p>
+            </div>
+            
+            <div class="insight">
+                協調博弈的困難：不是「合作不合作」，而是「選哪個合作方案」。<br>
+                例如：為什麼全世界開車有的靠左有的靠右？因為都有道理，但不能混。
+            </div>
+            
+            <h3 style="margin-top: 40px;">⚔️ 零和博弈：只能分勝負</h3>
+            <div class="definition-box">
+                <strong>零和博弈</strong> = 你贏的東西完全來自我的輸。總和永遠是零。
+            </div>
+            
+            <p style="margin-top: 20px;"><strong>例子：石頭布剪刀</strong></p>
+            <div style="overflow-x: auto;">
+                <table class="matrix">
+                    <tr>
+                        <td class="matrix-cell matrix-header">我 \ 你</td>
+                        <td class="matrix-cell matrix-header">石頭</td>
+                        <td class="matrix-cell matrix-header">布</td>
+                        <td class="matrix-cell matrix-header">剪刀</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">石頭</td>
+                        <td class="matrix-cell" style="background: #fff9c4;">0, 0</td>
+                        <td class="matrix-cell" style="background: #ffcdd2;">-1, +1</td>
+                        <td class="matrix-cell" style="background: #c8e6c9;">+1, -1</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">布</td>
+                        <td class="matrix-cell" style="background: #c8e6c9;">+1, -1</td>
+                        <td class="matrix-cell" style="background: #fff9c4;">0, 0</td>
+                        <td class="matrix-cell" style="background: #ffcdd2;">-1, +1</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">剪刀</td>
+                        <td class="matrix-cell" style="background: #ffcdd2;">-1, +1</td>
+                        <td class="matrix-cell" style="background: #c8e6c9;">+1, -1</td>
+                        <td class="matrix-cell" style="background: #fff9c4;">0, 0</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="insight">
+                在零和博弈中，沒有「雙贏」的可能。<br>
+                所以最好的策略是：隨機選擇，讓對手無法預測。
+            </div>
+        </div>
+        
+        <!-- 第三層 -->
+        <div id="layer3" class="layer-section">
+            <h2>第三層：演化博弈論 🦅🕊️</h2>
+            
+            <h3>📖 鷹鴿故事：最經典的演化博弈</h3>
+            <div class="story-box">
+                一個鳥類社群中，有兩種策略：<br><br>
+                🦅 <strong>鷹策略</strong>：激進、好鬥，搶食物時猛烈攻擊<br>
+                🕊️ <strong>鴿策略</strong>：溫和、讓步，看到對手就逃跑<br><br>
+                他們搶食物。每次搶奪有不同結果...
+            </div>
+            
+            <p style="margin-top: 20px;"><strong>一次搶奪的報酬：</strong></p>
+            <div style="overflow-x: auto;">
+                <table class="matrix">
+                    <tr>
+                        <td class="matrix-cell matrix-header">遇到 \ 我是</td>
+                        <td class="matrix-cell matrix-header">鷹</td>
+                        <td class="matrix-cell matrix-header">鴿</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">鷹</td>
+                        <td class="matrix-cell" style="background: #ffcdd2; color: #c62828;">⚔️ 0 (互相鬥，都受傷)</td>
+                        <td class="matrix-cell" style="background: #ffcdd2; color: #c62828;">😞 -1 (被搶)</td>
+                    </tr>
+                    <tr>
+                        <td class="matrix-cell matrix-header">鴿</td>
+                        <td class="matrix-cell" style="background: #c8e6c9; color: #2e7d32;">😋 4 (搶到全部)</td>
+                        <td class="matrix-cell" style="background: #fff9c4; color: #f57f17;">😐 2 (分享)</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <p style="margin-top: 20px;"><strong>關鍵發現：</strong></p>
+            <div style="margin-left: 20px;">
+                <p>• 🦅 遇 🕊️ → 🦅 大贏(4分)</p>
+                <p>• 🦅 遇 🦅 → 都損失(0分，互相傷害)</p>
+                <p>• 🕊️ 遇 🕊️ → 都分享(2分)</p>
+            </div>
+            
+            <h3 style="margin-top: 40px;">📊 種群演化：代代相傳</h3>
+            <p>現在想像一個有100隻鳥的社群。開始時：99隻鴿，1隻鷹。</p>
+            
+            <div class="insight">
+                <strong>第1代會怎樣？</strong><br>
+                • 🦅 很爽：到處搶 🕊️，報酬4分 × 很多次<br>
+                • 🕊️ 被搶：經常吃虧，報酬-1分<br>
+                → 🦅 長得快，🕊️ 死得多
+            </div>
+            
+            <p style="margin-top: 20px;">但是...</p>
+            
+            <div class="insight">
+                <strong>第5代會怎樣？</strong><br>
+                • 🦅 很多了，開始互相遇到<br>
+                • 🦅 遇 🦅 → 互相打架，報酬0分（糟糕！）<br>
+                • 🕊️ 雖被搶，但活著 → 報酬2分<br>
+                → 🦅 減少，🕊️ 增加
+            </div>
+            
+            <p style="margin-top: 20px;"><strong>最後呢？</strong></p>
+            <div class="insight">
+                到某個時間點，🦅 和 🕊️ 達到一個「平衡」。<br>
+                例如：30隻鷹，70隻鴿。<br><br>
+                在這個比例下：<br>
+                • 🦅 的平均報酬 ≈ 🕊️ 的平均報酬<br>
+                • 誰都無法「單靠增加數量」來改進<br>
+                <br>
+                這就是<strong>「進化穩定策略 (ESS)」</strong>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="eagleChart"></canvas>
+            </div>
+            
+            <h3 style="margin-top: 40px;">🔢 計算：進化穩定比例</h3>
+            <p>在鷹鴿博弈中，可以用數學計算出穩定的比例。</p>
+            
+            <div class="formula">
+                如果鷹的報酬 = 4(1 - p) <br>
+                鴿的報酬 = 2 - 3p <br>
+                <br>
+                其中 p = 鷹的比例 <br>
+                <br>
+                均衡點：4(1 - p) = 2 - 3p <br>
+                <strong>→ p = 0.4 (40%)</strong>
+            </div>
+            
+            <div class="insight">
+                所以穩定的鷹鴿比例是：40% 鷹，60% 鴿。<br>
+                不管初始比例多少，最後都會演化到這個點。
+            </div>
+            
+            <h3 style="margin-top: 40px;">📈 和指數律的連結</h3>
+            <p>你在數學課學的指數律，在這裡出現了！</p>
+            
+            <div class="formula">
+                如果鷹的報酬高於鴿，鷹會以指數增長：<br>
+                N(t) = N₀ × r^t <br>
+                <br>
+                其中 r ≈ 1.2 (增長率) <br>
+                <br>
+                • 第5代：N₀ × (1.2)^5<br>
+                • 第10代：N₀ × (1.2)^10
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="exponentialChart"></canvas>
+            </div>
+            
+            <h3 style="margin-top: 40px;">🌍 現實應用</h3>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h4>🧬 抗生素耐藥性</h4>
+                    <p>細菌對藥物敏感 = 🕊️<br>
+                    細菌對藥物耐藥 = 🦅<br><br>
+                    使用抗生素 → 敏感菌死 → 耐藥菌繁殖 → 最後全是耐藥菌</p>
+                </div>
+                <div class="comparison-item">
+                    <h4>🎓 班級作弊率</h4>
+                    <p>認真讀書 = 🕊️<br>
+                    偷懶作弊 = 🦅<br><br>
+                    不是「全部作弊」或「全部認真」，而是某個混合比例穩定</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 第四層 -->
+        <div id="layer4" class="layer-section">
+            <h2>第四層：模擬實驗 💻</h2>
+            
+            <h3>🎮 互動模擬：自己試試看</h3>
+            <p>下面可以改變參數，看演化結果怎麼變化。</p>
+            
+            <div class="interactive-section">
+                <h4 style="margin-top: 0;">🦅 鷹鴿博弈模擬</h4>
+                
+                <div class="parameter-input">
+                    <label>初始鷹的數量：</label>
+                    <input type="range" id="initialEagles" min="1" max="50" value="10">
+                    <span class="value-display" id="eaglesDisplay">10</span>
+                </div>
+                
+                <div class="parameter-input">
+                    <label>初始鴿的數量：</label>
+                    <input type="range" id="initialDoves" min="50" max="200" value="90">
+                    <span class="value-display" id="dovesDisplay">90</span>
+                </div>
+                
+                <div class="parameter-input">
+                    <label>模擬世代數：</label>
+                    <input type="range" id="generations" min="10" max="100" value="50">
+                    <span class="value-display" id="generationsDisplay">50</span>
+                </div>
+                
+                <button onclick="runEagleDoveSimulation()">▶️ 開始模擬</button>
+                <button onclick="resetCharts()">🔄 重置</button>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="simulationChart"></canvas>
+            </div>
+            
+            <h3 style="margin-top: 40px;">📊 囚徒困境的長期演化</h3>
+            <p>如果重複進行囚徒困境，合作和背叛的策略會怎樣演化？</p>
+            
+            <div class="chart-container">
+                <canvas id="prisonersChart"></canvas>
+            </div>
+            
+            <h3 style="margin-top: 40px;">💡 代碼邏輯示例</h3>
+            <p>如果你想自己寫代碼模擬，這是基本邏輯：</p>
+            
+            <div class="code-block">
+def payoff(strategy1, strategy2):
+    """計算一次博弈的報酬"""
+    if strategy1 == 'hawk' and strategy2 == 'hawk':
+        return 0, 0  # 互相打架，都受傷
+    elif strategy1 == 'hawk' and strategy2 == 'dove':
+        return 4, -1  # 鷹搶到全部，鴿被搶
+    elif strategy1 == 'dove' and strategy2 == 'hawk':
+        return -1, 4  # 相反情況
+    else:  # 都是鴿
+        return 2, 2  # 分享食物
+
+# 模擬多代演化
+population = [0] * 90 + [1] * 10  # 0=鴿, 1=鷹
+for generation in range(50):
+    # 計算每隻鳥的得分
+    scores = [0] * len(population)
+    
+    for i in range(len(population)):
+        for j in range(len(population)):
+            if i != j:
+                p1, p2 = payoff(population[i], population[j])
+                scores[i] += p1
+    
+    # 進化：高score的複製，低score的消亡
+    new_population = []
+    for _ in range(len(population)):
+        # 按score比例選擇
+        i = random.choices(
+            range(len(population)),
+            weights=scores,
+            k=1
+        )[0]
+        new_population.append(population[i])
+    
+    population = new_population
+            </div>
+        </div>
+        
+        <!-- 底部 -->
+        <div class="layer-section" style="margin-top: 50px; background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%); border-left-color: #2e7d32;">
+            <h2 style="color: #2e7d32; border-bottom-color: #2e7d32;">🎯 重點回顧</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-item" style="border-left-color: #1a73e8; border-color: 2px solid #1a73e8;">
+                    <h4 style="color: #1a73e8;">第一層：基礎</h4>
+                    <p>✓ 報酬矩陣<br>
+                    ✓ 囚徒困境<br>
+                    ✓ 納許均衡</p>
+                </div>
+                <div class="comparison-item" style="border-left-color: #ff9800; border-color: 2px solid #ff9800;">
+                    <h4 style="color: #ff9800;">第二層：類型</h4>
+                    <p>✓ 協調博弈<br>
+                    ✓ 零和博弈<br>
+                    ✓ 談判力量</p>
+                </div>
+                <div class="comparison-item" style="border-left-color: #d32f2f; border-color: 2px solid #d32f2f;">
+                    <h4 style="color: #d32f2f;">第三層：演化</h4>
+                    <p>✓ 進化穩定策略<br>
+                    ✓ 種群競爭<br>
+                    ✓ 指數增長</p>
+                </div>
+                <div class="comparison-item" style="border-left-color: #4caf50; border-color: 2px solid #4caf50;">
+                    <h4 style="color: #4caf50;">第四層：實驗</h4>
+                    <p>✓ 模擬演化<br>
+                    ✓ 可視化結果<br>
+                    ✓ 參數測試</p>
+                </div>
+            </div>
+            
+            <div class="insight" style="margin-top: 30px; background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%); border: 2px solid #fbc02d;">
+                <strong style="font-size: 1.15em;">最重要的一個觀察：</strong><br>
+                現實世界很多看起來「不理性」或「不公平」的現象，<br>
+                用賽局理論都能解釋。<br>
+                因為它們都是「穩定的」——達到了某種均衡。
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 更新顯示值
+        document.getElementById('initialEagles').addEventListener('input', function() {
+            document.getElementById('eaglesDisplay').textContent = this.value;
+        });
+        document.getElementById('initialDoves').addEventListener('input', function() {
+            document.getElementById('dovesDisplay').textContent = this.value;
+        });
+        document.getElementById('generations').addEventListener('input', function() {
+            document.getElementById('generationsDisplay').textContent = this.value;
+        });
+        
+        // Chart.js 配置
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#333',
+                        font: { size: 12, weight: 'bold' }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#333', font: { size: 11 } },
+                    grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                },
+                y: {
+                    ticks: { color: '#333', font: { size: 11 } },
+                    grid: { color: 'rgba(0, 0, 0, 0.1)' }
+                }
+            }
+        };
+        
+        // 鷹鴿初始演化圖表
+        function drawEagleChart() {
+            const ctx = document.getElementById('eagleChart').getContext('2d');
+            const generations = Array.from({length: 30}, (_, i) => i);
+            const eagles = [10];
+            const doves = [90];
+            
+            let currentEagles = 10;
+            let currentDoves = 90;
+            
+            for (let i = 0; i < 29; i++) {
+                const totalPop = currentEagles + currentDoves;
+                const eagleRatio = currentEagles / totalPop;
+                
+                const eaglePayoff = 4 * (1 - eagleRatio);
+                const dovePayoff = 2 - 3 * eagleRatio;
+                
+                const eagleGrowth = 1 + (eaglePayoff - 2) * 0.1;
+                const doveGrowth = 1 + (dovePayoff - 2) * 0.1;
+                
+                currentEagles = Math.max(1, currentEagles * eagleGrowth);
+                currentDoves = Math.max(1, currentDoves * doveGrowth);
+                
+                eagles.push(currentEagles);
+                doves.push(currentDoves);
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: generations,
+                    datasets: [
+                        {
+                            label: '🦅 鷹',
+                            data: eagles,
+                            borderColor: '#d32f2f',
+                            backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            borderWidth: 3
+                        },
+                        {
+                            label: '🕊️ 鴿',
+                            data: doves,
+                            borderColor: '#1976d2',
+                            backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            borderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '鷹鴿種群演化（初始：1鷹99鴿）',
+                            color: '#1a73e8',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 指數增長圖表
+        function drawExponentialChart() {
+            const ctx = document.getElementById('exponentialChart').getContext('2d');
+            const time = Array.from({length: 20}, (_, i) => i);
+            
+            const growth12 = time.map(t => 10 * Math.pow(1.2, t));
+            const growth15 = time.map(t => 10 * Math.pow(1.5, t));
+            const growth10 = time.map(t => 10 * Math.pow(1.0, t));
+            const growth08 = time.map(t => 10 * Math.pow(0.8, t));
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: time,
+                    datasets: [
+                        {
+                            label: 'r=1.2 (增長20%)',
+                            data: growth12,
+                            borderColor: '#2e7d32',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'r=1.5 (增長50%)',
+                            data: growth15,
+                            borderColor: '#f57f17',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'r=1.0 (穩定)',
+                            data: growth10,
+                            borderColor: '#1976d2',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'r=0.8 (衰退)',
+                            data: growth08,
+                            borderColor: '#d32f2f',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '指數增長：不同增長率的效果',
+                            color: '#1a73e8',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 囚徒困境演化
+        function drawPrisonersChart() {
+            const ctx = document.getElementById('prisonersChart').getContext('2d');
+            const generations = Array.from({length: 40}, (_, i) => i);
+            const cooperators = [80];
+            const defectors = [20];
+            
+            let coop = 80;
+            let def = 20;
+            
+            for (let i = 0; i < 39; i++) {
+                const total = coop + def;
+                const coopRatio = coop / total;
+                
+                const coopPayoff = 2 * coopRatio + 0 * (1 - coopRatio);
+                const defPayoff = 5 * coopRatio + 1 * (1 - coopRatio);
+                
+                const coopGrowth = 1 + (coopPayoff - 2) * 0.05;
+                const defGrowth = 1 + (defPayoff - 2) * 0.05;
+                
+                coop = Math.max(1, coop * coopGrowth);
+                def = Math.max(1, def * defGrowth);
+                
+                cooperators.push(coop);
+                defectors.push(def);
+            }
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: generations,
+                    datasets: [
+                        {
+                            label: '🤝 合作者',
+                            data: cooperators,
+                            borderColor: '#2e7d32',
+                            backgroundColor: 'rgba(46, 125, 50, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            borderWidth: 3
+                        },
+                        {
+                            label: '⚔️ 背叛者',
+                            data: defectors,
+                            borderColor: '#d32f2f',
+                            backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                            tension: 0.4,
+                            fill: true,
+                            borderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '囚徒困境長期演化',
+                            color: '#1a73e8',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 鷹鴿模擬（互動版）
+        function runEagleDoveSimulation() {
+            const initialEagles = parseInt(document.getElementById('initialEagles').value);
+            const initialDoves = parseInt(document.getElementById('initialDoves').value);
+            const numGenerations = parseInt(document.getElementById('generations').value);
+            
+            const generations = Array.from({length: numGenerations}, (_, i) => i);
+            const eagleRatios = [];
+            
+            let eagles = initialEagles;
+            let doves = initialDoves;
+            
+            for (let gen = 0; gen < numGenerations; gen++) {
+                const total = eagles + doves;
+                const eagleRatio = eagles / total;
+                eagleRatios.push(eagleRatio * 100);
+                
+                const eaglePayoff = 4 * (1 - eagleRatio);
+                const dovePayoff = 2 - 3 * eagleRatio;
+                
+                const eagleGrowth = 1 + (eaglePayoff / 2 - 1) * 0.1;
+                const doveGrowth = 1 + (dovePayoff / 2 - 1) * 0.1;
+                
+                eagles = Math.max(1, eagles * eagleGrowth);
+                doves = Math.max(1, doves * doveGrowth);
+            }
+            
+            const ctx = document.getElementById('simulationChart').getContext('2d');
+            
+            // 先清除舊圖表
+            if (window.simulationChartInstance) {
+                window.simulationChartInstance.destroy();
+            }
+            
+            window.simulationChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: generations,
+                    datasets: [
+                        {
+                            label: '鷹的比例',
+                            data: eagleRatios,
+                            borderColor: '#d32f2f',
+                            backgroundColor: 'rgba(211, 47, 47, 0.2)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3
+                        }
+                    ]
+                },
+                options: {
+                    ...chartOptions,
+                    scales: {
+                        ...chartOptions.scales,
+                        y: {
+                            ...chartOptions.scales.y,
+                            min: 0,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: `鷹鴿模擬：初始 ${initialEagles}鷹 ${initialDoves}鴿`,
+                            color: '#1a73e8',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function resetCharts() {
+            document.getElementById('initialEagles').value = 10;
+            document.getElementById('initialDoves').value = 90;
+            document.getElementById('generations').value = 50;
+            document.getElementById('eaglesDisplay').textContent = 10;
+            document.getElementById('dovesDisplay').textContent = 90;
+            document.getElementById('generationsDisplay').textContent = 50;
+            runEagleDoveSimulation();
+        }
+        
+        // 頁面載入時繪製圖表
+        window.addEventListener('load', function() {
+            try {
+                drawEagleChart();
+                drawExponentialChart();
+                drawPrisonersChart();
+                runEagleDoveSimulation();
+            } catch (e) {
+                console.error('圖表載入錯誤:', e);
+            }
+        });
+    </script>
+</body>
+</html>
