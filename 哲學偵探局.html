@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>哲學偵探局</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700;900&family=Special+Elite&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board:#1b2430;
+    --board-dark:#11161e;
+    --folder:#e8dcc0;
+    --folder-hi:#f2e9d8;
+    --ink:#2a2420;
+    --ink-soft:#4a4038;
+    --red:#b23a2e;
+    --red-dark:#8a2c22;
+    --green:#4a7a5c;
+    --gold:#c9a24b;
+    --paper-line:#c9bd9e;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 20% -10%, #232f40 0%, transparent 55%),
+      radial-gradient(ellipse at 90% 110%, #1f2a38 0%, transparent 50%),
+      var(--board);
+    background-attachment:fixed;
+    color:var(--folder-hi);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+    padding-bottom:80px;
+  }
+  .corkline{
+    position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.05;
+    background-image:
+      linear-gradient(90deg, transparent 0 19px, #000 20px),
+      linear-gradient(0deg, transparent 0 19px, #000 20px);
+    background-size:20px 20px;
+  }
+
+  /* ===== Header / HQ bar ===== */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:linear-gradient(180deg, var(--board-dark) 0%, rgba(17,22,30,.96) 80%, rgba(17,22,30,0) 100%);
+    padding:18px 20px 26px;
+    display:flex; align-items:center; justify-content:space-between; gap:14px;
+    flex-wrap:wrap;
+  }
+  .hq-title{
+    font-family:'Noto Serif TC', serif; font-weight:900;
+    font-size:clamp(22px,5vw,30px);
+    letter-spacing:.04em;
+    color:var(--folder-hi);
+    display:flex; align-items:center; gap:10px;
+  }
+  .hq-title .badgeicon{
+    width:38px;height:38px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold), #8a6b28 75%);
+    display:flex;align-items:center;justify-content:center;
+    font-size:19px; box-shadow:0 0 0 3px #7a5f28 inset, 0 2px 6px rgba(0,0,0,.5);
+    flex-shrink:0;
+  }
+  .hq-sub{
+    font-size:13px; color:#9aa6b5; margin-top:2px; letter-spacing:.03em;
+  }
+  .rank-pill{
+    background:var(--folder); color:var(--ink);
+    border-radius:999px; padding:10px 18px;
+    font-weight:700; font-size:14px;
+    display:flex; align-items:center; gap:10px;
+    box-shadow:0 3px 0 var(--paper-line), 0 6px 14px rgba(0,0,0,.4);
+  }
+  .rank-pill .rank-xp{
+    font-family:'Special Elite', monospace; font-size:12px; color:var(--ink-soft);
+  }
+
+  main{max-width:1000px; margin:0 auto; padding:0 18px; position:relative; z-index:1;}
+
+  /* ===== Intro plaque ===== */
+  .intro{
+    background:rgba(0,0,0,.22);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:14px;
+    padding:18px 20px;
+    margin:6px 0 28px;
+    font-size:15.5px; line-height:1.85;
+    color:#d7deea;
+  }
+  .intro b{color:var(--gold);}
+
+  /* ===== Case board (folder grid) ===== */
+  #board-view h2.section-label{
+    font-family:'Special Elite', monospace;
+    color:#8a95a6; font-size:13px; letter-spacing:.15em;
+    margin:0 0 14px 4px; text-transform:uppercase;
+  }
+  .folder-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr));
+    gap:22px 18px;
+    margin-bottom:36px;
+  }
+  .folder{
+    position:relative;
+    background:linear-gradient(180deg, var(--folder-hi), var(--folder));
+    border-radius:4px 10px 8px 8px;
+    padding:22px 18px 18px;
+    color:var(--ink);
+    cursor:pointer;
+    box-shadow:0 8px 0 -3px rgba(0,0,0,.25), 0 14px 24px rgba(0,0,0,.45);
+    transition:transform .18s ease, box-shadow .18s ease;
+    min-height:150px;
+    display:flex; flex-direction:column; justify-content:space-between;
+  }
+  .folder::before{
+    content:'';
+    position:absolute; top:-11px; left:16px;
+    width:70px; height:16px;
+    background:var(--folder);
+    border-radius:6px 6px 0 0;
+    box-shadow:0 -1px 0 rgba(0,0,0,.05) inset;
+  }
+  .folder:hover{ transform:translateY(-4px) rotate(0deg) !important; box-shadow:0 12px 0 -3px rgba(0,0,0,.25), 0 20px 30px rgba(0,0,0,.5);}
+  .folder .fnum{
+    font-family:'Special Elite', monospace; font-size:11px; color:var(--ink-soft); letter-spacing:.08em;
+  }
+  .folder h3{
+    font-family:'Noto Serif TC', serif; font-weight:900;
+    font-size:21px; margin:6px 0 8px; line-height:1.3;
+  }
+  .folder .fsub{ font-size:13px; color:var(--ink-soft); line-height:1.5;}
+  .folder .fmeta{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:14px; font-size:12px; color:var(--ink-soft);
+  }
+  .stars{ color:var(--red); letter-spacing:1px; font-size:13px;}
+  .stamp{
+    position:absolute; top:14px; right:10px;
+    border:3px solid var(--red); color:var(--red);
+    font-family:'Special Elite', monospace;
+    font-size:12px; padding:3px 8px; border-radius:4px;
+    transform:rotate(-14deg);
+    opacity:.85;
+    background:rgba(178,58,46,.06);
+  }
+
+  /* ===== Case detail view ===== */
+  #case-view{ display:none; }
+  .back-btn{
+    background:none; border:1px solid rgba(255,255,255,.25); color:#cfd8e4;
+    padding:9px 16px; border-radius:8px; font-size:14px; cursor:pointer;
+    margin-bottom:18px; font-family:'Noto Sans TC',sans-serif;
+  }
+  .back-btn:hover{ background:rgba(255,255,255,.08); }
+
+  .case-header{
+    background:linear-gradient(180deg, var(--folder-hi), var(--folder));
+    color:var(--ink); border-radius:10px; padding:22px 24px;
+    margin-bottom:20px; position:relative;
+    box-shadow:0 10px 24px rgba(0,0,0,.4);
+  }
+  .case-header .fnum{ font-family:'Special Elite',monospace; font-size:12px; color:var(--ink-soft);}
+  .case-header h2{
+    font-family:'Noto Serif TC',serif; font-weight:900; font-size:clamp(24px,5vw,32px);
+    margin:6px 0 10px;
+  }
+  .case-header .stars{ font-size:15px; }
+
+  .panel{
+    background:rgba(0,0,0,.24);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:12px; padding:20px 22px; margin-bottom:18px;
+  }
+  .panel h4{
+    font-family:'Special Elite', monospace; letter-spacing:.1em;
+    color:var(--gold); font-size:13px; text-transform:uppercase; margin:0 0 12px;
+  }
+  .panel p{ line-height:1.9; font-size:15.5px; color:#e2e8f2; margin:0 0 10px;}
+  .panel p:last-child{margin-bottom:0;}
+
+  .claim-box{
+    background:rgba(178,58,46,.12); border:1px dashed var(--red);
+    border-radius:10px; padding:16px 18px; margin-top:8px;
+    font-size:16px; line-height:1.8; color:#ffe4df;
+    font-weight:500;
+  }
+  .claim-box .who{ font-size:12px; color:#e0a89f; letter-spacing:.08em; margin-bottom:6px; display:block; font-family:'Special Elite',monospace;}
+
+  .scenario-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; margin-top:6px;}
+  .scenario-card{
+    background:rgba(255,255,255,.05); border-radius:10px; padding:14px 16px;
+    border-left:4px solid var(--gold);
+  }
+  .scenario-card .tag{ font-size:12px; color:var(--gold); font-weight:700; margin-bottom:6px; display:block;}
+  .scenario-card p{ font-size:14.5px; margin:0; line-height:1.75; color:#dfe6f0;}
+
+  /* interrogation chain */
+  .chain{ position:relative; padding-left:26px; }
+  .chain::before{
+    content:''; position:absolute; left:9px; top:6px; bottom:6px; width:2px;
+    background:repeating-linear-gradient(180deg, var(--red) 0 6px, transparent 6px 12px);
+  }
+  .chain-node{ position:relative; margin-bottom:18px; }
+  .chain-node::before{
+    content:''; position:absolute; left:-26px; top:6px;
+    width:12px; height:12px; border-radius:50%;
+    background:var(--red); box-shadow:0 0 0 3px rgba(178,58,46,.25);
+  }
+  .qcard{
+    background:linear-gradient(180deg,var(--folder-hi),var(--folder));
+    color:var(--ink); border-radius:8px; padding:16px 18px;
+    transform:rotate(var(--tilt,-.6deg));
+    box-shadow:0 6px 16px rgba(0,0,0,.35);
+  }
+  .qcard .qtext{ font-size:15.5px; font-weight:700; line-height:1.7; margin-bottom:12px;}
+  .opt-row{ display:flex; flex-direction:column; gap:8px;}
+  .opt-btn{
+    text-align:left; background:#fff; border:1.5px solid var(--paper-line);
+    border-radius:7px; padding:11px 14px; font-size:14.5px; color:var(--ink);
+    cursor:pointer; font-family:'Noto Sans TC',sans-serif; line-height:1.6;
+    transition:background .15s, border-color .15s;
+  }
+  .opt-btn:hover{ background:#fff8ea; border-color:var(--gold);}
+  .opt-btn.chosen{ background:#eef4ee; border-color:var(--green); font-weight:700;}
+  .reveal{
+    margin-top:10px; padding:12px 14px; background:rgba(74,122,92,.14);
+    border-left:3px solid var(--green); border-radius:6px;
+    font-size:14.5px; line-height:1.8; color:#dff2e6; display:none;
+  }
+  .reveal.show{ display:block; }
+  .next-btn{
+    margin-top:14px; background:var(--red); color:#fff; border:none;
+    padding:10px 18px; border-radius:8px; font-size:14px; cursor:pointer; font-weight:700;
+  }
+  .next-btn:hover{ background:var(--red-dark); }
+
+  .synthesis-box{
+    background:rgba(201,162,75,.1); border:1px solid rgba(201,162,75,.4);
+    border-radius:10px; padding:18px 20px; margin-top:6px;
+    font-size:15px; line-height:1.9; color:#f2e6c8;
+  }
+  .synthesis-box h5{ margin:0 0 8px; color:var(--gold); font-size:14px; font-family:'Special Elite',monospace; letter-spacing:.06em;}
+
+  .discuss-box{
+    background:rgba(255,255,255,.05); border-radius:10px; padding:18px 20px;
+    font-size:15.5px; line-height:1.85; color:#eef2f8;
+  }
+  .discuss-box .icon-label{ color:var(--gold); font-weight:700; margin-bottom:8px; display:block;}
+
+  details.parent-guide{
+    background:rgba(0,0,0,.28); border:1px solid rgba(255,255,255,.1);
+    border-radius:12px; padding:16px 20px; margin-bottom:18px;
+  }
+  details.parent-guide summary{
+    cursor:pointer; font-weight:700; color:#cfd8e4; font-size:14.5px;
+    list-style:none; display:flex; align-items:center; gap:8px;
+  }
+  details.parent-guide summary::-webkit-details-marker{ display:none; }
+  details.parent-guide summary::before{ content:'▸'; color:var(--gold); transition:transform .15s;}
+  details.parent-guide[open] summary::before{ transform:rotate(90deg); }
+  .parent-guide .pg-body{ margin-top:14px; font-size:14.5px; line-height:1.9; color:#d7deea;}
+  .parent-guide .pg-body b{ color:var(--gold); }
+  .parent-guide .pg-body .phrase{
+    background:rgba(255,255,255,.06); border-radius:6px; padding:8px 12px; margin:6px 0;
+    font-style:normal; display:block;
+  }
+
+  .complete-bar{
+    text-align:center; margin-top:8px;
+  }
+  .complete-btn{
+    background:var(--green); color:#fff; border:none; padding:14px 30px;
+    border-radius:10px; font-size:16px; font-weight:700; cursor:pointer;
+    box-shadow:0 6px 16px rgba(74,122,92,.4);
+  }
+  .complete-btn:disabled{ background:#4a5568; cursor:default; box-shadow:none;}
+  .complete-msg{ margin-top:12px; color:var(--gold); font-size:14.5px; display:none;}
+  .complete-msg.show{ display:block; }
+
+  @media (max-width:600px){
+    .case-header, .panel{ padding:16px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="corkline"></div>
+
+<header>
+  <div>
+    <div class="hq-title"><span class="badgeicon">🔎</span>哲學偵探局</div>
+    <div class="hq-sub">Philosophy Detective Agency · 案件調查中心</div>
+  </div>
+  <div class="rank-pill">
+    <span id="rank-name">見習偵探</span>
+    <span class="rank-xp" id="rank-xp">0 XP</span>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===================== BOARD VIEW ===================== -->
+  <div id="board-view">
+    <div class="intro">
+      歡迎回到偵探局。牆上這幾份是<b>懸案</b>——每一份都裝著一句聽起來很有道理、但可能藏著漏洞的「哲學主張」。
+      你的任務不是背答案，是像平常拆解足球戰術或抓 AI 的錯一樣：<b>先找矛盾，再判斷這句話站不站得住腳</b>。
+      點開一份案件卷宗開始偵辦。
+    </div>
+    <h2 class="section-label">案件卷宗</h2>
+    <div class="folder-grid" id="folder-grid"></div>
+  </div>
+
+  <!-- ===================== CASE DETAIL VIEW ===================== -->
+  <div id="case-view">
+    <button class="back-btn" onclick="showBoard()">← 回偵探局</button>
+    <div class="case-header">
+      <span class="fnum" id="cd-num"></span>
+      <h2 id="cd-title"></h2>
+      <span class="stars" id="cd-stars"></span>
+    </div>
+
+    <details class="parent-guide">
+      <summary>給家長的辦案手冊（點開查看）</summary>
+      <div class="pg-body" id="cd-parentguide"></div>
+    </details>
+
+    <div class="panel">
+      <h4>案件背景</h4>
+      <p id="cd-background"></p>
+    </div>
+
+    <div class="panel">
+      <h4>嫌疑主張</h4>
+      <div class="claim-box">
+        <span class="who">主張人 THE CLAIM</span>
+        <span id="cd-claim"></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h4>情境檔案</h4>
+      <div class="scenario-grid" id="cd-scenarios"></div>
+    </div>
+
+    <div class="panel">
+      <h4>偵訊室 — 一步步追問</h4>
+      <div class="chain" id="cd-chain"></div>
+    </div>
+
+    <div class="panel" id="cd-synthesis-panel" style="display:none;">
+      <h4>目前調查結果</h4>
+      <div class="synthesis-box" id="cd-synthesis"></div>
+    </div>
+
+    <div class="panel" id="cd-discuss-panel" style="display:none;">
+      <h4>今晚可以聊的一句話</h4>
+      <div class="discuss-box">
+        <span class="icon-label">🗣 口頭討論題</span>
+        <span id="cd-discuss"></span>
+      </div>
+    </div>
+
+    <div class="complete-bar" id="cd-complete-bar" style="display:none;">
+      <button class="complete-btn" id="cd-complete-btn" onclick="completeCase()">結案，收進檔案櫃</button>
+      <div class="complete-msg" id="cd-complete-msg">✅ 已結案！這件案子收進你的檔案櫃了。</div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+/* ============================================================
+   DATA — 六個案件
+   ============================================================ */
+const CASES = [
+{
+  id:'nihilism',
+  num:'案件 001',
+  title:'虛無主義',
+  short:'人生根本沒有意義？',
+  difficulty:2,
+  background:`有一派說法認為：宇宙沒有幫任何人事先寫好「意義說明書」，人生的價值不是刻在星星上的，全部都是人類自己「編」出來的。這句話聽起來很喪氣，但也有人說它其實是一種解放——如果沒有人規定意義是什麼，你反而可以自己決定什麼對你重要。`,
+  claim:`「人生沒有客觀意義，所有價值都是人自己編出來的，所以人生根本不重要。」`,
+  scenarios:[
+    {tag:'足球場', text:'足球比賽的規則、勝負、獎盃——全部都是人類發明出來的東西，沒有一條物理定律規定「進球比較多要贏」。那足球比賽就「不重要」嗎？'},
+    {tag:'AI 世界', text:'一個 AI 模型的「目標函數」也是工程師編出來的，不是宇宙內建的。工程師編的目標，跟這個目標「值不值得追求」，是同一件事嗎？'}
+  ],
+  steps:[
+    {q:'如果「一切都沒有意義」這句話是真的，那這句話本身有沒有意義？',
+     options:[
+       {label:'有意義，因為說話的人很認真在講。', reveal:'如果這句話「有意義」，代表世界上至少存在一件有意義的事——那「一切都沒有意義」就自相矛盾了。這是虛無主義最常被抓到的漏洞，叫做「自我指涉矛盾」：這句話如果為真，就會證明自己是假的。'},
+       {label:'沒有意義，那就跟其他事情一樣不重要。', reveal:'如果連這句話本身都不重要，那說話的人幹嘛特別花力氣講出來、甚至寫成書出版？行為（很認真地主張）和內容（沒有什麼值得認真）之間出現了矛盾。'}
+     ]},
+    {q:'足球規則是人編的，但你踢輸關鍵一球時會很難過。那「人編的」東西，是不是就等於「假的、不重要的」？',
+     options:[
+       {label:'是，反正規則本來就是人定的，難過也是自己騙自己。', reveal:'照這個邏輯，友情、承諾、語言全部也是人「編」出來的社會約定——那是不是全部都可以不當一回事？大多數人不會這樣想，這代表「人編的」跟「不重要」其實是兩件事，不能直接畫等號。'},
+       {label:'不是，人編的東西一樣可以很真實、很重要。', reveal:'這正是虛無主義的一個常見反駁：意義不需要「客觀刻在宇宙裡」才算數。它可以是人類（或你自己）建構出來、卻依然真實有分量的東西——就像足球比賽的獎盃，即使規則是編的，捧起獎盃那一刻的感受是真的。'}
+     ]},
+    {q:'如果一個人真心相信「人生沒有意義」，他隔天還會不會準時去踢球練習？',
+     options:[
+       {label:'還是會去，因為習慣或喜歡踢球。', reveal:'注意到了嗎——他的「行為」（持續去做某件事）已經悄悄透露：他其實把某些事當一回事。相信一個理論，跟真的照那個理論生活，常常是兩回事。哲學家會說，純粹的虛無主義很難真的「活出來」。'},
+       {label:'不會去了，反正做什麼都沒差。', reveal:'如果一路貫徹到底，這個人會停止做任何選擇——包括「決定不去」，因為連「不去」也需要一個理由，而理由本身就代表某件事「比較好」。這也是虛無主義在現實中很難被真正實踐的原因之一。'}
+     ]}
+  ],
+  synthesis:`哲學家在這題上沒有共識，大致分成幾派：<br>
+  <b>強硬虛無主義者</b>認為即使矛盾很多，也不代表意義就存在，只是人類很難面對這個事實。<br>
+  <b>存在主義者</b>（例如卡繆）承認宇宙不主動給意義，但主張人可以「明知沒有保證，還是自己選擇去建構意義」，這叫做「荒謬中的反抗」。<br>
+  <b>你剛剛找到的矛盾</b>（這句話講出來這件事本身，還有它很難被真正活出來）是很多人反駁虛無主義的起點，但不是最終定論——這題目前仍然open，值得你自己持續觀察。`,
+  discuss:`「如果一件事是『人編出來的』，你覺得還可能是重要的嗎？舉一個你生活裡的例子。」`,
+  parentGuide:`Xavier 可能會很快抓到「這句話自我矛盾」這個點——這正是他 VCI 的強項，不用急著糾正或補充，讓他自己講完。<br><br>
+  <b>可以說：</b>
+  <span class="phrase">「你剛剛講的『如果這句話有意義，那不就自相矛盾』——這個推理方式在哲學裡有個名字，叫『自我指涉悖論』，你等於自己發現了一個經典論證。」</span>
+  <span class="phrase">「這題哲學家到現在還在吵，沒有標準答案，你比較認同哪一派？」</span>
+  <br>
+  避免：不需要把話題導向「所以人生有沒有意義」這種情緒性的大哉問，保持在邏輯拆解層面就足夠。如果他自己把話題帶到比較個人、情緒性的方向，跟著他走，不用勉強拉回邏輯遊戲。`
+},
+{
+  id:'determinism',
+  num:'案件 002',
+  title:'決定論 vs 自由意志',
+  short:'那顆進球，其實老早就決定好了？',
+  difficulty:3,
+  background:`物理定律告訴我們：每一個現在的狀態，都是由前一秒的狀態加上物理定律「算」出來的。如果這是真的，那從宇宙大爆炸那一刻起，包括你今天早餐吃什麼、那球有沒有踢進，理論上全部都已經被「決定好了」——你只是還不知道結果而已。這叫做「決定論」。`,
+  claim:`「一切都是前面的原因決定的，所以『自由選擇』其實只是幻覺，你根本沒有真正選過任何事。」`,
+  scenarios:[
+    {tag:'足球場', text:'射門的那一刻，你的肌肉角度、風速、對手位置全部都是物理狀態。如果知道所有變數，理論上可以算出球會不會進。那你「決定」射門這件事，還是你的選擇嗎？'},
+    {tag:'AI 世界', text:'一個沒有隨機性的 AI 模型，給同樣的輸入永遠會算出同樣的輸出——它的「決定」完全由程式和參數決定。人腦是不是也只是一台更複雜的計算機？'}
+  ],
+  steps:[
+    {q:'如果決定論是對的，「教練訓斥球員沒有盡力」這件事，還有沒有道理？',
+     options:[
+       {label:'沒道理，反正他的表現早就被物理決定了，罵他也沒用。', reveal:'這是決定論最實際的推論之一：如果什麼都是必然的，責備、獎勵、稱讚好像都失去了原本的意義。但問題是——教練的「訓斥」這個行為，也是被前面的原因決定的，它同樣是因果鏈的一部分,而且訓斥這個因,可能真的會改變球員下一秒的行為(這個因也是因果鏈的一部分)。所以「罵他」本身可能仍然有效果,只是「有沒有效果」跟「他該不該被罵」是兩個不同的問題。'},
+       {label:'還是有道理，因為訓斥本身也可能改變他下一次的表現。', reveal:'這是相容論者的立場：即使一切都是因果決定的,「訓斥」這個因,依然可以是造成球員改進的一個真實原因。決定論不代表「什麼都沒差」,只是代表每個結果背後都有原因——而你的選擇、努力、教練的話,都可以是那個原因的一部分。'}
+     ]},
+    {q:'AI 下棋時會「計算」出一步棋,人腦想一步棋時也在「計算」。那 AI 和人腦做決定,差別到底在哪裡?',
+     options:[
+       {label:'沒有本質差別,人腦就是更複雜的計算機。', reveal:'這正是「強決定論」或「物理主義」的立場——意識和選擇感,可能只是複雜計算過程附帶產生的「錯覺」。但也有人質疑:AI 不會「感覺」到自己在選擇,人類卻有非常真實的主觀選擇感受,這種「感受」本身要怎麼解釋,目前科學還沒有定論。'},
+       {label:'有差別,因為人類會「感覺」到自己在猶豫、選擇,AI 不會。', reveal:'這個「感覺」在哲學裡叫做「現象意識」(qualia)——即使人腦運作完全遵守物理定律,「有沒有主觀感受」仍然可能是不一樣的一回事。但質疑者會反問:感覺到自己在選擇,不代表選擇真的是自由的,說不定「感覺自由」本身也是被決定好會出現的一種感覺。'}
+     ]},
+    {q:'如果有一天科學家真的能用物理公式,100% 準確預測你下一步要做什麼,那時候你還會覺得自己「在選擇」嗎?',
+     options:[
+       {label:'不會了,那就證明一切都是假象。', reveal:'這是「強決定論」會走到的結論。但值得注意:即使「被準確預測」,那個被預測出來的行為,依然是經過你大腦裡「權衡、比較、決定」這整個真實運算過程才產生的——可預測,不一定等於這個過程本身不算數。'},
+       {label:'還是會,因為做決定的那個「過程」本身還是真實發生在我身上。', reveal:'這呼應了相容論的核心主張:自由不是「不被任何原因影響」,而是「這個決定是經過你自己的思考、價值判斷做出來的,不是被別人強迫或被鎖鏈綁住」。用這個定義,自由意志和決定論可以並存。'}
+     ]}
+  ],
+  synthesis:`這是哲學史上吵最久的題目之一,大致三個陣營:<br>
+  <b>強決定論者</b>認為自由意志完全是幻覺,一切都是物理必然。<br>
+  <b>自由意志論者</b>認為人類(或至少人類的決定過程)存在某種不被物理完全決定的成分,常常訴諸量子力學的隨機性(但隨機不等於自由,這本身也是個爭議點)。<br>
+  <b>相容論者</b>(目前哲學界人數最多)主張自由意志不需要「完全不被決定」,只需要「決定是由你自己的推理和價值產生的,而不是被外力強迫」——這樣自由和決定論就不衝突了。<br>
+  這題沒有實驗可以一次驗證誰對,值得持續帶著問號生活。`,
+  discuss:`「如果有人說『反正一切都注定好了,努力也沒用』,你會怎麼反駁他?」`,
+  parentGuide:`這是六個案件裡邏輯最燒腦的一個,很適合 Xavier 深度沉浸——不用擔心他花很久時間在同一步,這正是 VCI 144 的展現方式。<br><br>
+  <b>可以說:</b>
+  <span class="phrase">「你剛剛講的『訓斥本身也是因果鏈的一部分』,這個角度叫『相容論』,是目前哲學界支持最多人的立場,你自己推理出來了。」</span>
+  <span class="phrase">「這題沒有標準答案,連物理學家和哲學家都還在吵,你比較站哪一邊?為什麼?」</span>
+  <br>
+  如果他開始糾結「那努力到底有沒有用」,可以提醒他:不管決定論對不對,「努力」這個行為本身,在因果鏈裡永遠是真實發生、會產生影響的一環——這個結論在兩派立場下都成立,是個安全的收尾點。`
+},
+{
+  id:'trolley',
+  num:'案件 003',
+  title:'電車難題',
+  short:'規則重要,還是結果重要?',
+  difficulty:2,
+  background:`一台失控的電車即將撞死軌道上的五個人。你站在一根拉桿旁,拉下去電車會轉到另一條軌道,但那條軌道上有一個人會被撞死。拉,還是不拉?這個思想實驗被用來測試兩種倫理學立場的衝突:看結果的「效益主義」,還是看規則與義務的「義務論」。`,
+  claim:`「只要能救比較多人,就應該去做——結果好,就是對的。」`,
+  scenarios:[
+    {tag:'足球場', text:'裁判看到一次犯規動作,明知道吹罰會讓弱隊輸掉比賽,但按規則就是該吹。裁判該按規則吹,還是考慮「這樣吹對比賽結果比較不好」而放水?'},
+    {tag:'AI 世界', text:'自駕車遇到煞車失靈,前方是五個行人,方向盤打歪會撞上一位騎士。工程師該怎麼寫這段程式的判斷邏輯?這其實就是電車難題的真實版本。'}
+  ],
+  steps:[
+    {q:'如果拉桿救五個人、犧牲一個人是對的,那如果要把一個路人推下天橋去擋住電車救五個人,也一樣是對的嗎?',
+     options:[
+       {label:'一樣,反正都是犧牲一人救五人,數字相同。', reveal:'純粹按「救比較多人」的效益主義邏輯,兩種情況在數學上確實一樣。但大多數人直覺上覺得「推人」比「拉桿」更難以接受——這代表大家心裡除了算人數,還有別的道德直覺在運作,而不只是結果。'},
+       {label:'不一樣,推人感覺更「主動傷害」,拉桿只是「改變路線」。', reveal:'這正是義務論會強調的:用一個人的死亡「當工具」(推他下去是把他當手段)跟「附帶造成」(拉桿是改道,那個人的死是意外結果),在道德上可能有本質差異——即使結果的人數完全相同。'}
+     ]},
+    {q:'裁判為了「讓比賽更好看、結果更公平」而故意不吹一個明顯犯規,你會怎麼看這個裁判?',
+     options:[
+       {label:'可以理解,他是為了整體比賽好。', reveal:'這是效益主義式的判斷——只要整體結果變好,規則可以有彈性。但反對者會問:如果每個裁判都可以自己判斷「這次要不要照規則」,足球比賽還有辦法公平進行下去嗎?'},
+       {label:'不行,裁判的責任就是按規則吹,不是自己評估結果。', reveal:'這是義務論式的判斷——規則本身有獨立的價值,不能因為「這次結果比較好」就打破。義務論者會說:規則之所以重要,正是因為它不能被每次的結果任意推翻,不然規則就沒有意義了。'}
+     ]},
+    {q:'工程師要幫自駕車寫程式,遇到電車難題該怎麼寫?你覺得寫「救人數多的那邊」合理嗎?',
+     options:[
+       {label:'合理,至少有一個明確、可以計算的標準。', reveal:'效益主義的優點正是「可計算」——這對寫程式來說很實際,AI 需要明確規則才能運作。但也有人擔心:如果每一台車都被寫成「犧牲少數救多數」,那車主(可能就是「少數」那一邊)還會想買這台車嗎?'},
+       {label:'不合理,因為每個人的生命不該被拿來互相比較、計算。', reveal:'義務論者會主張每個人的生命都有不可被工具化的尊嚴,不能簡化成數字比較。但這個立場的難題是:如果拒絕做任何選擇,程式該怎麼寫?「什麼都不算」本身也是一種選擇。'}
+     ]}
+  ],
+  synthesis:`這題沒有標準答案,是倫理學裡最活躍的辯論之一:<br>
+  <b>效益主義者</b>(邊沁、彌爾)主張道德的核心是「讓整體幸福最大化」,結果最重要。<br>
+  <b>義務論者</b>(康德)主張有些規則和義務不能因為結果好就被打破,人不能被當成純粹的工具。<br>
+  <b>德行倫理學</b>則說重點不在規則或結果,而在「一個有德行的人在這個情境會怎麼做」。<br>
+  現實中的自駕車公司、醫療分配政策,至今都還在用不同的混合方式處理這個問題,沒有一致答案。`,
+  discuss:`「你覺得足球比賽的規則,應該永遠照字面遵守,還是有時候可以為了『比賽更精彩』彈性處理?」`,
+  parentGuide:`這個案件很適合連結足球裁判經驗,Xavier 對規則和公平性通常有敏銳直覺,可以順著他的反應深挖。<br><br>
+  <b>可以說:</b>
+  <span class="phrase">「你剛才說『推人』跟『拉桿』感覺不一樣,即使人數相同——這個直覺,剛好對應到哲學史上『效益主義』跟『義務論』的分歧,你已經摸到這題的核心了。」</span>
+  <span class="phrase">「這題連自駕車工程師現在都還在吵,沒有一個公司敢說自己有標準答案。」</span>
+  <br>
+  這題容易引發強烈的道德直覺反應,保持輕鬆、思想實驗的語氣,不需要引導到「哪個答案才是對的」。`
+},
+{
+  id:'theseus',
+  num:'案件 004',
+  title:'忒修斯之船',
+  short:'全部零件都換過,還是同一艘船嗎?',
+  difficulty:2,
+  background:`古希臘傳說中,忒修斯的船在海上航行多年,每次木板腐爛就換一塊新的。等到所有木板都被換過一輪,這艘船還是「原來的那艘船」嗎?這個古老問題其實在問一件更根本的事:一個東西的「身分」,到底建立在什麼之上?`,
+  claim:`「只要功能、外觀一樣,零件全部換過也還是『同一個東西』——身分只跟持續性有關,跟材料無關。」`,
+  scenarios:[
+    {tag:'足球場', text:'一支球隊十年前的十一位球員,現在可能一個都不在了——教練換了、隊徽也改版了。這支球隊還是「同一支球隊」嗎?球迷為什麼還會說「我從小支持的球隊」?'},
+    {tag:'AI 世界', text:'一個 AI 模型每次「更新版本」,權重參數幾乎全部重新訓練,跟上一版可能完全不同。那 Claude 4 和 Claude 5 是「同一個 AI」,還是不同的東西共用一個名字?'}
+  ],
+  steps:[
+    {q:'如果把忒修斯之船換下來的舊木板,全部撿回去重新組成一艘船,那兩艘船(修好的那艘、舊木板組的那艘)哪一艘才是「真正的」忒修斯之船?',
+     options:[
+       {label:'修好的那艘,因為它一直在航行、有連續的歷史。', reveal:'這個答案重視「持續性」——身分跟著這艘船的「故事線」走,不管零件換了多少次。但問題來了:如果連續性才是關鍵,那舊木板組成的那艘,豈不是擁有原始的物理材料,反而更「原版」?'},
+       {label:'舊木板組的那艘,因為它的材料才是「原本的」。', reveal:'這個答案重視「物質構成」——原子、材料才是身分的根本。但這樣的話,人體細胞每七年幾乎全部代謝更新一次,是不是代表你七年前跟現在,已經是「不同的兩個人」了?'}
+     ]},
+    {q:'一支球隊球員、教練全部換過,但球迷依然覺得「這是我從小支持的球隊」——這份認同感建立在什麼上面?',
+     options:[
+       {label:'建立在隊徽、名字這些「符號」上,只要名字延續,身分就延續。', reveal:'這呼應了哲學家常說的「敘事身分」(narrative identity):身分不是靠材料,而是靠一條連續不斷的「故事」串起來——這支球隊的故事、你自己人生的故事,都是這樣延續的。'},
+       {label:'建立在球迷自己心裡的情感連結,跟球隊本身怎麼變沒關係。', reveal:'這個角度很有意思——它把「身分」的重心,從球隊本身,轉移到了觀察者(球迷)的認知習慣上。也許有些「同一性」根本不是客觀存在的事實,而是人類大腦為了方便理解世界,主動貼上去的標籤。'}
+     ]},
+    {q:'AI 模型大更新後幾乎是重新訓練出來的,你覺得還應該叫「同一個 AI」延續舊的名字嗎?',
+     options:[
+       {label:'應該,因為使用者體驗到的「角色」和目的是延續的。', reveal:'這跟球隊的邏輯一樣——延續的是「功能和敘事」,不是底層材料(這裡是參數權重)。'},
+       {label:'不應該,權重全部不同了,本質上是全新的東西。', reveal:'這是「物質構成優先」的立場,跟忒修斯之船「原始木板」派是同一種思路。這題其實沒有客觀對錯,取決於你認為「身分」該用哪種標準衡量。'}
+     ]}
+  ],
+  synthesis:`哲學家對「同一性」的立場大致分幾種:<br>
+  <b>物質構成論</b>認為身分等於構成材料,材料變了身分就變了(嚴格來說會遇到人體細胞代謝的難題)。<br>
+  <b>持續性/因果連結論</b>認為只要每一步變化之間有連續的因果鏈,身分就能延續,不需要材料相同。<br>
+  <b>敘事身分論</b>認為身分根本不是材料問題,而是一套「被說出來、被記得」的故事——這也是這幾年被廣泛接受、用來討論人格同一性(甚至你自己十年前和現在是不是「同一個人」)的主流角度。<br>
+  這題沒有標準答案,但你選哪一派,會直接影響你怎麼看「改變」這件事本身。`,
+  discuss:`「如果你十年後個性、興趣、朋友圈完全不一樣了,你會說『那還是我』嗎?為什麼?」`,
+  parentGuide:`這個案件特別適合連結 AI 模型更新(Claude 版本迭代)這個他熟悉的情境,也很適合帶到「人自己會不會隨時間變成不同的人」這種比較貼近他自身經驗的延伸討論。<br><br>
+  <b>可以說:</b>
+  <span class="phrase">「你提到『敘事』這個角度很棒——這剛好是這幾十年哲學界討論『人格同一性』最主流的方式,你等於自己推導出一個現代哲學的核心概念。」</span>
+  <span class="phrase">「這題背後藏著一個更大的問題:『你』到底是什麼決定的?是身體、記憶,還是別人怎麼看你、記得你?」</span>
+  <br>
+  如果他把話題帶到「那我十年後還是我嗎」這種自我認同的方向,可以順著走,這是很健康的延伸,不需要拉回純邏輯層面。`
+},
+{
+  id:'skepticism',
+  num:'案件 005',
+  title:'缸中之腦',
+  short:'你怎麼確定現在不是在模擬世界裡?',
+  difficulty:3,
+  background:`想像有個瘋狂科學家把你的大腦取出來泡在營養液裡,接上電極,輸入跟現在一模一樣的所有感官訊號。你完全感覺不出差別——因為「感覺一模一樣」正是這個思想實驗的重點。這叫做「缸中之腦」,現代版本常被講成「我們是不是活在電腦模擬裡」。這個問題挑戰的是:你對「這一切都是真的」這份信心,到底建立在什麼證據上?`,
+  claim:`「反正我沒辦法百分之百證明自己不是活在模擬或幻覺裡,所以我對現實世界的任何『知道』,其實都不算真正知道。」`,
+  scenarios:[
+    {tag:'AI 世界', text:'一個 AI 語言模型「知道」巴黎是法國首都,但它其實只是根據訓練資料算出高機率的字詞組合,它並沒有真的「去過」巴黎。它算不算「知道」這件事?這跟你「知道」巴黎存在,本質上有差別嗎?'},
+    {tag:'日常生活', text:'你在打一場逼真的模擬遊戲時,遊戲裡的「你」如果有意識,會不會也覺得那個世界完全真實,毫無破綻?'}
+  ],
+  steps:[
+    {q:'如果你真的沒辦法百分之百排除「自己活在模擬裡」這個可能,那你今天早上吃的早餐,還算不算「真的」吃過?',
+     options:[
+       {label:'不算,因為連感覺都可能是假的。', reveal:'把懷疑論貫徹到底會走到這裡——但注意,如果連「吃早餐的感覺」都不算數,那「懷疑這一切是假的」這個念頭本身,是不是也一樣不算數?懷疑論一路走到底,連自己都會被懷疑掉。'},
+       {label:'算,因為就算是模擬,那個「吃」的體驗對我來說依然是真實發生的。', reveal:'這是哲學家常用的反駁:即使外部世界的「本體」有問題,你「正在經歷」這件事本身,是懷疑不掉的——這正是笛卡兒那句名言背後的邏輯:不管外面的世界是真是假,「有一個東西正在懷疑、正在思考」這件事本身無法被懷疑掉。'}
+     ]},
+    {q:'AI 說出「巴黎是法國首都」是不是「知道」這件事?這跟你自己「知道」有什麼不同?',
+     options:[
+       {label:'一樣是知道,只要答案正確就算數。', reveal:'這是一種「行為主義式」的知識觀——只看輸出對不對,不管內部發生了什麼。但反對者會問:如果只看輸出,一本正確的百科全書是不是也「知道」所有內容?這樣「知道」這個詞好像失去了原本的意義。'},
+       {label:'不一樣,因為「知道」還需要理解,而不只是算出正確答案。', reveal:'這呼應了哲學界很有名的思想實驗「中文房間」:一個完全不懂中文的人,只靠對照手冊,也能把中文問題「翻譯」成正確的中文答案——他有「回答正確」,但有沒有「理解」?這題到現在 AI 領域還在吵。'}
+     ]},
+    {q:'如果永遠沒辦法百分之百證明現實是「真的」,那懷疑這件事,對你的日常生活還有沒有用?',
+     options:[
+       {label:'沒用,反正證明不了,想這個只是浪費時間。', reveal:'很多哲學家其實同意這個實用主義的立場——這也是為什麼笛卡兒自己懷疑到極致後,最後還是選擇「像平常一樣生活」,因為懷疑論在日常實踐上幾乎無法真正被使用。'},
+       {label:'有用,它讓我對「我以為我知道的事」保持一點謙虛,更願意檢查證據。', reveal:'這正是懷疑論真正的價值所在——不是用來否定一切,而是當成一種「品質檢查」的態度:不要理所當然地相信第一印象,而是願意問「我怎麼知道這是真的」。這也正是你在做「AI 抓錯」訓練時一直在用的能力。'}
+     ]}
+  ],
+  synthesis:`這題的現代版本(模擬假說)甚至被一些物理學家和科技界人士認真討論過,但目前沒有任何辦法可以實驗驗證。哲學上大致的立場:<br>
+  <b>激進懷疑論</b>認為既然無法排除,就該對所有外部世界的知識保持懸置。<br>
+  <b>笛卡兒式回應</b>主張至少有一件事無法懷疑——「正在懷疑/思考的這個主體存在」,並以此為基礎重建知識。<br>
+  <b>實用主義回應</b>認為就算理論上無法百分之百證明,日常生活也應該按「最合理的證據」行動,而不是被無法驗證的懷疑困住。<br>
+  這題的價值不在於「解決」,而在於它逼你去檢查:你平常說「我知道」的時候,到底憑什麼?`,
+  discuss:`「AI『說對答案』跟人『真的理解』,你覺得有沒有差別?怎麼測試得出來?」`,
+  parentGuide:`這是六案中跟 Xavier「AI 驗證官」身分連結最直接的一案——中文房間論證幾乎是為他量身打造的討論題材,可以預期他會很投入。<br><br>
+  <b>可以說:</b>
+  <span class="phrase">「你剛剛問『AI 有沒有理解,還是只是算出正確答案』——這個問題有個正式名字叫『中文房間論證』,是 AI 哲學裡最重要的辯論之一,你自己重新發現了它。」</span>
+  <span class="phrase">「這題到現在連 AI 研究者自己都沒有共識,你比較站哪一邊?」</span>
+  <br>
+  提醒:懷疑論討論到極致有時候會讓孩子產生一點不安(「那什麼都不能相信了嗎」),如果他表現出這種不安,可以用最後一步的「實用主義」收尾——懷疑是拿來當工具用的,不是拿來癱瘓自己的。`
+},
+{
+  id:'hedonism',
+  num:'案件 006',
+  title:'快樂悖論',
+  short:'越想要快樂,反而越不快樂?',
+  difficulty:1,
+  background:`直覺上,追求快樂應該讓人得到快樂。但很多研究和個人經驗都指出一個奇怪的現象:當一個人把「讓自己快樂」當成最直接、最主要的目標去追逐時,反而常常得不到快樂,甚至更空虛。這叫做「快樂悖論」(paradox of hedonism)。快樂似乎是一種「副產品」,不是一種可以直接抓住的東西。`,
+  claim:`「快樂是人生最重要的目標,所以我應該把每一個選擇,都用『能不能讓我更快樂』來判斷。」`,
+  scenarios:[
+    {tag:'遊戲/XP 系統', text:'一款遊戲如果把「獲得快樂」設計成唯一目標(不斷給獎勵、不斷跳等級提示),玩久了常常會覺得空洞、麻木,反而不如「沉浸在解一個困難謎題」那種過程帶來的滿足感持久。'},
+    {tag:'足球場', text:'球員如果每一腳都只想著「這樣做會不會讓我看起來很爽、很威」,通常表現反而變差;完全投入在「這球該怎麼處理」的球員,賽後反而更享受比賽本身。'}
+  ],
+  steps:[
+    {q:'一直盯著「這樣做我會不會快樂」在做選擇的人,跟完全投入在一件事本身、不去想快不快樂的人,誰通常事後回想起來比較滿足?',
+     options:[
+       {label:'一直盯著快樂的人,因為他每一步都在優化快樂。', reveal:'實際上大量心理學研究(包括心流理論)顯示相反的結果:太專注於「監測自己快不快樂」,反而會打斷投入的狀態,讓體驗變得表淺。這是快樂悖論最核心的現象。'},
+       {label:'完全投入、忘記去想快不快樂的人,反而比較滿足。', reveal:'這正是心理學家米哈里提出的「心流」(flow)概念——最深刻的滿足感,通常發生在你完全忘記要不要快樂、只專注在挑戰本身的時刻。快樂變成了投入之後「自己冒出來」的副產品,而不是直接被追求到的東西。'}
+     ]},
+    {q:'如果快樂沒辦法「直接」追求,那要怎麼樣才比較容易得到快樂?',
+     options:[
+       {label:'去追求別的東西(挑戰、意義、關係),快樂自己會跟著來。', reveal:'這是快樂悖論的解方,也呼應古希臘哲學家亞里斯多德的想法:他認為真正持久的幸福感(他稱為 eudaimonia,「活得好」)來自把潛能發揮出來、投入有意義的活動,而不是來自直接追逐感官上的愉悅。'},
+       {label:'還是要直接想辦法讓自己開心,只是方法要換一換。', reveal:'如果還是把「我要開心」當成每一步的計算目標,可能還是會掉進同一個陷阱——重點不是換方法,而是暫時放下「這樣做划不划算」的計算心態,單純投入。這個轉變本身才是關鍵,而不是換一種追逐快樂的技巧。'}
+     ]}
+  ],
+  synthesis:`快樂悖論不是說「快樂不重要」,而是提出一個關於「怎麼獲得快樂」的弔詭機制:<br>
+  <b>享樂主義</b>(伊比鳩魯等)本身也承認,單純追逐感官快感容易导致空虛,主張要追求「長久、平靜的快樂」而非短暫刺激。<br>
+  <b>亞里斯多德式的幸福觀</b>認為快樂是投入有意義活動之後的副產品,不是可以直接瞄準的靶心。<br>
+  <b>現代心理學(心流理論)</b>用實證研究支持了這個古老直覺——最深的滿足感發生在「忘記要快樂」的沉浸狀態裡。<br>
+  這題比較少爭議,大部分立場其實殊途同歸:別直接瞄準快樂,瞄準值得投入的事,快樂自己會跟上來。`,
+  discuss:`「你有沒有哪次是完全忘記時間、忘記在意好不好玩,結果反而是你印象最深刻的時刻?」`,
+  parentGuide:`這一案難度最低、也最貼近日常生活,很適合當作暖身案件,或用來反思偵探局本身這套 XP/獎勵系統的設計哲學。<br><br>
+  <b>可以說:</b>
+  <span class="phrase">「你發現『太想要快樂反而不快樂』這個矛盾,這其實就是心理學裡『心流』理論在講的事,你的踢球投入狀態就是一個活生生的例子。」</span>
+  <span class="phrase">「你平常在深度研究一個主題、忘記時間的時候,那種感覺跟『特地找開心的事來做』,哪一種比較滿足?」</span>
+  <br>
+  這一案是溫和的收尾案件,適合放在會議最後討論,也可以順勢肯定他平常深度沉浸單一主題的能力,本身就是這個原理最好的示範。`
+}
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const STORE_KEY = 'philosophyDetective_progress_v1';
+let progress = loadProgress();
+let currentCase = null;
+let stepState = {}; // per open case: which step index revealed, chosen options
+
+function loadProgress(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return {solved:{}, xp:0};
+    const parsed = JSON.parse(raw);
+    return {solved:parsed.solved||{}, xp:parsed.xp||0};
+  }catch(e){ return {solved:{}, xp:0}; }
+}
+function saveProgress(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(progress)); }
+  catch(e){ console.error('Storage failed', e); }
+}
+
+function rankFor(xp){
+  if(xp >= 220) return '首席顧問偵探';
+  if(xp >= 100) return '資深偵探';
+  return '見習偵探';
+}
+
+function renderRank(){
+  document.getElementById('rank-name').textContent = rankFor(progress.xp);
+  document.getElementById('rank-xp').textContent = progress.xp + ' XP';
+}
+
+/* ============================================================
+   BOARD VIEW
+   ============================================================ */
+function renderBoard(){
+  const grid = document.getElementById('folder-grid');
+  grid.innerHTML = '';
+  CASES.forEach((c, i)=>{
+    const solved = !!progress.solved[c.id];
+    const tilt = (i % 2 === 0 ? -1 : 1) * (1 + (i % 3));
+    const div = document.createElement('div');
+    div.className = 'folder';
+    div.style.transform = `rotate(${tilt*0.4}deg)`;
+    div.onclick = ()=> openCase(c.id);
+    div.innerHTML = `
+      ${solved ? '<div class="stamp">已結案</div>' : ''}
+      <div>
+        <div class="fnum">${c.num}</div>
+        <h3>${c.title}</h3>
+        <div class="fsub">${c.short}</div>
+      </div>
+      <div class="fmeta">
+        <span class="stars">${'★'.repeat(c.difficulty)}${'☆'.repeat(3-c.difficulty)}</span>
+        <span>${solved ? '點擊複查' : '點擊偵辦'}</span>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+/* ============================================================
+   CASE VIEW
+   ============================================================ */
+function openCase(id){
+  currentCase = CASES.find(c=>c.id===id);
+  stepState = { revealed: currentCase.steps.map(()=>false), doneCount:0 };
+
+  document.getElementById('cd-num').textContent = currentCase.num;
+  document.getElementById('cd-title').textContent = currentCase.title;
+  document.getElementById('cd-stars').textContent = '★'.repeat(currentCase.difficulty) + '☆'.repeat(3-currentCase.difficulty);
+  document.getElementById('cd-background').textContent = currentCase.background;
+  document.getElementById('cd-claim').textContent = currentCase.claim;
+  document.getElementById('cd-parentguide').innerHTML = currentCase.parentGuide;
+  document.getElementById('cd-discuss').textContent = currentCase.discuss;
+
+  const scenWrap = document.getElementById('cd-scenarios');
+  scenWrap.innerHTML = currentCase.scenarios.map(s=>`
+    <div class="scenario-card">
+      <span class="tag">${s.tag}</span>
+      <p>${s.text}</p>
+    </div>
+  `).join('');
+
+  document.getElementById('cd-synthesis-panel').style.display = 'none';
+  document.getElementById('cd-discuss-panel').style.display = 'none';
+  document.getElementById('cd-complete-bar').style.display = 'none';
+  document.getElementById('cd-complete-msg').classList.remove('show');
+
+  renderChain();
+
+  document.getElementById('board-view').style.display = 'none';
+  document.getElementById('case-view').style.display = 'block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function renderChain(){
+  const chain = document.getElementById('cd-chain');
+  chain.innerHTML = '';
+  currentCase.steps.forEach((step, idx)=>{
+    if(idx > stepState.doneCount) return; // only show up to current + one pending
+    const node = document.createElement('div');
+    node.className = 'chain-node';
+    const tilt = (idx % 2 === 0 ? -0.6 : 0.6);
+    const optsHtml = step.options.map((opt,oi)=>`
+      <button class="opt-btn" data-idx="${oi}" onclick="chooseOption(${idx},${oi})">${opt.label}</button>
+    `).join('');
+    node.innerHTML = `
+      <div class="qcard" style="--tilt:${tilt}deg">
+        <div class="qtext">Q${idx+1}. ${step.q}</div>
+        <div class="opt-row" id="opts-${idx}">${optsHtml}</div>
+        <div class="reveal" id="reveal-${idx}"></div>
+        ${idx === stepState.doneCount ? '' : ''}
+      </div>
+    `;
+    chain.appendChild(node);
+  });
+}
+
+function chooseOption(stepIdx, optIdx){
+  if(stepState.revealed[stepIdx]) return; // already answered
+  const step = currentCase.steps[stepIdx];
+  const opt = step.options[optIdx];
+
+  const optsWrap = document.getElementById('opts-'+stepIdx);
+  Array.from(optsWrap.children).forEach((btn,i)=>{
+    btn.disabled = true;
+    if(i===optIdx) btn.classList.add('chosen');
+    else btn.style.opacity = '.5';
+  });
+
+  const revealEl = document.getElementById('reveal-'+stepIdx);
+  revealEl.textContent = opt.reveal;
+  revealEl.classList.add('show');
+
+  stepState.revealed[stepIdx] = true;
+  stepState.doneCount = stepIdx + 1;
+
+  if(stepState.doneCount < currentCase.steps.length){
+    setTimeout(renderChain, 150);
+  } else {
+    // all steps done — show synthesis + discussion + complete button
+    document.getElementById('cd-synthesis').innerHTML = currentCase.synthesis;
+    document.getElementById('cd-synthesis-panel').style.display = 'block';
+    document.getElementById('cd-discuss-panel').style.display = 'block';
+    document.getElementById('cd-complete-bar').style.display = 'block';
+    const btn = document.getElementById('cd-complete-btn');
+    if(progress.solved[currentCase.id]){
+      btn.disabled = true;
+      btn.textContent = '這件案子已經在檔案櫃裡了';
+    } else {
+      btn.disabled = false;
+      btn.textContent = '結案,收進檔案櫃';
+    }
+  }
+}
+
+function completeCase(){
+  if(!currentCase) return;
+  if(!progress.solved[currentCase.id]){
+    progress.solved[currentCase.id] = true;
+    progress.xp += 40;
+    saveProgress();
+    renderRank();
+  }
+  document.getElementById('cd-complete-btn').disabled = true;
+  document.getElementById('cd-complete-btn').textContent = '這件案子已經在檔案櫃裡了';
+  document.getElementById('cd-complete-msg').classList.add('show');
+}
+
+function showBoard(){
+  document.getElementById('case-view').style.display = 'none';
+  document.getElementById('board-view').style.display = 'block';
+  renderBoard();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderRank();
+renderBoard();
+</script>
+</body>
+</html>
